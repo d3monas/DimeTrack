@@ -1,6 +1,20 @@
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+
+type Transaction = {
+  id: number,
+  description: string,
+  amount: number,
+  type: "income" | "expense",
+  date: string
+}
+
 export default function Home() {
 
-  const transactions = [
+  const transactions: Transaction[] = [
     {
       id: 1,
       description: "Birthday Money",
@@ -33,6 +47,16 @@ export default function Home() {
   const progress = (goal.currentAmount / goal.targetAmount) * 100
   const remaining = goal.targetAmount - goal.currentAmount
 
+  const income = transactions
+  .filter((transaction) => transaction.type === "income")
+  .reduce((sum, transaction) => sum + transaction.amount, 0)
+
+  const expenses = transactions
+  .filter((transaction) => transaction.type === "expense")
+  .reduce((sum, transaction) => sum + transaction.amount, 0)
+
+  const balance = income - expenses
+
   return (
     <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-6xl p-6">
@@ -41,10 +65,21 @@ export default function Home() {
           <p className="text-muted-foreground">Track spending and save for goals.</p>
         </header>
 
+        {/* Current balance card */}
         <div className="grid gap-6 md:grid-cols-3">
           <div className="rounded-2xl border p-6">
             <p className="text-sm text-muted-foreground">Current Balance</p>
-            <h2 className="mt-2 text-3xl font-bold">$324.50</h2>
+            <h2 className="mt-2 text-3xl font-bold">${balance.toFixed(2)}</h2>
+          </div>
+
+          <div className="rounded-2xl border p-6">
+            <p className="text-sm text-muted-foreground">Income this month</p>
+            <h2 className="mt-2 text-3xl font-bold text-green-600">${income.toFixed(2)}</h2>
+          </div>
+
+          <div className="rounded-2xl border p-6">
+            <p className="text-sm text-muted-foreground">Expenses this month</p>
+            <h2 className="mt-2 text-3xl font-bold text-red-600">${expenses.toFixed(2)}</h2>
           </div>
         </div>
 
@@ -89,15 +124,6 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="rounded-2xl border p-6">
-          <p className="text-sm text-muted-foreground">Income this month</p>
-          <h2 className="mt-2 text-3xl font-bold text-green-600">$120.00</h2>
-        </div>
-
-        <div className="rounded-2xl border p-6">
-          <p className="text-sm text-muted-foreground">Expenses this month</p>
-          <h2 className="mt-2 text-3xl font-bold text-red-600">$45.00</h2>
-        </div>
       </div>
     </main>
   )
