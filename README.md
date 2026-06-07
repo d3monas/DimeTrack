@@ -19,3 +19,5 @@ Built with:
 - TypeScript
 - Tailwind CSS
 - shadcn/ui
+
+check it out here: https://dime-track.vercel.app/
