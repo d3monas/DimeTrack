@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 // types
 import type { Transaction } from "@/types/transaction"
@@ -46,6 +47,19 @@ export default function Home() {
   
   const [description, setDescription] = useState("")
   const [amount, setAmount] = useState("")
+  const [transactionType, setTransactionType] = useState<"income" | "expense">("expense")
+
+  useEffect(() => {
+    const savedTransactions = localStorage.getItem("transactions")
+
+    if (savedTransactions) {
+      setTransactions(JSON.parse(savedTransactions))
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem("transactions", JSON.stringify(transactions))
+  }, [transactions])
 
   const progress = (goal.currentAmount / goal.targetAmount) * 100
   const remaining = goal.targetAmount - goal.currentAmount
@@ -66,15 +80,21 @@ export default function Home() {
       id: Date.now(),
       description,
       amount: numberCheck,
-      type: "expense",
+      type: transactionType,
       date: new Date().toLocaleDateString(),
     }
 
     setTransactions([newTransaction, ...transactions])
     setDescription("")
     setAmount("")
+    setTransactionType("expense")
     setOpen(false)
   }
+
+  function deleteTransaction(id: number) {
+    setTransactions(transactions.filter((transaction) => transaction.id !== id))
+  }
+
   const [open, setOpen] = useState(false)
   
   return (
@@ -143,6 +163,21 @@ export default function Home() {
                 </div>
 
                 <div>
+                  <Label>Type</Label>
+
+                  <Select value={transactionType} onValueChange={(value) => setTransactionType(value as "expense" | "income")}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectItem value="expense">Expense</SelectItem>
+                      <SelectItem value="income">Income</SelectItem>
+                    </SelectContent>
+                    </Select>
+                </div>
+
+                <div>
                   <Label>Amount</Label>
                   <Input type="number" min="0.01" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="5" />
                 </div>
@@ -166,6 +201,7 @@ export default function Home() {
 
                 <span className={`font-medium ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}>
                   {transaction.type === "income" ? "+" : "-"}${transaction.amount.toFixed(2)}
+                  <Button variant="ghost" size="sm" onClick={() => deleteTransaction(transaction.id)}>X</Button>
                 </span>
               </div>
             ))}
