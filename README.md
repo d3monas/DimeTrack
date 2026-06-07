@@ -1,21 +1,21 @@
-# Next.js template
+# PennyPath
 
-This is a Next.js template with shadcn/ui.
+A simple, open-source money tracker and savings planner built for students and teens.
 
-## Adding components
+## Features
 
-To add components to your app, run the following command:
+- Track income & expenses
+- Set savings goals
+- Monitor spending habits
+- View account balance at a glance
+- Designed specifically for students and teens
 
-```bash
-npx shadcn@latest add button
-```
+## How it works
 
-This will place the ui components in the `components` directory.
+PennyPath helps students understand where their money is going and stay on track toward savings goals. The initial version focuses on fast transaction entry, goal tracking & a simple dashboard.
 
-## Using components
-
-To use the components in your app, import them as follows:
-
-```tsx
-import { Button } from "@/components/ui/button";
-```
+Built with:
+- Next.js
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
