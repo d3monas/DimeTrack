@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -14,7 +16,7 @@ type Transaction = {
 
 export default function Home() {
 
-  const transactions: Transaction[] = [
+  const [transactions, setTransactions] = useState<Transaction[]>([
     {
       id: 1,
       description: "Birthday Money",
@@ -36,13 +38,16 @@ export default function Home() {
       type: "expense",
       date: "May 20, 2026",
     },
-  ]
+  ])
 
   const goal = {
     name: "IPhone 17",
     currentAmount: 420,
     targetAmount: 999.99,
   }
+  
+  const [description, setDescription] = useState("")
+  const [amount, setAmount] = useState("")
 
   const progress = (goal.currentAmount / goal.targetAmount) * 100
   const remaining = goal.targetAmount - goal.currentAmount
@@ -56,6 +61,22 @@ export default function Home() {
   .reduce((sum, transaction) => sum + transaction.amount, 0)
 
   const balance = income - expenses
+
+  function addTransaction() {
+    if (!description || !amount) return
+
+    const newTransaction: Transaction = {
+      id: Date.now(),
+      description,
+      amount: Number(amount),
+      type: "expense",
+      date: new Date().toLocaleDateString(),
+    }
+
+    setTransactions([newTransaction, ...transactions])
+    setDescription("")
+    setAmount("")
+  }
 
   return (
     <main className="min-h-screen bg-background">
@@ -105,6 +126,34 @@ export default function Home() {
         </div>
 
       {/* Recent transactions card */}
+        <div className="mt-6 flex justify-end">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>Add Transaction</Button>
+            </DialogTrigger>
+
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add Transaction</DialogTitle>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                <div>
+                  <Label>Description</Label>
+                  <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Coffee" />
+                </div>
+
+                <div>
+                  <Label>Amount</Label>
+                  <Input value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="5" />
+                </div>
+
+                <Button className="w-full" onClick={addTransaction}>Save Transaction</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+
         <div className="mt-6 rounded-2xl border p-6">
           <h2 className="mb-4 text-xl font-semibold">Recent Transactions</h2>
 
