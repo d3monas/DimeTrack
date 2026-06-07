@@ -101,7 +101,7 @@ export default function Home() {
     <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-6xl p-6">
         <header className="mb-8">
-          <h1 className="text-4xl font-bold">PennyPath</h1>
+          <h1 className="text-4xl font-bold">DimeTrack</h1>
           <p className="text-muted-foreground">Track spending and save for goals.</p>
         </header>
 

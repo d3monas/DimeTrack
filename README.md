@@ -1,4 +1,4 @@
-# PennyPath
+# DimeTrack
 
 A simple, open-source money tracker and savings planner built for students and teens.
 
@@ -12,7 +12,7 @@ A simple, open-source money tracker and savings planner built for students and t
 
 ## How it works
 
-PennyPath helps students understand where their money is going and stay on track toward savings goals. The initial version focuses on fast transaction entry, goal tracking & a simple dashboard.
+DimeTrack helps students understand where their money is going and stay on track toward savings goals. This initial version focuses on fast transaction entry, goal tracking & a simple dashboard.
 
 Built with:
 - Next.js
