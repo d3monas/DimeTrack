@@ -6,13 +6,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-type Transaction = {
-  id: number,
-  description: string,
-  amount: number,
-  type: "income" | "expense",
-  date: string
-}
+// types
+import type { Transaction } from "@/types/transaction"
+
+// libs
+import { calculateIncome, calculateExpenses } from "@/lib/calculations"
 
 export default function Home() {
 
@@ -52,23 +50,22 @@ export default function Home() {
   const progress = (goal.currentAmount / goal.targetAmount) * 100
   const remaining = goal.targetAmount - goal.currentAmount
 
-  const income = transactions
-  .filter((transaction) => transaction.type === "income")
-  .reduce((sum, transaction) => sum + transaction.amount, 0)
-
-  const expenses = transactions
-  .filter((transaction) => transaction.type === "expense")
-  .reduce((sum, transaction) => sum + transaction.amount, 0)
+  const income = calculateIncome(transactions)
+  const expenses = calculateExpenses(transactions)
 
   const balance = income - expenses
 
   function addTransaction() {
-    if (!description || !amount) return
+    const numberCheck = Number(amount)
+
+    if (!description || !amount || Number.isNaN(numberCheck) || numberCheck <= 0) {
+      return
+    }
 
     const newTransaction: Transaction = {
       id: Date.now(),
       description,
-      amount: Number(amount),
+      amount: numberCheck,
       type: "expense",
       date: new Date().toLocaleDateString(),
     }
@@ -76,8 +73,10 @@ export default function Home() {
     setTransactions([newTransaction, ...transactions])
     setDescription("")
     setAmount("")
+    setOpen(false)
   }
-
+  const [open, setOpen] = useState(false)
+  
   return (
     <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-6xl p-6">
@@ -127,7 +126,7 @@ export default function Home() {
 
       {/* Recent transactions card */}
         <div className="mt-6 flex justify-end">
-          <Dialog>
+          <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button>Add Transaction</Button>
             </DialogTrigger>
@@ -145,7 +144,7 @@ export default function Home() {
 
                 <div>
                   <Label>Amount</Label>
-                  <Input value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="5" />
+                  <Input type="number" min="0.01" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="5" />
                 </div>
 
                 <Button className="w-full" onClick={addTransaction}>Save Transaction</Button>
