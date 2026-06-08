@@ -1,4 +1,5 @@
 import { Transaction } from "@/types/transaction"
+import { Goal } from "@/types/goal"
 
 export function saveTransactions(transactions: Transaction[]) {
     localStorage.setItem("transactions", JSON.stringify(transactions))
@@ -18,12 +19,27 @@ export function loadTransactions(): Transaction[] {
     return JSON.parse(saved)
 }
 
-export function loadGoal(): any {
+export function loadGoal(): Goal | null {
     const saved = localStorage.getItem("goal")
 
-    if (!saved) {
-        return []
+    if (!saved) { 
+        return null
     }
 
-    return JSON.parse(saved)
+    try { 
+        const parsed = JSON.parse(saved)
+
+        if (
+            typeof parsed.name !== "string" ||
+            typeof parsed.currentAmount !== "number" ||
+            typeof parsed.targetAmount !== "number"
+        ) {
+            return null
+        }
+        return parsed
+    }
+
+    catch {
+        return null
+    }
 }
