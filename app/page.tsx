@@ -1,17 +1,17 @@
 "use client"
-
+// components
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { TransactionList } from "@/components/transactionList"
+import { GoalCard } from "@/components/goalCard"
+import { GoalDialog } from "@/components/add-goal-ui"
+import { AddTransactionDialog } from "@/components/add-transaction-ui"
 
 // types
 import type { Transaction } from "@/types/transaction"
 
 // libs
 import { calculateIncome, calculateExpenses } from "@/lib/calculations"
+import { saveTransactions, loadTransactions, saveGoal as saveGoalStorage, loadGoal as loadGoalStorage } from "@/lib/localstorage"
 
 export default function Home() {
 
@@ -39,26 +39,46 @@ export default function Home() {
     },
   ])
 
-  const goal = {
+  const [goal, setGoal] = useState({
     name: "IPhone 17",
     currentAmount: 420,
     targetAmount: 999.99,
-  }
+  })
+
+  useEffect(() => {
+    const savedGoal = loadGoalStorage()
+
+    if (savedGoal) {
+      setGoal(savedGoal)
+
+      setGoalName(savedGoal.name)
+      setGoalSaved(savedGoal.currentAmount.toString())
+      setGoalTarget(savedGoal.targetAmount.toString())
+    }
+  }, [])
+
+  useEffect(() => {
+    saveGoalStorage(goal)
+  }, [goal])
+
+  const [goalName, setGoalName] = useState(goal.name)
+  const [goalTarget, setGoalTarget] = useState(goal.targetAmount.toString())
+  const [goalSaved, setGoalSaved] = useState(goal.currentAmount.toString())
   
   const [description, setDescription] = useState("")
   const [amount, setAmount] = useState("")
   const [transactionType, setTransactionType] = useState<"income" | "expense">("expense")
 
   useEffect(() => {
-    const savedTransactions = localStorage.getItem("transactions")
+    const saved = loadTransactions()
 
-    if (savedTransactions) {
-      setTransactions(JSON.parse(savedTransactions))
+    if (saved.length > 0) {
+      setTransactions(saved) 
     }
   }, [])
 
   useEffect(() => {
-    localStorage.setItem("transactions", JSON.stringify(transactions))
+    saveTransactions(transactions)
   }, [transactions])
 
   const progress = (goal.currentAmount / goal.targetAmount) * 100
@@ -84,7 +104,7 @@ export default function Home() {
       date: new Date().toLocaleDateString(),
     }
 
-    setTransactions([newTransaction, ...transactions])
+    setTransactions((prev) => [newTransaction, ...prev])
     setDescription("")
     setAmount("")
     setTransactionType("expense")
@@ -92,10 +112,27 @@ export default function Home() {
   }
 
   function deleteTransaction(id: number) {
-    setTransactions(transactions.filter((transaction) => transaction.id !== id))
+    setTransactions((prev) => prev.filter((transaction) => transaction.id !== id))
+  }
+
+  function saveGoal() {
+    const saved = Number(goalSaved)
+    const target = Number(goalTarget)
+
+    if (!goalName || Number.isNaN(saved) || Number.isNaN(target) || target <= 0 || saved < 0) {
+      return
+    }
+
+    setGoal({
+      name: goalName,
+      currentAmount: saved,
+      targetAmount: target
+    })
+    setGoalDialogOpen(false)
   }
 
   const [open, setOpen] = useState(false)
+  const [goalDialogOpen, setGoalDialogOpen] = useState(false)
   
   return (
     <main className="min-h-screen bg-background">
@@ -124,88 +161,20 @@ export default function Home() {
         </div>
 
         {/* Goal card */}
-        <div className="mt-6 rounded-2xl border p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold">{goal.name}</h2>
-              <p className="text-muted-foreground">Savings Goal</p>
-            </div>
+        <GoalCard goal={goal} progress={progress} remaining={remaining} onEdit={() => setGoalDialogOpen(true)} />
 
-            <p className="font-bold">${goal.currentAmount.toFixed(2)} / ${goal.targetAmount.toFixed(2)}</p>
-        </div>
+        {/* Edit goal button */}
+        <GoalDialog open={goalDialogOpen} setOpen={setGoalDialogOpen} goalName={goalName} setGoalName={setGoalName} goalTarget={goalTarget} setGoalTarget={setGoalTarget} goalSaved={goalSaved} setGoalSaved={setGoalSaved} onSave={saveGoal} />
 
-        <div className="mt-4 h-3 overflow-hidden rounded-full bg-muted">
-          <div
-            className="h-full rounded-full bg-green-600"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-
-        <p className="mt-2 text-sm text-muted-foreground">${remaining.toFixed(2)} remaining</p>
+        {/* Add transaction button */}
+        <div className="mt-6 flex justify-end">
+          <AddTransactionDialog open={open} setOpen={setOpen} description={description} setDescription={setDescription} amount={amount} setAmount={setAmount} transactionType={transactionType} setTransactionType={setTransactionType} onSave={addTransaction}></AddTransactionDialog>
         </div>
 
       {/* Recent transactions card */}
-        <div className="mt-6 flex justify-end">
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button>Add Transaction</Button>
-            </DialogTrigger>
-
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add Transaction</DialogTitle>
-              </DialogHeader>
-
-              <div className="space-y-4">
-                <div>
-                  <Label>Description</Label>
-                  <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Coffee" />
-                </div>
-
-                <div>
-                  <Label>Type</Label>
-
-                  <Select value={transactionType} onValueChange={(value) => setTransactionType(value as "expense" | "income")}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-
-                    <SelectContent>
-                      <SelectItem value="expense">Expense</SelectItem>
-                      <SelectItem value="income">Income</SelectItem>
-                    </SelectContent>
-                    </Select>
-                </div>
-
-                <div>
-                  <Label>Amount</Label>
-                  <Input type="number" min="0.01" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="5" />
-                </div>
-
-                <Button className="w-full" onClick={addTransaction}>Save Transaction</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-
         <div className="mt-6 rounded-2xl border p-6">
           <h2 className="mb-4 text-xl font-semibold">Recent Transactions</h2>
-
-          <div className="space-y-4">
-            {transactions.map((transaction) => (
-              <div key={transaction.id} className="flex items-center justify-between border-b pb-3 last:border-0">
-                <div>
-                  <p className="font-medium">{transaction.description}</p>
-                  <p className="text-sm text-muted-foreground">{transaction.date}</p>
-                </div>
-
-                <span className={`font-medium ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}>
-                  {transaction.type === "income" ? "+" : "-"}${transaction.amount.toFixed(2)}
-                  <Button variant="ghost" size="sm" onClick={() => deleteTransaction(transaction.id)}>X</Button>
-                </span>
-              </div>
-            ))}
-          </div>
+          <TransactionList transactions={transactions} onDelete={deleteTransaction} />
         </div>
 
       </div>
