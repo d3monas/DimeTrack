@@ -8,9 +8,9 @@ const colors = [
     "#22c55e",
     "#3b82f6",
     "#f59e0b",
-  "#ef4444",
-  "#8b5cf6",
-  "#06b6d4",
+    "#ef4444",
+    "#8b5cf6",
+    "#06b6d4",
 ]
 
 export function SpendingChart({totals}: Things) {
@@ -27,7 +27,7 @@ export function SpendingChart({totals}: Things) {
             <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                        <Pie data={data} dataKey="amount" nameKey="category" outerRadius={100} label>{data.map((_, index) => (<Cell key={index} fill={colors[index % colors.length]} />))}</Pie>
+                        <Pie data={data} dataKey="amount" nameKey="category" outerRadius={100} label={({payload}) => payload.category}>{data.map((_, index) => (<Cell key={index} fill={colors[index % colors.length]} />))}</Pie>
                         <Tooltip />
                     </PieChart>
                 </ResponsiveContainer>
