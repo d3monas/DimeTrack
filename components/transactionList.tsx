@@ -16,7 +16,12 @@ export function TransactionList({
                 <div key={transaction.id} className="flex items-center justify-between border-b pb-3 last:border-0">
                     <div>
                         <p className="font-medium">{transaction.description}</p>
-                        <p className="text-sm text-muted-foreground">{transaction.date}</p>
+
+                        <div className="flex gap-2 text-sm text-muted-foreground">
+                            <span>{transaction.date}</span>
+                            <span>•</span>
+                            <span>{transaction.category}</span>
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-2">

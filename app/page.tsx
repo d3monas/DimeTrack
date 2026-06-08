@@ -21,6 +21,7 @@ export default function Home() {
       description: "Birthday Money",
       amount: 50,
       type: "income",
+      category: "Other",
       date: "May 1, 2026",
     },
     {
@@ -28,6 +29,7 @@ export default function Home() {
       description: "Spotify",
       amount: 11,
       type: "expense",
+      category: "Subscriptions",
       date: "May 15, 2026",
     },
     {
@@ -35,6 +37,7 @@ export default function Home() {
       description: "Breakfast",
       amount: 5,
       type: "expense",
+      category: "Food",
       date: "May 20, 2026",
     },
   ])
@@ -69,6 +72,8 @@ export default function Home() {
   const [amount, setAmount] = useState("")
   const [transactionType, setTransactionType] = useState<"income" | "expense">("expense")
 
+  const [category, setCategory] = useState("")
+
   useEffect(() => {
     const saved = loadTransactions()
 
@@ -101,6 +106,7 @@ export default function Home() {
       description,
       amount: numberCheck,
       type: transactionType,
+      category,
       date: new Date().toLocaleDateString(),
     }
 
@@ -168,7 +174,7 @@ export default function Home() {
 
         {/* Add transaction button */}
         <div className="mt-6 flex justify-end">
-          <AddTransactionDialog open={open} setOpen={setOpen} description={description} setDescription={setDescription} amount={amount} setAmount={setAmount} transactionType={transactionType} setTransactionType={setTransactionType} onSave={addTransaction}></AddTransactionDialog>
+          <AddTransactionDialog open={open} setOpen={setOpen} description={description} setDescription={setDescription} amount={amount} setAmount={setAmount} category={category} setCategory={setCategory} transactionType={transactionType} setTransactionType={setTransactionType} onSave={addTransaction}></AddTransactionDialog>
         </div>
 
       {/* Recent transactions card */}

@@ -11,13 +11,15 @@ type AddTransactionDialogThings = {
     setDescription: (value: string) => void
     amount: string
     setAmount: (value: string) => void
-    transactionType: string
+    transactionType: "income" | "expense"
     setTransactionType: (value: "income" | "expense") => void
+    category: string
+    setCategory: (value: string) => void
     
     onSave: () => void
 }
 
-export function AddTransactionDialog({ open, setOpen, description, setDescription, amount, setAmount, transactionType, setTransactionType, onSave }: AddTransactionDialogThings) {
+export function AddTransactionDialog({ open, setOpen, description, setDescription, amount, setAmount, transactionType, setTransactionType, category, setCategory, onSave }: AddTransactionDialogThings) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -48,6 +50,11 @@ export function AddTransactionDialog({ open, setOpen, description, setDescriptio
                                 <SelectItem value="income">Income</SelectItem>
                             </SelectContent>
                         </Select>
+                    </div>
+
+                    <div>
+                        <Label>Category</Label>
+                        <Input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Groceries" />
                     </div>
 
                     <div>
