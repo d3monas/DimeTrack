@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono, Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/react"
+import { Metadata } from "next"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -12,6 +13,11 @@ const fontMono = Geist_Mono({
   variable: "--font-mono",
 })
 
+export const metadata: Metadata = {
+  title: "DimeTrack",
+  description: "A simple money tracking app",
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -22,8 +28,7 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       className={cn("antialiased", fontMono.variable, "font-sans", inter.variable)}
-    >
-      <title>DimeTrack</title>
+      >
       <body>
         <ThemeProvider>{children}</ThemeProvider>
         <Analytics />
