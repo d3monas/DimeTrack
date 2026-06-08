@@ -6,6 +6,7 @@ import { GoalCard } from "@/components/goalCard"
 import { GoalDialog } from "@/components/add-goal-ui"
 import { AddTransactionDialog } from "@/components/add-transaction-ui"
 import { CategoryBreakdown } from "@/components/categoryBreakdown"
+import { SpendingChart } from "@/components/spendingCharts"
 
 // types
 import type { Transaction } from "@/types/transaction"
@@ -187,6 +188,8 @@ export default function Home() {
         </div>
       {/* Breakdown into categories */}
         <CategoryBreakdown totals={categoryTotals} />
+        {/* chart */}
+        <SpendingChart totals={categoryTotals} />
 
       </div>
     </main>
