@@ -28,7 +28,6 @@ export function TransactionList({
                         <span className={`font-medium ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}>
                             {transaction.type === "income" ? "+" : "-"}${transaction.amount.toFixed(2)}</span>
                         <Button variant="ghost" size="sm" className="text-red-500" onClick={() => onDelete(transaction.id)}>✕</Button>
-
                     </div>
                 </div>
             ))}

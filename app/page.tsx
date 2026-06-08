@@ -5,6 +5,7 @@ import { TransactionList } from "@/components/transactionList"
 import { GoalCard } from "@/components/goalCard"
 import { GoalDialog } from "@/components/add-goal-ui"
 import { AddTransactionDialog } from "@/components/add-transaction-ui"
+import { CategoryBreakdown } from "@/components/categoryBreakdown"
 
 // types
 import type { Transaction } from "@/types/transaction"
@@ -12,6 +13,7 @@ import type { Transaction } from "@/types/transaction"
 // libs
 import { calculateIncome, calculateExpenses } from "@/lib/calculations"
 import { saveTransactions, loadTransactions, saveGoal as saveGoalStorage, loadGoal as loadGoalStorage } from "@/lib/localstorage"
+import { getCategoryTotals } from "@/lib/categories"
 
 export default function Home() {
 
@@ -93,6 +95,7 @@ export default function Home() {
   const expenses = calculateExpenses(transactions)
 
   const balance = income - expenses
+  const categoryTotals = getCategoryTotals(transactions)
 
   function addTransaction() {
     const numberCheck = Number(amount)
@@ -182,6 +185,8 @@ export default function Home() {
           <h2 className="mb-4 text-xl font-semibold">Recent Transactions</h2>
           <TransactionList transactions={transactions} onDelete={deleteTransaction} />
         </div>
+      {/* Breakdown into categories */}
+        <CategoryBreakdown totals={categoryTotals} />
 
       </div>
     </main>
