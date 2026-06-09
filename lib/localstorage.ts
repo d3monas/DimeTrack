@@ -5,8 +5,12 @@ export function saveTransactions(transactions: Transaction[]) {
     localStorage.setItem("transactions", JSON.stringify(transactions))
 }
 
-export function saveGoal(goal: any) {
+export function saveGoal(goal: Goal) {
     localStorage.setItem("goal", JSON.stringify(goal))
+}
+
+export function saveCategories(categories: string[]) {
+    localStorage.setItem("categories", JSON.stringify(categories))
 }
 
 export function loadTransactions(): Transaction[] {
@@ -42,4 +46,14 @@ export function loadGoal(): Goal | null {
     catch {
         return null
     }
+}
+
+export function loadCategories(): string[] {
+    const saved = localStorage.getItem('categories')
+
+    if (!saved) {
+        return []
+    }
+
+    return JSON.parse(saved)
 }

@@ -13,7 +13,7 @@ import type { Transaction } from "@/types/transaction"
 
 // libs
 import { calculateIncome, calculateExpenses } from "@/lib/calculations"
-import { saveTransactions, loadTransactions, saveGoal as saveGoalStorage, loadGoal as loadGoalStorage } from "@/lib/localstorage"
+import { saveTransactions, loadTransactions, saveGoal as saveGoalStorage, loadGoal as loadGoalStorage, saveCategories, loadCategories } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 
 export default function Home() {
@@ -76,6 +76,23 @@ export default function Home() {
   const [transactionType, setTransactionType] = useState<"income" | "expense">("expense")
 
   const [category, setCategory] = useState("")
+  const [categories, setCategories] = useState<string[]>([
+    "Food",
+    "Subscriptions",
+    "Other"
+  ])
+
+  useEffect(() => {
+    const savedCategories = loadCategories()
+
+    if (savedCategories.length > 0) {
+      setCategories(savedCategories)
+    }
+  }, [])
+
+  useEffect(() => {
+    saveCategories(categories)
+  }, [categories])
 
   useEffect(() => {
     const saved = loadTransactions()
@@ -101,7 +118,7 @@ export default function Home() {
   function addTransaction() {
     const numberCheck = Number(amount)
 
-    if (!description || !amount || Number.isNaN(numberCheck) || numberCheck <= 0) {
+    if (!description || !amount || !category || Number.isNaN(numberCheck) || numberCheck <= 0) {
       return
     }
 
@@ -117,6 +134,7 @@ export default function Home() {
     setTransactions((prev) => [newTransaction, ...prev])
     setDescription("")
     setAmount("")
+    setCategory("")
     setTransactionType("expense")
     setOpen(false)
   }
@@ -139,6 +157,22 @@ export default function Home() {
       targetAmount: target
     })
     setGoalDialogOpen(false)
+  }
+
+  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false)
+  const [newCategory, setNewCategory] = useState("")
+  function addCategory() {
+    if (!newCategory) {
+      return
+    }
+
+    if (categories.includes(newCategory.trim())) {
+      return
+    }
+
+    setCategories((prev) => [...prev, newCategory.trim()])
+    setNewCategory("")
+    setCategoryDialogOpen(false)
   }
 
   const [open, setOpen] = useState(false)
@@ -178,7 +212,8 @@ export default function Home() {
 
         {/* Add transaction button */}
         <div className="mt-6 flex justify-end">
-          <AddTransactionDialog open={open} setOpen={setOpen} description={description} setDescription={setDescription} amount={amount} setAmount={setAmount} category={category} setCategory={setCategory} transactionType={transactionType} setTransactionType={setTransactionType} onSave={addTransaction}></AddTransactionDialog>
+          <AddTransactionDialog open={open} setOpen={setOpen} description={description} setDescription={setDescription} amount={amount} setAmount={setAmount} categories={categories} category={category} setCategory={setCategory} transactionType={transactionType} setTransactionType={setTransactionType} onSave={addTransaction}
+          newCategory={newCategory} setNewCategory={setNewCategory} categoryDialogOpen={categoryDialogOpen} setCategoryDialogOpen={setCategoryDialogOpen} onAddCategory={addCategory} />
         </div>
 
       {/* Recent transactions card */}

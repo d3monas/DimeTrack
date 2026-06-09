@@ -2,7 +2,7 @@ import { Label } from "./ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
 import { Input } from "./ui/input"
 import { Button } from "./ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 
 type AddTransactionDialogThings = {
     open: boolean
@@ -13,58 +13,96 @@ type AddTransactionDialogThings = {
     setAmount: (value: string) => void
     transactionType: "income" | "expense"
     setTransactionType: (value: "income" | "expense") => void
-    category: string
     setCategory: (value: string) => void
     
+    // creating new category settings
+    categories: string[]
+    category: string
+    newCategory: string
+    setNewCategory: (value: string) => void
+    categoryDialogOpen: boolean
+    setCategoryDialogOpen: (open: boolean) => void
+    
+    onAddCategory: () => void
     onSave: () => void
 }
 
-export function AddTransactionDialog({ open, setOpen, description, setDescription, amount, setAmount, transactionType, setTransactionType, category, setCategory, onSave }: AddTransactionDialogThings) {
+export function AddTransactionDialog({ 
+    open, setOpen, description, setDescription, amount, setAmount, transactionType, setTransactionType, category, setCategory, onSave,
+    categories, newCategory, setNewCategory, categoryDialogOpen, setCategoryDialogOpen, onAddCategory
+    }: AddTransactionDialogThings) {
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button>Add Transaction</Button>
-            </DialogTrigger>
+        <>
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogTrigger asChild>
+                    <Button>Add Transaction</Button>
+                </DialogTrigger>
 
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Add Transaction</DialogTitle>
-                </DialogHeader>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Add Transaction</DialogTitle>
+                    </DialogHeader>
 
-                <div className="space-y-4">
-                    <div>
-                        <Label>Description</Label>
-                        <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Coffee" />
+                    <div className="space-y-4">
+                        <div>
+                            <Label>Description</Label>
+                            <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Coffee" />
+                        </div>
+
+                        <div>
+                            <Label>Type</Label>
+
+                            <Select value={transactionType} onValueChange={(value) => setTransactionType(value as "expense" | "income")}>
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+
+                                <SelectContent>
+                                    <SelectItem value="expense">Expense</SelectItem>
+                                    <SelectItem value="income">Income</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div>
+                            <Label>Category</Label>
+                            <Select value={category} onValueChange={setCategory}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a category" />
+                                </SelectTrigger>
+
+                                <SelectContent>
+                                    {categories.map((category) => (
+                                        <SelectItem key={category} value={category}>{category}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+
+                            <Button type="button" variant="outline" className="mt-2 w-full" onClick={() => setCategoryDialogOpen(true)}>New Category</Button>
+                        </div>
+
+                        <div>
+                            <Label>Amount</Label>
+                            <Input type="number" min="0.01" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="5" />
+                        </div>
+
+                        <Button className="w-full" onClick={onSave}>Save Transaction</Button>
                     </div>
+                </DialogContent>
+            </Dialog>
 
-                    <div>
-                        <Label>Type</Label>
+            <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Add Category</DialogTitle>
+                    </DialogHeader>
 
-                        <Select value={transactionType} onValueChange={(value) => setTransactionType(value as "expense" | "income")}>
-                            <SelectTrigger>
-                                <SelectValue />
-                            </SelectTrigger>
-
-                            <SelectContent>
-                                <SelectItem value="expense">Expense</SelectItem>
-                                <SelectItem value="income">Income</SelectItem>
-                            </SelectContent>
-                        </Select>
+                    <div className="space-y-4">
+                        <Input placeholder="Food & Drinks" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} />
+                        <Button onClick={onAddCategory} className="w-full">Save Category</Button>
                     </div>
-
-                    <div>
-                        <Label>Category</Label>
-                        <Input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Groceries" />
-                    </div>
-
-                    <div>
-                        <Label>Amount</Label>
-                        <Input type="number" min="0.01" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="5" />
-                    </div>
-
-                    <Button className="w-full" onClick={onSave}>Save Transaction</Button>
-                </div>
-            </DialogContent>
-        </Dialog>
+                </DialogContent>
+            </Dialog>
+        </>
     )
 }
