@@ -13,6 +13,10 @@ export function saveCategories(categories: string[]) {
     localStorage.setItem("categories", JSON.stringify(categories))
 }
 
+export function saveBudgets(budgets: Record<string, number>) {
+    localStorage.setItem("budgets", JSON.stringify(budgets))
+}
+
 export function loadTransactions(): Transaction[] {
     const saved = localStorage.getItem("transactions")
 
@@ -53,6 +57,16 @@ export function loadCategories(): string[] {
 
     if (!saved) {
         return []
+    }
+
+    return JSON.parse(saved)
+}
+
+export function loadBudgets(): Record<string, number> {
+    const saved = localStorage.getItem("budgets")
+
+    if (!saved) {
+        return {}
     }
 
     return JSON.parse(saved)

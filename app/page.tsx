@@ -7,13 +7,14 @@ import { GoalDialog } from "@/components/add-goal-ui"
 import { AddTransactionDialog } from "@/components/add-transaction-ui"
 import { CategoryBreakdown } from "@/components/categoryBreakdown"
 import { SpendingChart } from "@/components/spendingCharts"
+import { BudgetOverview } from "@/components/budgetOverview"
 
 // types
 import type { Transaction } from "@/types/transaction"
 
 // libs
 import { calculateIncome, calculateExpenses } from "@/lib/calculations"
-import { saveTransactions, loadTransactions, saveGoal as saveGoalStorage, loadGoal as loadGoalStorage, saveCategories, loadCategories } from "@/lib/localstorage"
+import { saveTransactions, loadTransactions, saveGoal as saveGoalStorage, loadGoal as loadGoalStorage, saveCategories, loadCategories, saveBudgets, loadBudgets } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 
 export default function Home() {
@@ -177,6 +178,24 @@ export default function Home() {
 
   const [open, setOpen] = useState(false)
   const [goalDialogOpen, setGoalDialogOpen] = useState(false)
+
+  const [budgets, setBudgets] = useState<Record<string, number>>({
+    "Food": 50,
+    "Subscriptions": 20,
+    "Other": 30
+    })
+
+  useEffect(() => {
+    const savedBudgets = loadBudgets()
+
+    if (Object.keys(savedBudgets).length > 0) {
+      setBudgets(savedBudgets)
+    }
+  }, [])
+
+  useEffect(() => {
+    saveBudgets(budgets)
+  }, [budgets])
   
   return (
     <main className="min-h-screen bg-background">
@@ -225,6 +244,8 @@ export default function Home() {
         <CategoryBreakdown totals={categoryTotals} />
         {/* chart */}
         <SpendingChart totals={categoryTotals} />
+        {/* budget */}
+        <BudgetOverview totals={categoryTotals} budgets={budgets} />
 
       </div>
     </main>
