@@ -149,11 +149,7 @@ export default function Home() {
   const [open, setOpen] = useState(false)
   const [goalDialogOpen, setGoalDialogOpen] = useState(false)
 
-  const [budgets, setBudgets] = useState<Record<string, number>>({
-    "Food": 50,
-    "Subscriptions": 20,
-    "Other": 30
-    })
+  const [budgets, setBudgets] = useState<Record<string, number>>({})
 
   useEffect(() => {
     const savedBudgets = loadBudgets()
@@ -166,6 +162,29 @@ export default function Home() {
   useEffect(() => {
     saveBudgets(budgets)
   }, [budgets])
+
+  useEffect(() => {
+    setBudgets((prev) => {
+      const updated = {...prev}
+      categories.forEach((category) => {
+        if (!(category in updated)) {
+          updated[category] = 0
+        }
+      })
+      return updated
+    })
+  }, [categories])
+
+  function deleteCategory(categoryToDelete: string) {
+    setCategories((prev) => 
+      prev.filter((category) => category !== categoryToDelete)
+    )
+    setBudgets((prev) => {
+      const updated = {...prev}
+      delete updated[categoryToDelete]
+      return updated
+    })
+  }
   
   return (
     <main className="min-h-screen bg-background">

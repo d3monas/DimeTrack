@@ -5,6 +5,14 @@ type Things = {
 export function CategoryBreakdown({ totals }: Things) {
     const entries = Object.entries(totals).sort(([,a], [,b]) => b - a)
 
+    if (Object.keys(totals).length === 0) {
+        return (
+            <div className="rounded-2xl border p-6 mt-2">
+                <p className="text-muted-foreground">No spending categories yet</p>
+            </div>
+        )
+    }
+
     if (entries.length === 0) {
         return (
             <div className="mt-6 rounded-2xl border p-6">

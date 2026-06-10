@@ -17,7 +17,11 @@ export function SpendingChart({totals}: Things) {
     const data = Object.entries(totals).map(([category, amount]) => ({ category, amount}))
 
     if (data.length === 0) {
-        return null
+        return (
+            <div className="rounded-2xl border p-6 mt-2">
+                <p className="text-muted-foreground">Add some expenses to see spending trends</p>
+            </div>
+        )
     }
 
     return (

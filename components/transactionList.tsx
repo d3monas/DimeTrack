@@ -6,10 +6,19 @@ type Things = {
     onDelete(id: number): void
 }
 
+
 export function TransactionList({
     transactions,
     onDelete
 }: Things) {
+
+    if (transactions.length === 0) {
+        return (
+            <p className="text-muted-foreground">No transactions yet</p>
+        )
+    }
+
+
     return (
         <div className="space-y-4">
             {transactions.map((transaction) => (
