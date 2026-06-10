@@ -8,7 +8,7 @@ export function BudgetOverview({
 }: BudgetOverviewProps) {
   return (
     <div className="mt-6 rounded-2xl border p-6">
-      <h2 className="mb-4 text-xl font-semibold">Budget Progress</h2>
+      <h2 className="mb-4 text-xl font-semibold">Budget Overview</h2>
 
       <div className="space-y-4">
         {Object.entries(budgets).map(([category, limit]) => {

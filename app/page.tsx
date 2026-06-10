@@ -11,6 +11,7 @@ import { BudgetOverview } from "@/components/budgetOverview"
 
 // types
 import type { Transaction } from "@/types/transaction"
+import type { Goal } from "@/types/goal"
 
 // libs
 import { calculateIncome, calculateExpenses } from "@/lib/calculations"
@@ -19,38 +20,9 @@ import { getCategoryTotals } from "@/lib/categories"
 
 export default function Home() {
 
-  const [transactions, setTransactions] = useState<Transaction[]>([
-    {
-      id: 1,
-      description: "Birthday Money",
-      amount: 50,
-      type: "income",
-      category: "Other",
-      date: "May 1, 2026",
-    },
-    {
-      id: 2,
-      description: "Spotify",
-      amount: 11,
-      type: "expense",
-      category: "Subscriptions",
-      date: "May 15, 2026",
-    },
-    {
-      id: 3,
-      description: "Breakfast",
-      amount: 5,
-      type: "expense",
-      category: "Food",
-      date: "May 20, 2026",
-    },
-  ])
+  const [transactions, setTransactions] = useState<Transaction[]>([])
 
-  const [goal, setGoal] = useState({
-    name: "IPhone 17",
-    currentAmount: 420,
-    targetAmount: 999.99,
-  })
+  const [goal, setGoal] = useState<Goal | null>(null)
 
   useEffect(() => {
     const savedGoal = loadGoalStorage()
@@ -65,23 +37,21 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    saveGoalStorage(goal)
+    if (goal) {
+      saveGoalStorage(goal)
+    }
   }, [goal])
 
-  const [goalName, setGoalName] = useState(goal.name)
-  const [goalTarget, setGoalTarget] = useState(goal.targetAmount.toString())
-  const [goalSaved, setGoalSaved] = useState(goal.currentAmount.toString())
+  const [goalName, setGoalName] = useState("")
+  const [goalTarget, setGoalTarget] = useState("")
+  const [goalSaved, setGoalSaved] = useState("")
   
   const [description, setDescription] = useState("")
   const [amount, setAmount] = useState("")
   const [transactionType, setTransactionType] = useState<"income" | "expense">("expense")
 
   const [category, setCategory] = useState("")
-  const [categories, setCategories] = useState<string[]>([
-    "Food",
-    "Subscriptions",
-    "Other"
-  ])
+  const [categories, setCategories] = useState<string[]>([])
 
   useEffect(() => {
     const savedCategories = loadCategories()
@@ -107,8 +77,8 @@ export default function Home() {
     saveTransactions(transactions)
   }, [transactions])
 
-  const progress = (goal.currentAmount / goal.targetAmount) * 100
-  const remaining = goal.targetAmount - goal.currentAmount
+  const progress = goal ? (goal.currentAmount / goal.targetAmount) * 100 : 0
+  const remaining = goal ? goal.targetAmount - goal.currentAmount : 0
 
   const income = calculateIncome(transactions)
   const expenses = calculateExpenses(transactions)
@@ -224,7 +194,14 @@ export default function Home() {
         </div>
 
         {/* Goal card */}
-        <GoalCard goal={goal} progress={progress} remaining={remaining} onEdit={() => setGoalDialogOpen(true)} />
+        {goal ? (
+          <GoalCard goal={goal} progress={progress} remaining={remaining} onEdit={() => setGoalDialogOpen(true)} />
+        ):(
+          <div className="mt-6 rounded-2xl border p-6">
+            <h2 className="text-xl font-semibold">No goal set</h2>
+            <p className="text-muted-foreground mt-4">Create your goal now!</p>
+          </div>
+        )}
 
         {/* Edit goal button */}
         <GoalDialog open={goalDialogOpen} setOpen={setGoalDialogOpen} goalName={goalName} setGoalName={setGoalName} goalTarget={goalTarget} setGoalTarget={setGoalTarget} goalSaved={goalSaved} setGoalSaved={setGoalSaved} onSave={saveGoal} />
