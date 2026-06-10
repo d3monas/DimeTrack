@@ -1,11 +1,8 @@
 import { Button } from "./ui/button";
+import type { Goal } from "@/types/goal";
 
 type GoalCardThings = {
-    goal: {
-        name: string
-        currentAmount: number
-        targetAmount: number
-    }
+    goal: Goal | null
     progress: number
     remaining: number
     onEdit: () => void
@@ -14,6 +11,16 @@ type GoalCardThings = {
 export function GoalCard({
     goal, progress, remaining, onEdit,
 }: GoalCardThings) {
+
+    if (!goal) {
+        return (
+            <div className="mt-6 rounded-2xl border p-6">
+                <h2 className="text-xl font-semibold">Savings Goal</h2>
+                <Button size="lg" variant="default" onClick={onEdit} className="mt-4">Create goal</Button>
+          </div>
+        )
+    }
+
     return (
         <div className="mt-6 rounded-2xl border p-6">
             <Button size="sm" variant="outline" onClick={onEdit}>Edit</Button>

@@ -8,6 +8,7 @@ import { AddTransactionDialog } from "@/components/add-transaction-ui"
 import { CategoryBreakdown } from "@/components/categoryBreakdown"
 import { SpendingChart } from "@/components/spendingCharts"
 import { BudgetOverview } from "@/components/budgetOverview"
+import { CategoryManager } from "@/components/categoryManager"
 
 // types
 import type { Transaction } from "@/types/transaction"
@@ -184,6 +185,12 @@ export default function Home() {
       delete updated[categoryToDelete]
       return updated
     })
+
+    setTransactions(prev =>
+      prev.map(transaction =>
+        transaction.category === categoryToDelete ? {...transaction, category: "Uncategorized"}: transaction
+      )
+    )
   }
   
   return (
@@ -213,14 +220,7 @@ export default function Home() {
         </div>
 
         {/* Goal card */}
-        {goal ? (
-          <GoalCard goal={goal} progress={progress} remaining={remaining} onEdit={() => setGoalDialogOpen(true)} />
-        ):(
-          <div className="mt-6 rounded-2xl border p-6">
-            <h2 className="text-xl font-semibold">No goal set</h2>
-            <p className="text-muted-foreground mt-4">Create your goal now!</p>
-          </div>
-        )}
+        <GoalCard goal={goal} progress={progress} remaining={remaining} onEdit={() => setGoalDialogOpen(true)} />
 
         {/* Edit goal button */}
         <GoalDialog open={goalDialogOpen} setOpen={setGoalDialogOpen} goalName={goalName} setGoalName={setGoalName} goalTarget={goalTarget} setGoalTarget={setGoalTarget} goalSaved={goalSaved} setGoalSaved={setGoalSaved} onSave={saveGoal} />
@@ -242,6 +242,8 @@ export default function Home() {
         <SpendingChart totals={categoryTotals} />
         {/* budget */}
         <BudgetOverview totals={categoryTotals} budgets={budgets} />
+        {/* category manager ui */}
+        <CategoryManager categories={categories} onDelete={deleteCategory} />
 
       </div>
     </main>
