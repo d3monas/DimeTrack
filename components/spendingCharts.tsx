@@ -13,12 +13,13 @@ const colors = [
     "#06b6d4",
 ]
 
-export function SpendingChart({totals}: Things) {
-    const data = Object.entries(totals).map(([category, amount]) => ({ category, amount}))
+export function SpendingChart({ totals }: Things) {
+    const data = Object.entries(totals).map(([category, amount]) => ({ category, amount }))
 
     if (data.length === 0) {
         return (
-            <div className="rounded-2xl border p-6 mt-2">
+            <div className="rounded-2xl border p-6 mt-6">
+                <h2 className="mb-4 text-xl font-semibold">Spending Breakdown</h2>
                 <p className="text-muted-foreground">Add some expenses to see spending trends</p>
             </div>
         )
@@ -31,7 +32,7 @@ export function SpendingChart({totals}: Things) {
             <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                        <Pie data={data} dataKey="amount" nameKey="category" outerRadius={100} label={({payload}) => payload.category}>{data.map((_, index) => (<Cell key={index} fill={colors[index % colors.length]} />))}</Pie>
+                        <Pie data={data} dataKey="amount" nameKey="category" outerRadius={100} label={({ payload }) => payload.category}>{data.map((_, index) => (<Cell key={index} fill={colors[index % colors.length]} />))}</Pie>
                         <Tooltip />
                     </PieChart>
                 </ResponsiveContainer>

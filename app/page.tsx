@@ -33,7 +33,6 @@ export default function Home() {
 
   const [open, setOpen] = useState(false)
   const [goalDialogOpen, setGoalDialogOpen] = useState(false)
-  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false)
 
   const [isLoaded, setIsLoaded] = useState(false)
 
@@ -136,7 +135,6 @@ export default function Home() {
     }
     setCategories((prev) => [...prev, newCategory.trim()])
     setNewCategory("")
-    setCategoryDialogOpen(false)
   }
 
   function deleteCategory(categoryToDelete: string) {
@@ -205,11 +203,6 @@ export default function Home() {
             transactionType={transactionType}
             setTransactionType={setTransactionType}
             onSave={addTransaction}
-            newCategory={newCategory}
-            setNewCategory={setNewCategory}
-            categoryDialogOpen={categoryDialogOpen}
-            setCategoryDialogOpen={setCategoryDialogOpen}
-            onAddCategory={addCategory}
           />
         </div>
 

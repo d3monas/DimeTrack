@@ -1,17 +1,9 @@
-type Things = {
+type CategoryBreakdownThings = {
     totals: Record<string, number>
 }
 
-export function CategoryBreakdown({ totals }: Things) {
+export function CategoryBreakdown({ totals }: CategoryBreakdownThings) {
     const entries = Object.entries(totals).sort(([,a], [,b]) => b - a)
-
-    if (Object.keys(totals).length === 0) {
-        return (
-            <div className="rounded-2xl border p-6 mt-2">
-                <p className="text-muted-foreground">No spending categories yet</p>
-            </div>
-        )
-    }
 
     if (entries.length === 0) {
         return (
@@ -19,7 +11,6 @@ export function CategoryBreakdown({ totals }: Things) {
                 <h2 className="mb-4 text-xl font-semibold">Spending by Category</h2>
                 <p className="text-muted-foreground">No expenses yet</p>
             </div>
-
         )
     }
 
