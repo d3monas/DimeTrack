@@ -1,49 +1,69 @@
+import { useState, useEffect } from "react"
 import { Label } from "./ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog"
 import { Input } from "./ui/input"
 import { Button } from "./ui/button"
+import type { Goal } from "@/types/goal"
 
 type GoalDialogThings = {
     open: boolean
     setOpen: (open: boolean) => void
-    goalName: string
-    setGoalName: (value: string) => void
-    goalSaved: string
-    setGoalSaved: (value: string) => void
-    goalTarget: string
-    setGoalTarget: (value: string) => void
-    
-    onSave: () => void
+    goal: Goal | null
+    onSave: (name: string, currentAmount: number, targetAmount: number) => void
 }
 
-export function GoalDialog({ open, setOpen, goalName, setGoalName, goalSaved, setGoalSaved, goalTarget, setGoalTarget, onSave }: GoalDialogThings) {
-    return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Edit Goal</DialogTitle>
-                </DialogHeader>
+export function GoalDialog({ open, setOpen, goal, onSave }: GoalDialogThings) {
+    const [name, setName] = useState("")
+    const [saved, setSaved] = useState("")
+    const [target, setTarget] = useState("")
 
-                <div className="space-y-4">
-                    <div>
-                        <Label>Name</Label>
-                        <Input value={goalName} onChange={(e) => setGoalName(e.target.value)} />
+    useEffect(() => {
+        if (open) {
+            setName(goal?.name ?? "")
+            setSaved(goal?.currentAmount.toString() ?? "")
+            setTarget(goal?.targetAmount.toString() ?? "")
+        }
+    }, [open, goal])
+
+    function handleSave() {
+        const parsedSaved = Number(saved)
+        const parsedTarget = Number(target)
+
+        if (!name || Number.isNaN(parsedSaved) || Number.isNaN(parsedTarget) || parsedTarget <= 0 || parsedSaved < 0) {
+            return
+        }
+        onSave(name, parsedSaved, parsedTarget)
+        setOpen(false)
+    }
+
+        return (
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{goal ? "Edit Goal":"Create Goal"}</DialogTitle>
+                    </DialogHeader>
+        
+                    <div className="space-y-4">
+                        <div>
+                            <Label>Name</Label>
+                            <Input value={name} onChange={(e) => setName(e.target.value)} />
+                        </div>
+        
+                        <div>
+                            <Label>Currently saved</Label>
+                            <Input type="number" min="0" step="0.01" value={saved} onChange={(e) => setSaved(e.target.value)} placeholder="0.00" />
+                        </div>
+        
+                        <div>
+                            <Label>Target Amount</Label>
+                            <Input type="number" min="0.01" step="0.01" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="1000.00" />
+                        </div>
+        
+        
+                        <Button className="w-full" onClick={handleSave}>{goal ? "Save":"Create"}</Button>
                     </div>
-
-                    <div>
-                        <Label>Currently saved</Label>
-                        <Input type="number" min="0" step="0.01" value={goalSaved} onChange={(e) => setGoalSaved(e.target.value)} />
-                    </div>
-
-                    <div>
-                        <Label>Target Amount</Label>
-                        <Input type="number" min="0.01" step="0.01" value={goalTarget} onChange={(e) => setGoalTarget(e.target.value)} />
-                    </div>
-
-
-                    <Button className="w-full" onClick={onSave}>Save Goal</Button>
-                </div>
-            </DialogContent>
-        </Dialog>
-    )
+                </DialogContent>
+            </Dialog>
+        )
 }
+
