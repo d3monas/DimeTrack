@@ -1,13 +1,18 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
+import { Input } from "./ui/input"
 import { Button } from "./ui/button"
+import { Dispatch, SetStateAction } from "react"
 
 type SettingsDialogThings = {
     categories: string[]
     onDeleteCategory: (category: string) => void
+    newCategory: string
+    setNewCategory: Dispatch<SetStateAction<string>>
+    onAddNewCategory: () => void
 }
 
 export function SettingsDialog({
-    categories, onDeleteCategory,
+    categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory
 }: SettingsDialogThings) {
     return (
         <Dialog>
@@ -23,7 +28,11 @@ export function SettingsDialog({
                 <div className="space-y-4">
                     <div>
                         <h3 className="font-semibold mb-2">Categories</h3>
-                        <div className="space-y-3">
+                        <div className="flex gap-2">
+                            <Input value={newCategory} onChange={(e) => setNewCategory(e.target.value)} placeholder="New Category" />
+                            <Button onClick={onAddNewCategory}>Add</Button>
+                        </div>
+                        <div className="space-y-2 mt-4">
                             {categories.map((category) => (
                                 <div key={category} className="flex items-center justify-between rounded-md p-2">
                                     <span>{category}</span>

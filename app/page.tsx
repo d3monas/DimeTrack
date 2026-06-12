@@ -201,7 +201,7 @@ export default function Home() {
         <header className="mb-8 flex items-start justify-between">
           <div>
             <h1 className="text-4xl font-bold">DimeTrack</h1>
-            <SettingsDialog categories={categories} onDeleteCategory={deleteCategory} />
+            <SettingsDialog categories={categories} newCategory={newCategory} setNewCategory={setNewCategory} onAddNewCategory={addCategory} onDeleteCategory={deleteCategory} />
           </div>
         </header>
 

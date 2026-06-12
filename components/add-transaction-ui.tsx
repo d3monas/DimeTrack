@@ -28,8 +28,7 @@ type AddTransactionDialogThings = {
 }
 
 export function AddTransactionDialog({ 
-    open, setOpen, description, setDescription, amount, setAmount, transactionType, setTransactionType, category, setCategory, onSave,
-    categories, newCategory, setNewCategory, categoryDialogOpen, setCategoryDialogOpen, onAddCategory
+    open, setOpen, description, setDescription, amount, setAmount, transactionType, setTransactionType, category, setCategory, onSave, categories, newCategory, setNewCategory, categoryDialogOpen, setCategoryDialogOpen, onAddCategory
     }: AddTransactionDialogThings) {
     return (
         <>
@@ -77,8 +76,6 @@ export function AddTransactionDialog({
                                     ))}
                                 </SelectContent>
                             </Select>
-
-                            <Button type="button" variant="outline" className="mt-2 w-full" onClick={() => setCategoryDialogOpen(true)}>New Category</Button>
                         </div>
 
                         <div>
@@ -87,19 +84,6 @@ export function AddTransactionDialog({
                         </div>
 
                         <Button className="w-full" onClick={onSave}>Save Transaction</Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Add Category</DialogTitle>
-                    </DialogHeader>
-
-                    <div className="space-y-4">
-                        <Input placeholder="Food & Drinks" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} />
-                        <Button onClick={onAddCategory} className="w-full">Save Category</Button>
                     </div>
                 </DialogContent>
             </Dialog>
