@@ -9,6 +9,7 @@ import { CategoryBreakdown } from "@/components/categoryBreakdown"
 import { SpendingChart } from "@/components/spendingCharts"
 import { BudgetOverview } from "@/components/budgetOverview"
 import { CategoryManager } from "@/components/categoryManager"
+import { SettingsDialog } from "@/components/settingsUI"
 
 // types
 import type { Transaction } from "@/types/transaction"
@@ -18,6 +19,7 @@ import type { Goal } from "@/types/goal"
 import { calculateIncome, calculateExpenses } from "@/lib/calculations"
 import { saveTransactions, loadTransactions, saveGoal as saveGoalStorage, loadGoal as loadGoalStorage, saveCategories, loadCategories, saveBudgets, loadBudgets } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
+import { Settings } from "@hugeicons/core-free-icons"
 
 export default function Home() {
 
@@ -196,9 +198,11 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-6xl p-6">
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold">DimeTrack</h1>
-          <p className="text-muted-foreground">Track spending and save for goals.</p>
+        <header className="mb-8 flex items-start justify-between">
+          <div>
+            <h1 className="text-4xl font-bold">DimeTrack</h1>
+            <SettingsDialog categories={categories} onDeleteCategory={deleteCategory} />
+          </div>
         </header>
 
         {/* Current balance card */}
@@ -242,9 +246,6 @@ export default function Home() {
         <SpendingChart totals={categoryTotals} />
         {/* budget */}
         <BudgetOverview totals={categoryTotals} budgets={budgets} />
-        {/* category manager ui */}
-        <CategoryManager categories={categories} onDelete={deleteCategory} />
-
       </div>
     </main>
   )
