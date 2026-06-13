@@ -6,9 +6,10 @@ type BudgetOverviewThings = {
   totals: Record<string, number>
   budgets: Record<string, number>
   onUpdateBudget: (category: string, limit: number) => void
+  currencySymbol: string
 }
 
-export function BudgetOverview({ totals, budgets, onUpdateBudget }: BudgetOverviewThings) {
+export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol }: BudgetOverviewThings) {
   const [editingCategory, setEditingCategory] = useState<string | null>(null)
   const [editingValue, setEditingValue] = useState("")
 
@@ -65,7 +66,7 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget }: BudgetOvervi
 
                 {isEditing ? (
                   <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground">$</span>
+                    <span className="text-muted-foreground">{currencySymbol}</span>
                     <Input
                       className="h-8 w-24 text-sm"
                       placeholder="0.00"
@@ -90,7 +91,7 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget }: BudgetOvervi
                 ) : (
                   <div className="flex items-center gap-3">
                     {hasLimit ? (
-                      <span className={`text-sm ${isOver ? "text-red-600 font-medium" : "text-muted-foreground"}`}>${spent.toFixed(2)} / ${limit.toFixed(2)}</span>
+                      <span className={`text-sm ${isOver ? "text-red-600 font-medium" : "text-muted-foreground"}`}>{currencySymbol}{spent.toFixed(2)} / {currencySymbol}{limit.toFixed(2)}</span>
                     ) : (
                       <span className="text-sm text-muted-foreground">No limit set</span>
                     )}

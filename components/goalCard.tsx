@@ -11,9 +11,10 @@ type GoalCardThings = {
     remaining: number
     onEdit: () => void
     onContribute: (amount: number) => void
+    currencySymbol: string
 }
 
-export function GoalCard({ goal, progress, remaining, onEdit, onContribute }: GoalCardThings) {
+export function GoalCard({ goal, progress, remaining, onEdit, onContribute, currencySymbol }: GoalCardThings) {
 
     const [contributeOpen, setContributeOpen] = useState(false)
     const [contributeAmount, setContributeAmount] = useState("")
@@ -45,7 +46,7 @@ export function GoalCard({ goal, progress, remaining, onEdit, onContribute }: Go
                     <p className="text-muted-foreground">Savings Goal</p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <p className="font-bold">${goal.currentAmount.toFixed(2)} / ${goal.targetAmount.toFixed(2)}</p>
+                    <p className="font-bold">{currencySymbol}{goal.currentAmount.toFixed(2)} / {currencySymbol}{goal.targetAmount.toFixed(2)}</p>
                     <Button size="sm" variant="outline" onClick={() => setContributeOpen(true)}>Contribute to goal</Button>
                     <Button size="sm" variant="outline" onClick={onEdit}>Edit</Button>
                 </div>
@@ -58,7 +59,7 @@ export function GoalCard({ goal, progress, remaining, onEdit, onContribute }: Go
                 />
             </div>
 
-            <p className="mt-2 text-sm text-muted-foreground">{remaining <= 0 ? "🥳 You reached your goal!" : `$${remaining.toFixed(2)} remaining`}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{remaining <= 0 ? "🥳 You reached your goal!" : `${currencySymbol}${remaining.toFixed(2)} remaining`}</p>
 
             <Dialog open={contributeOpen} onOpenChange={setContributeOpen}>
                 <DialogContent>

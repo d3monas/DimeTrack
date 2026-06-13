@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "./ui/input"
 import { Button } from "./ui/button"
 import { Dispatch, SetStateAction } from "react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 
 type SettingsDialogThings = {
     categories: string[]
@@ -9,10 +10,23 @@ type SettingsDialogThings = {
     newCategory: string
     setNewCategory: Dispatch<SetStateAction<string>>
     onAddNewCategory: () => void
+    currency: string
+    onCurrencyChange: (value: string) => void
 }
 
+const currencies = [
+    { code: "USD", label: "USD - US Dollar" },
+    { code: "EUR", label: "EUR - Euro" },
+    { code: "GBP", label: "GBP — British Pound (£)" },
+    { code: "JPY", label: "JPY — Japanese Yen (¥)" },
+    { code: "CAD", label: "CAD — Canadian Dollar (CA$)" },
+    { code: "AUD", label: "AUD — Australian Dollar (A$)" },
+    { code: "CHF", label: "CHF — Swiss Franc (Fr)" },
+    { code: "INR", label: "INR — Indian Rupee (₹)" },
+]
+
 export function SettingsDialog({
-    categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory
+    categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory, currency, onCurrencyChange
 }: SettingsDialogThings) {
     return (
         <Dialog>
@@ -44,6 +58,20 @@ export function SettingsDialog({
                                 </div>
                             ))}
                         </div>
+                    </div>
+
+                    <div>
+                        <h3 className="font-semibold mb-2">Currency</h3>
+                        <Select value={currency} onValueChange={onCurrencyChange}>
+                            <SelectTrigger>
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {currencies.map((currency) => (
+                                    <SelectItem key={currency.code} value={currency.code}>{currency.label}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                 </div>
             </DialogContent>

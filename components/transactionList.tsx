@@ -4,12 +4,14 @@ import { Button } from "./ui/button"
 type Things = {
     transactions: Transaction[]
     onDelete(id: number): void
+    currencySymbol: string
 }
 
 
 export function TransactionList({
     transactions,
-    onDelete
+    onDelete,
+    currencySymbol
 }: Things) {
 
     if (transactions.length === 0) {
@@ -35,7 +37,7 @@ export function TransactionList({
 
                     <div className="flex items-center gap-2">
                         <span className={`font-medium ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}>
-                            {transaction.type === "income" ? "+" : "-"}${transaction.amount.toFixed(2)}</span>
+                            {transaction.type === "income" ? "+" : "-"}{currencySymbol}{transaction.amount.toFixed(2)}</span>
                         <Button variant="ghost" size="sm" className="text-red-500" onClick={() => onDelete(transaction.id)}>✕</Button>
                     </div>
                 </div>

@@ -3,32 +3,12 @@ import { Goal } from "@/types/goal"
 
 const isBrowser = typeof window !== "undefined"
 
+// transactions
 export function saveTransactions(transactions: Transaction[]) {
     if (!isBrowser) {
         return
     }
     localStorage.setItem("transactions", JSON.stringify(transactions))
-}
-
-export function saveGoal(goal: Goal) {
-    if (!isBrowser) {
-        return
-    }
-    localStorage.setItem("goal", JSON.stringify(goal))
-}
-
-export function saveCategories(categories: string[]) {
-    if (!isBrowser) {
-        return
-    }
-    localStorage.setItem("categories", JSON.stringify(categories))
-}
-
-export function saveBudgets(budgets: Record<string, number>) {
-    if (!isBrowser) {
-        return
-    }
-    localStorage.setItem("budgets", JSON.stringify(budgets))
 }
 
 export function loadTransactions(): Transaction[] {
@@ -48,6 +28,14 @@ export function loadTransactions(): Transaction[] {
     } catch {
         return []
     }
+}
+
+// goal
+export function saveGoal(goal: Goal) {
+    if (!isBrowser) {
+        return
+    }
+    localStorage.setItem("goal", JSON.stringify(goal))
 }
 
 export function loadGoal(): Goal | null {
@@ -71,6 +59,14 @@ export function loadGoal(): Goal | null {
     }
 }
 
+// categories
+export function saveCategories(categories: string[]) {
+    if (!isBrowser) {
+        return
+    }
+    localStorage.setItem("categories", JSON.stringify(categories))
+}
+
 export function loadCategories(): string[] {
     if (!isBrowser) {
         return []
@@ -90,6 +86,14 @@ export function loadCategories(): string[] {
     }
 }
 
+// budget
+export function saveBudgets(budgets: Record<string, number>) {
+    if (!isBrowser) {
+        return
+    }
+    localStorage.setItem("budgets", JSON.stringify(budgets))
+}
+
 export function loadBudgets(): Record<string, number> {
     if (!isBrowser) {
         return {}
@@ -106,5 +110,30 @@ export function loadBudgets(): Record<string, number> {
         return parsed
     } catch {
         return {}
+    }
+}
+
+// currency
+export function saveCurrency(currency: string) {
+    if (!isBrowser) {
+        return
+    }
+    localStorage.setItem("currency", currency)
+}
+
+export function loadCurrency(): string {
+    if (!isBrowser) {
+        return "USD"
+    }
+    return localStorage.getItem("currency") || "USD"    
+}
+
+export function loadAllData() {
+    return {
+        transactions: loadTransactions(),
+        categories: loadCategories(),
+        budgets: loadBudgets(),
+        goal: loadGoal(),
+        currency: loadCurrency()
     }
 }

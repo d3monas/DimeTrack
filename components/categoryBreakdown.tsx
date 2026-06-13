@@ -1,8 +1,9 @@
 type CategoryBreakdownThings = {
     totals: Record<string, number>
+    currencySymbol: string
 }
 
-export function CategoryBreakdown({ totals }: CategoryBreakdownThings) {
+export function CategoryBreakdown({ totals, currencySymbol }: CategoryBreakdownThings) {
     const entries = Object.entries(totals).sort(([,a], [,b]) => b - a)
 
     if (entries.length === 0) {
@@ -22,7 +23,7 @@ export function CategoryBreakdown({ totals }: CategoryBreakdownThings) {
                 {entries.map(([category, total]) => (
                     <div key={category} className="flex justify-between">
                         <span>{category}</span>
-                        <span>${total.toFixed(2)}</span>
+                        <span>{currencySymbol}{total.toFixed(2)}</span>
                     </div>
                 ))}
             </div>

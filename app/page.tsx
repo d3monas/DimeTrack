@@ -16,7 +16,7 @@ import type { Goal } from "@/types/goal"
 
 // libs
 import { calculateIncome, calculateExpenses } from "@/lib/calculations"
-import { saveTransactions, loadTransactions, saveGoal as saveGoalStorage, loadGoal as loadGoalStorage, saveCategories, loadCategories, saveBudgets, loadBudgets } from "@/lib/localstorage"
+import { saveTransactions, saveGoal as saveGoalStorage, saveCategories, saveBudgets, saveCurrency, loadAllData } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 
 export default function Home() {
@@ -36,14 +36,17 @@ export default function Home() {
 
   const [isLoaded, setIsLoaded] = useState(false)
 
+  const [currency, setCurrency] = useState("USD")
+
   // load localstorage 
   useEffect(() => {
-    setTransactions(loadTransactions())
-    setCategories(loadCategories())
-    setBudgets(loadBudgets())
-    const savedGoal = loadGoalStorage()
-    if (savedGoal) {
-      setGoal(savedGoal)
+    const data = loadAllData()
+    setTransactions(data.transactions)
+    setCategories(data.categories)
+    setBudgets(data.budgets)
+    setCurrency(data.currency)
+    if (data.goal) {
+      setGoal(data.goal)
     }
     setIsLoaded(true)
   }, [])
@@ -93,6 +96,12 @@ export default function Home() {
     })
   }, [categories])
 
+  useEffect(() => {
+    if (isLoaded) {
+      saveCurrency(currency)
+    }
+  }, [isLoaded, currency])
+
 
   const income = calculateIncome(transactions)
   const expenses = calculateExpenses(transactions)
@@ -100,6 +109,7 @@ export default function Home() {
   const categoryTotals = getCategoryTotals(transactions)
   const progress = goal ? (goal.currentAmount / goal.targetAmount) * 100 : 0
   const remaining = goal ? goal.targetAmount - goal.currentAmount : 0
+  const currencySymbol = { USD: "$", EUR: "€", GBP: "£", JPY: "¥", CAD: "CA$", AUD: "A$", CHF: "Fr", INR: "₹" }[currency] ?? "$"
 
   function addTransaction() {
     const numberCheck = Number(amount)
@@ -222,7 +232,7 @@ export default function Home() {
         <header className="mb-8 flex items-start justify-between">
           <div>
             <h1 className="text-4xl font-bold">DimeTrack</h1>
-            <SettingsDialog categories={categories} newCategory={newCategory} setNewCategory={setNewCategory} onAddNewCategory={addCategory} onDeleteCategory={deleteCategory} />
+            <SettingsDialog categories={categories} newCategory={newCategory} setNewCategory={setNewCategory} onAddNewCategory={addCategory} onDeleteCategory={deleteCategory} currency={currency} onCurrencyChange={setCurrency} />
           </div>
         </header>
 
@@ -230,22 +240,22 @@ export default function Home() {
         <div className="grid gap-6 md:grid-cols-3">
           <div className="rounded-2xl border p-6">
             <p className="text-sm text-muted-foreground">Current Balance</p>
-            <h2 className="mt-2 text-3xl font-bold">${balance.toFixed(2)}</h2>
+            <h2 className="mt-2 text-3xl font-bold">{currencySymbol}{balance.toFixed(2)}</h2>
           </div>
 
           <div className="rounded-2xl border p-6">
             <p className="text-sm text-muted-foreground">Income this month</p>
-            <h2 className="mt-2 text-3xl font-bold text-green-600">${income.toFixed(2)}</h2>
+            <h2 className="mt-2 text-3xl font-bold text-green-600">{currencySymbol}{income.toFixed(2)}</h2>
           </div>
 
           <div className="rounded-2xl border p-6">
             <p className="text-sm text-muted-foreground">Expenses this month</p>
-            <h2 className="mt-2 text-3xl font-bold text-red-600">${expenses.toFixed(2)}</h2>
+            <h2 className="mt-2 text-3xl font-bold text-red-600">{currencySymbol}{expenses.toFixed(2)}</h2>
           </div>
         </div>
 
         {/* Goal card */}
-        <GoalCard goal={goal} progress={progress} remaining={remaining} onContribute={contributeToGoal} onEdit={() => setGoalDialogOpen(true)} />
+        <GoalCard goal={goal} progress={progress} remaining={remaining} onContribute={contributeToGoal} onEdit={() => setGoalDialogOpen(true)} currencySymbol={currencySymbol} />
 
         {/* Edit goal button */}
         <GoalDialog open={goalDialogOpen} setOpen={setGoalDialogOpen} goal={goal} onSave={saveGoal} />
@@ -271,14 +281,14 @@ export default function Home() {
         {/* Recent transactions card */}
         <div className="mt-6 rounded-2xl border p-6">
           <h2 className="mb-4 text-xl font-semibold">Recent Transactions</h2>
-          <TransactionList transactions={transactions} onDelete={deleteTransaction} />
+          <TransactionList transactions={transactions} onDelete={deleteTransaction} currencySymbol={currencySymbol} />
         </div>
         {/* Breakdown into categories */}
-        <CategoryBreakdown totals={categoryTotals} />
+        <CategoryBreakdown totals={categoryTotals} currencySymbol={currencySymbol} />
         {/* chart */}
         <SpendingChart totals={categoryTotals} />
         {/* budget */}
-        <BudgetOverview totals={categoryTotals} budgets={budgets} onUpdateBudget={updateBudget} />
+        <BudgetOverview totals={categoryTotals} budgets={budgets} onUpdateBudget={updateBudget} currencySymbol={currencySymbol} />
       </div>
     </main>
   )
