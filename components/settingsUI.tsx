@@ -36,8 +36,11 @@ export function SettingsDialog({
                             {categories.map((category) => (
                                 <div key={category} className="flex items-center justify-between rounded-md p-2">
                                     <span>{category}</span>
-
-                                    <Button variant="destructive" size="sm" onClick={() => onDeleteCategory(category)}>Delete</Button>
+                                    {category === "Contribution to Savings Goal" ? (
+                                        <span className="text-xs text-muted-foreground px-2 py-1 rounded-md border">Default</span>
+                                    ) : (
+                                        <Button variant="destructive" size="sm" onClick={() => onDeleteCategory(category)}>Delete</Button>
+                                    )}
                                 </div>
                             ))}
                         </div>

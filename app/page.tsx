@@ -126,6 +126,19 @@ export default function Home() {
   }
 
   function deleteTransaction(id: number) {
+    const transaction = transactions.find((transaction) => transaction.id === id)
+
+    if (transaction && transaction.category === "Contribution to Savings Goal") {
+      setGoal((prev) => {
+        if (!prev) {
+          return prev
+        }
+        return {
+          ...prev, currentAmount: Math.max(0, prev.currentAmount - transaction.amount)
+        }
+      })
+    }
+
     setTransactions((prev) => prev.filter((transaction) => transaction.id !== id))
   }
 
@@ -146,6 +159,10 @@ export default function Home() {
   }
 
   function deleteCategory(categoryToDelete: string) {
+    if (categoryToDelete === "Contribution to Savings Goal") {
+      return
+    }
+
     setCategories((prev) =>
       prev.filter((category) => category !== categoryToDelete)
     )
@@ -164,6 +181,39 @@ export default function Home() {
 
   function updateBudget(category: string, limit: number) {
     setBudgets((prev) => ({...prev, [category]: limit}))
+  }
+
+  function contributeToGoal(amount: number) {
+    if (!goal) {
+      return
+    }
+
+    setGoal((prev) => {
+      if (!prev) {
+        return prev
+      }
+      return {
+        ...prev, currentAmount: prev.currentAmount + amount
+      }
+    })
+
+    setCategories((prev) => {
+      if (prev.includes("Contribution to Savings Goal")) {
+        return prev
+      } else {
+        return [...prev, "Contribution to Savings Goal"]
+      }
+    })
+
+    const savingsTransaction: Transaction = {
+      id: Date.now(),
+      description: `Savings ${goal.name}`,
+      amount,
+      type: "expense",
+      category: "Contribution to Savings Goal",
+      date: new Date().toLocaleDateString(),
+    }
+    setTransactions((prev) => [savingsTransaction, ...prev])
   }
 
   return (
@@ -195,7 +245,7 @@ export default function Home() {
         </div>
 
         {/* Goal card */}
-        <GoalCard goal={goal} progress={progress} remaining={remaining} onEdit={() => setGoalDialogOpen(true)} />
+        <GoalCard goal={goal} progress={progress} remaining={remaining} onContribute={contributeToGoal} onEdit={() => setGoalDialogOpen(true)} />
 
         {/* Edit goal button */}
         <GoalDialog open={goalDialogOpen} setOpen={setGoalDialogOpen} goal={goal} onSave={saveGoal} />
@@ -209,7 +259,7 @@ export default function Home() {
             setDescription={setDescription}
             amount={amount}
             setAmount={setAmount}
-            categories={categories}
+            categories={categories.filter(category => category !== "Contribution to Savings Goal")}
             category={category}
             setCategory={setCategory}
             transactionType={transactionType}

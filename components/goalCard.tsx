@@ -1,14 +1,32 @@
+import { useState} from "react";
 import { Button } from "./ui/button";
 import type { Goal } from "@/types/goal";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog"
+import { Input } from "./ui/input"
+import { Label } from "./ui/label"
 
 type GoalCardThings = {
     goal: Goal | null
     progress: number
     remaining: number
     onEdit: () => void
+    onContribute: (amount: number) => void
 }
 
-export function GoalCard({ goal, progress, remaining, onEdit }: GoalCardThings) {
+export function GoalCard({ goal, progress, remaining, onEdit, onContribute }: GoalCardThings) {
+
+    const [contributeOpen, setContributeOpen] = useState(false)
+    const [contributeAmount, setContributeAmount] = useState("")
+
+    function handleContribute() {
+        const parsed = Number(contributeAmount)
+        if (!contributeAmount || Number.isNaN(parsed) || parsed <= 0) {
+            return
+        }
+        onContribute(parsed)
+        setContributeAmount("")
+        setContributeOpen(false)
+    }
 
     if (!goal) {
         return (
@@ -28,6 +46,7 @@ export function GoalCard({ goal, progress, remaining, onEdit }: GoalCardThings) 
                 </div>
                 <div className="flex items-center gap-4">
                     <p className="font-bold">${goal.currentAmount.toFixed(2)} / ${goal.targetAmount.toFixed(2)}</p>
+                    <Button size="sm" variant="outline" onClick={() => setContributeOpen(true)}>Contribute to goal</Button>
                     <Button size="sm" variant="outline" onClick={onEdit}>Edit</Button>
                 </div>
             </div>
@@ -39,7 +58,22 @@ export function GoalCard({ goal, progress, remaining, onEdit }: GoalCardThings) 
                 />
             </div>
 
-            <p className="mt-2 text-sm text-muted-foreground">${remaining.toFixed(2)} remaining</p>
+            <p className="mt-2 text-sm text-muted-foreground">{remaining <= 0 ? "🥳 You reached your goal!" : `$${remaining.toFixed(2)} remaining`}</p>
+
+            <Dialog open={contributeOpen} onOpenChange={setContributeOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Contribute to {goal.name}</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                        <div>
+                            <Label>Amount</Label>
+                            <Input type="number" min="0.01" step="0.01" placeholder="0.00" value={contributeAmount} onChange={(e) => setContributeAmount(e.target.value)} />
+                        </div>
+                        <Button className="w-full" onClick={handleContribute}>Confirm</Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
