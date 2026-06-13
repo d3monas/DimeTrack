@@ -56,9 +56,9 @@ export function AddTransactionDialog({
 
                     <div>
                         <Label>Category</Label>
-                        <Select value={category} onValueChange={setCategory}>
+                        <Select value={category} onValueChange={setCategory} disabled={categories.length === 0}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Select a category" />
+                                <SelectValue placeholder={categories.length === 0 ? "No categories yet. To create a category, visit Settings" : "Select a category"} />
                             </SelectTrigger>
 
                             <SelectContent>

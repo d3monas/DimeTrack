@@ -50,8 +50,13 @@ export default function Home() {
 
   // write to localstorage on data change
   useEffect(() => {
-    if (isLoaded && goal) {
+    if (!isLoaded) {
+      return
+    }
+    if (goal) {
       saveGoalStorage(goal)
+    } else {
+      localStorage.removeItem('goal')
     }
   }, [isLoaded,goal])
 
@@ -74,6 +79,9 @@ export default function Home() {
   }, [isLoaded,budgets])
 
   useEffect(() => {
+    if (!isLoaded) {
+      return
+    }
     setBudgets((prev) => {
       const updated = { ...prev }
       categories.forEach((category) => {
@@ -154,6 +162,10 @@ export default function Home() {
     )
   }
 
+  function updateBudget(category: string, limit: number) {
+    setBudgets((prev) => ({...prev, [category]: limit}))
+  }
+
   return (
     <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-6xl p-6">
@@ -216,7 +228,7 @@ export default function Home() {
         {/* chart */}
         <SpendingChart totals={categoryTotals} />
         {/* budget */}
-        <BudgetOverview totals={categoryTotals} budgets={budgets} />
+        <BudgetOverview totals={categoryTotals} budgets={budgets} onUpdateBudget={updateBudget} />
       </div>
     </main>
   )
