@@ -1,10 +1,10 @@
 import { useState } from "react"
-import { Label } from "./ui/label"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
-import { Input } from "./ui/input"
-import { Button } from "./ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
-import { FieldError } from "./fieldError"
+import { Label } from "../ui/label"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog"
+import { Input } from "../ui/input"
+import { Button } from "../ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import { FieldError } from "../fieldError"
 
 type AddTransactionDialogThings = {
     open: boolean

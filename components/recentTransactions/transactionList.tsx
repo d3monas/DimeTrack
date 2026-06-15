@@ -1,6 +1,6 @@
 import { Transaction } from "@/types/transaction"
-import { Button } from "./ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
+import { Button } from "../ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import type { FilterPeriod } from "@/lib/calculations"
 
 const filterLabels: Record<FilterPeriod, string> = {
@@ -14,13 +14,14 @@ const filterLabels: Record<FilterPeriod, string> = {
 type Things = {
     transactions: Transaction[]
     onDelete(id: number): void
+    onEditClick: (transaction: Transaction) => void
     currencySymbol: string
     filter: FilterPeriod
     onFilterChange: (filter: FilterPeriod) => void
 }
 
 export function TransactionList({
-    transactions, onDelete, currencySymbol, filter, onFilterChange
+    transactions, onDelete, onEditClick, currencySymbol, filter, onFilterChange
 }: Things) {
     return (
         <div>
@@ -63,7 +64,11 @@ export function TransactionList({
 
                             <div className="flex items-center gap-2">
                                 <span className={`font-medium ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}>
-                                    {transaction.type === "income" ? "+" : "-"}{currencySymbol}{transaction.amount.toFixed(2)}</span>
+                                    {transaction.type === "income" ? "+" : "-"}{currencySymbol}{transaction.amount.toFixed(2)}
+                                </span>
+                                {transaction.category !== "Contribution to Savings Goal" && (
+                                    <Button variant="ghost" size="sm" onClick={() => onEditClick(transaction)}>✎</Button>
+                                )}
                                 <Button variant="ghost" size="sm" className="text-red-500" onClick={() => onDelete(transaction.id)}>✕</Button>
                             </div>
                         </div>

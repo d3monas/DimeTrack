@@ -1,14 +1,15 @@
 "use client"
 // components
 import { useState, useEffect } from "react"
-import { TransactionList } from "@/components/transactionList"
+import { TransactionList } from "@/components/recentTransactions/transactionList"
 import { GoalCard } from "@/components/goalCard"
 import { GoalDialog } from "@/components/add-goal-ui"
-import { AddTransactionDialog } from "@/components/add-transaction-ui"
+import { AddTransactionDialog } from "@/components/recentTransactions/add-transaction-ui"
 import { CategoryBreakdown } from "@/components/categoryBreakdown"
 import { SpendingChart } from "@/components/spendingCharts"
 import { BudgetOverview } from "@/components/budgetOverview"
 import { SettingsDialog } from "@/components/settingsUI"
+import { EditTransactionDialog } from "@/components/recentTransactions/edit-transaction-ui"
 
 // types
 import type { Transaction } from "@/types/transaction"
@@ -40,6 +41,8 @@ export default function Home() {
   const [currency, setCurrency] = useState("USD")
 
   const [filterPeriod, setFilterPeriod] = useState<FilterPeriod>("lifetime")
+
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
 
   // load localstorage 
   useEffect(() => {
@@ -167,6 +170,13 @@ export default function Home() {
     }
 
     setTransactions((prev) => prev.filter((transaction) => transaction.id !== id))
+  }
+
+  function editTransaction(id: number, description: string, amount: number, type : "income" | "expense", category: string) {
+    setTransactions((prev) => 
+      prev.map((transaction) =>
+      transaction.id === id ? { ...transaction, description, amount, category, type }: transaction
+    ))
   }
 
   function saveGoal(name: string, currentAmount: number, targetAmount: number) {
@@ -297,7 +307,19 @@ export default function Home() {
 
         {/* Recent transactions card */}
         <div className="mt-6 rounded-2xl border p-6">
-          <TransactionList transactions={filteredTransactions} onDelete={deleteTransaction} currencySymbol={currencySymbol} filter={filterPeriod} onFilterChange={setFilterPeriod} />
+          <EditTransactionDialog 
+            transaction={editingTransaction}
+            open={!!editingTransaction} 
+            onClose={() => setEditingTransaction(null)} 
+            categories={categories.filter(category => category !== "Contribution to Savings Goal")}
+            onSave={editTransaction} />
+          <TransactionList 
+            transactions={filteredTransactions} 
+            onEditClick={setEditingTransaction} 
+            onDelete={deleteTransaction} 
+            currencySymbol={currencySymbol} 
+            filter={filterPeriod} 
+            onFilterChange={setFilterPeriod} />
         </div>
         {/* Breakdown into categories */}
         <CategoryBreakdown totals={categoryTotals} currencySymbol={currencySymbol} />
