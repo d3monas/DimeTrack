@@ -2,6 +2,7 @@ import { Transaction } from "@/types/transaction"
 import { Button } from "../ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import type { FilterPeriod } from "@/lib/calculations"
+import { defaultSavingsCategory } from "@/lib/consts"
 
 const filterLabels: Record<FilterPeriod, string> = {
     today: "Today",
@@ -66,7 +67,7 @@ export function TransactionList({
                                 <span className={`font-medium ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}>
                                     {transaction.type === "income" ? "+" : "-"}{currencySymbol}{transaction.amount.toFixed(2)}
                                 </span>
-                                {transaction.category !== "Contribution to Savings Goal" && (
+                                {transaction.category !== defaultSavingsCategory && (
                                     <Button variant="ghost" size="sm" onClick={() => onEditClick(transaction)}>✎</Button>
                                 )}
                                 <Button variant="ghost" size="sm" className="text-red-500" onClick={() => onDelete(transaction.id)}>✕</Button>

@@ -3,6 +3,7 @@ import { Input } from "./ui/input"
 import { Button } from "./ui/button"
 import { Dispatch, SetStateAction } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
+import { defaultSavingsCategory } from "@/lib/consts"
 
 type SettingsDialogThings = {
     categories: string[]
@@ -50,7 +51,7 @@ export function SettingsDialog({
                             {categories.map((category) => (
                                 <div key={category} className="flex items-center justify-between rounded-md p-2">
                                     <span>{category}</span>
-                                    {category === "Contribution to Savings Goal" ? (
+                                    {category === defaultSavingsCategory ? (
                                         <span className="text-xs text-muted-foreground px-2 py-1 rounded-md border">Default</span>
                                     ) : (
                                         <Button variant="destructive" size="sm" onClick={() => onDeleteCategory(category)}>Delete</Button>

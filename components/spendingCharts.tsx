@@ -29,7 +29,7 @@ export function SpendingChart({ totals }: Things) {
         <div className="mt-6 rounded-2xl border p-6">
             <h2 className="mb-4 text-xl font-semibold">Spending Breakdown</h2>
 
-            <div className="h-72">
+            <div className="h-72 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                         <Pie data={data} dataKey="amount" nameKey="category" outerRadius={100} label={({ payload }) => payload.category}>{data.map((_, index) => (<Cell key={index} fill={colors[index % colors.length]} />))}</Pie>

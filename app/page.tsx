@@ -20,6 +20,7 @@ import type { FilterPeriod } from "@/lib/calculations"
 import { calculateIncome, calculateExpenses, filterTransactionsByPeriod } from "@/lib/calculations"
 import { saveTransactions, saveGoal as saveGoalStorage, saveCategories, saveBudgets, saveCurrency, loadAllData } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
+import { defaultSavingsCategory } from "@/lib/consts"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -158,7 +159,7 @@ export default function Home() {
   function deleteTransaction(id: number) {
     const transaction = transactions.find((transaction) => transaction.id === id)
 
-    if (transaction && transaction.category === "Contribution to Savings Goal") {
+    if (transaction && transaction.category === defaultSavingsCategory) {
       setGoal((prev) => {
         if (!prev) {
           return prev
@@ -196,7 +197,7 @@ export default function Home() {
   }
 
   function deleteCategory(categoryToDelete: string) {
-    if (categoryToDelete === "Contribution to Savings Goal") {
+    if (categoryToDelete === defaultSavingsCategory) {
       return
     }
 
@@ -235,19 +236,19 @@ export default function Home() {
     })
 
     setCategories((prev) => {
-      if (prev.includes("Contribution to Savings Goal")) {
+      if (prev.includes(defaultSavingsCategory)) {
         return prev
       } else {
-        return [...prev, "Contribution to Savings Goal"]
+        return [...prev, defaultSavingsCategory]
       }
     })
 
     const savingsTransaction: Transaction = {
       id: Date.now(),
-      description: `Savings ${goal.name}`,
+      description: `Savings towards ${goal.name}`,
       amount,
       type: "expense",
-      category: "Contribution to Savings Goal",
+      category: defaultSavingsCategory,
       date: new Date().toISOString(),
     }
     setTransactions((prev) => [savingsTransaction, ...prev])
@@ -296,7 +297,7 @@ export default function Home() {
             setDescription={setDescription}
             amount={amount}
             setAmount={setAmount}
-            categories={categories.filter(category => category !== "Contribution to Savings Goal")}
+            categories={categories.filter(category => category !== defaultSavingsCategory)}
             category={category}
             setCategory={setCategory}
             transactionType={transactionType}
@@ -311,7 +312,7 @@ export default function Home() {
             transaction={editingTransaction}
             open={!!editingTransaction} 
             onClose={() => setEditingTransaction(null)} 
-            categories={categories.filter(category => category !== "Contribution to Savings Goal")}
+            categories={categories.filter(category => category !== defaultSavingsCategory)}
             onSave={editTransaction} />
           <TransactionList 
             transactions={filteredTransactions} 

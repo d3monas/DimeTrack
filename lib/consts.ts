@@ -1,0 +1,1 @@
+export const defaultSavingsCategory = "Contribution to Savings Goal"
