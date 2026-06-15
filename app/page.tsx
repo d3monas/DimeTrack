@@ -13,9 +13,10 @@ import { SettingsDialog } from "@/components/settingsUI"
 // types
 import type { Transaction } from "@/types/transaction"
 import type { Goal } from "@/types/goal"
+import type { FilterPeriod } from "@/lib/calculations"
 
 // libs
-import { calculateIncome, calculateExpenses } from "@/lib/calculations"
+import { calculateIncome, calculateExpenses, filterTransactionsByPeriod } from "@/lib/calculations"
 import { saveTransactions, saveGoal as saveGoalStorage, saveCategories, saveBudgets, saveCurrency, loadAllData } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 
@@ -37,6 +38,8 @@ export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false)
 
   const [currency, setCurrency] = useState("USD")
+
+  const [filterPeriod, setFilterPeriod] = useState<FilterPeriod>("lifetime")
 
   // load localstorage 
   useEffect(() => {
@@ -103,13 +106,27 @@ export default function Home() {
   }, [isLoaded, currency])
 
 
-  const income = calculateIncome(transactions)
-  const expenses = calculateExpenses(transactions)
-  const balance = income - expenses
-  const categoryTotals = getCategoryTotals(transactions)
+  const lifetimeIncome = calculateIncome(transactions)
+  const lifetimeExpenses = calculateExpenses(transactions)
+  const balance = lifetimeIncome - lifetimeExpenses
   const progress = goal ? (goal.currentAmount / goal.targetAmount) * 100 : 0
   const remaining = goal ? goal.targetAmount - goal.currentAmount : 0
   const currencySymbol = { USD: "$", EUR: "€", GBP: "£", JPY: "¥", CAD: "CA$", AUD: "A$", CHF: "Fr", INR: "₹" }[currency] ?? "$"
+  
+  const now = new Date()
+  const thisMonthTransactions = transactions.filter((transaction) => {
+    const date = new Date(transaction.date)
+    if (isNaN(date.getTime())) {
+      return false
+    }
+    return (
+      date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()
+    )
+  })
+  const income = calculateIncome(thisMonthTransactions)
+  const expenses = calculateExpenses(thisMonthTransactions)
+  const filteredTransactions = filterTransactionsByPeriod(transactions, filterPeriod)
+  const categoryTotals = getCategoryTotals(filteredTransactions)
 
   function addTransaction() {
     const numberCheck = Number(amount)
@@ -124,7 +141,7 @@ export default function Home() {
       amount: numberCheck,
       type: transactionType,
       category,
-      date: new Date().toLocaleDateString(),
+      date: new Date().toISOString(),
     }
 
     setTransactions((prev) => [newTransaction, ...prev])
@@ -221,7 +238,7 @@ export default function Home() {
       amount,
       type: "expense",
       category: "Contribution to Savings Goal",
-      date: new Date().toLocaleDateString(),
+      date: new Date().toISOString(),
     }
     setTransactions((prev) => [savingsTransaction, ...prev])
   }
@@ -239,7 +256,7 @@ export default function Home() {
         {/* Current balance card */}
         <div className="grid gap-6 md:grid-cols-3">
           <div className="rounded-2xl border p-6">
-            <p className="text-sm text-muted-foreground">Current Balance</p>
+            <p className="text-sm text-muted-foreground">Current Balance <span className="text-xs">(All Time)</span></p>
             <h2 className="mt-2 text-3xl font-bold">{currencySymbol}{balance.toFixed(2)}</h2>
           </div>
 
@@ -280,8 +297,7 @@ export default function Home() {
 
         {/* Recent transactions card */}
         <div className="mt-6 rounded-2xl border p-6">
-          <h2 className="mb-4 text-xl font-semibold">Recent Transactions</h2>
-          <TransactionList transactions={transactions} onDelete={deleteTransaction} currencySymbol={currencySymbol} />
+          <TransactionList transactions={filteredTransactions} onDelete={deleteTransaction} currencySymbol={currencySymbol} filter={filterPeriod} onFilterChange={setFilterPeriod} />
         </div>
         {/* Breakdown into categories */}
         <CategoryBreakdown totals={categoryTotals} currencySymbol={currencySymbol} />
