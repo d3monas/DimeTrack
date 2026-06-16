@@ -1,5 +1,6 @@
 import { Transaction } from "@/types/transaction"
 import { Goal } from "@/types/goal"
+import type { RecurringTransaction } from "@/types/recurringTransaction"
 
 const isBrowser = typeof window !== "undefined"
 
@@ -128,12 +129,40 @@ export function loadCurrency(): string {
     return localStorage.getItem("currency") || "USD"    
 }
 
+// recurring transactions
+export function saveRecurring(recurring: RecurringTransaction[]) {
+    if (!isBrowser) {
+        return
+    }
+    localStorage.setItem("recurring", JSON.stringify(recurring))
+}
+
+export function loadRecurring(): RecurringTransaction[] {
+    if (!isBrowser) {
+        return []
+    }
+    try {
+        const saved = localStorage.getItem("recurring")
+        if (!saved) {
+            return []
+        }
+        const parsed = JSON.parse(saved)
+        if (!Array.isArray(parsed)) {
+            return []
+        }
+        return parsed
+    } catch {
+        return []
+    }
+}
+
 export function loadAllData() {
     return {
         transactions: loadTransactions(),
         categories: loadCategories(),
         budgets: loadBudgets(),
         goal: loadGoal(),
-        currency: loadCurrency()
+        currency: loadCurrency(),
+        recurring: loadRecurring(),
     }
 }

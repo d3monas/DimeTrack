@@ -8,19 +8,21 @@ import { AddTransactionDialog } from "@/components/recentTransactions/add-transa
 import { CategoryBreakdown } from "@/components/categoryBreakdown"
 import { SpendingChart } from "@/components/spendingCharts"
 import { BudgetOverview } from "@/components/budgetOverview"
-import { SettingsDialog } from "@/components/settingsUI"
+import { SettingsDialog } from "@/components/settings/settingsUI"
 import { EditTransactionDialog } from "@/components/recentTransactions/edit-transaction-ui"
 
 // types
 import type { Transaction } from "@/types/transaction"
 import type { Goal } from "@/types/goal"
 import type { FilterPeriod } from "@/lib/calculations"
+import type { RecurringTransaction } from "@/types/recurringTransaction"
 
 // libs
 import { calculateIncome, calculateExpenses, filterTransactionsByPeriod } from "@/lib/calculations"
-import { saveTransactions, saveGoal as saveGoalStorage, saveCategories, saveBudgets, saveCurrency, loadAllData } from "@/lib/localstorage"
+import { saveTransactions, saveGoal as saveGoalStorage, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 import { defaultSavingsCategory } from "@/lib/consts"
+import { processRecurring } from "@/lib/recurring"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -45,6 +47,8 @@ export default function Home() {
 
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
 
+  const [recurring, setRecurring] = useState<RecurringTransaction[]>([])
+
   // load localstorage 
   useEffect(() => {
     const data = loadAllData()
@@ -52,6 +56,7 @@ export default function Home() {
     setCategories(data.categories)
     setBudgets(data.budgets)
     setCurrency(data.currency)
+    setRecurring(data.recurring)
     if (data.goal) {
       setGoal(data.goal)
     }
@@ -108,6 +113,12 @@ export default function Home() {
       saveCurrency(currency)
     }
   }, [isLoaded, currency])
+
+  useEffect(() => {
+    if (isLoaded) {
+      saveRecurring(recurring)
+    }
+  }, [isLoaded, recurring])
 
 
   const lifetimeIncome = calculateIncome(transactions)
@@ -254,13 +265,47 @@ export default function Home() {
     setTransactions((prev) => [savingsTransaction, ...prev])
   }
 
+  useEffect(() => {
+    if (!isLoaded || recurring.length === 0) {
+      return
+    }
+    const { newTransactions, updatedRecurring } = processRecurring(recurring)
+    if (newTransactions.length > 0) {
+      setTransactions((prev) => [...newTransactions, ...prev])
+      setRecurring(updatedRecurring)
+    }
+  }, [isLoaded])
+
+  function addRecurring(recurring: Omit<RecurringTransaction, "id" | "lastProcessedDate">) {
+    const newRecurring: RecurringTransaction = { 
+      ...recurring,
+      id: Date.now(),
+      lastProcessedDate: new Date().toISOString()
+    }
+    setRecurring((prev) => [...prev, newRecurring])
+  }
+
+  function deleteRecurring(id: number) {
+    setRecurring((prev) => prev.filter((recurring) => recurring.id !== id))
+  }
+
   return (
     <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-6xl p-6">
         <header className="mb-8 flex items-start justify-between">
           <div>
             <h1 className="text-4xl font-bold">DimeTrack</h1>
-            <SettingsDialog categories={categories} newCategory={newCategory} setNewCategory={setNewCategory} onAddNewCategory={addCategory} onDeleteCategory={deleteCategory} currency={currency} onCurrencyChange={setCurrency} />
+            <SettingsDialog 
+              categories={categories} 
+              newCategory={newCategory} 
+              setNewCategory={setNewCategory} 
+              onAddNewCategory={addCategory} 
+              onDeleteCategory={deleteCategory} 
+              currency={currency}
+              onCurrencyChange={setCurrency}
+              recurring={recurring}
+              onAddRecurring={addRecurring}
+              onDeleteRecurring={deleteRecurring} />
           </div>
         </header>
 
