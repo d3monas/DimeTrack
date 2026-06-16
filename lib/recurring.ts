@@ -11,10 +11,10 @@ export function getNextDate(lastProcessedDate: string, interval: RecurringTransa
             date.setDate(date.getDate() +7)
             break;
         case "monthly":
-            date.setDate(date.getMonth() +1)
+            date.setMonth(date.getMonth() +1)
             break;
         case "yearly":
-            date.setDate(date.getFullYear() +1)
+            date.setFullYear(date.getFullYear() +1)
             break;
     }
     return date
@@ -27,7 +27,7 @@ export function processRecurring(recurring: RecurringTransaction[]): { newTransa
         const nextDate = getNextDate(recurring.lastProcessedDate, recurring.interval)
         if (nextDate <= now) {
             newTransactions.push({
-                id: Date.now() + Math.random(),
+                id: crypto.randomUUID(),
                 description: recurring.description,
                 amount: recurring.amount,
                 type: recurring.type,

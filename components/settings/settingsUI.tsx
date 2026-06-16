@@ -14,10 +14,10 @@ type SettingsDialogThings = {
     setNewCategory: Dispatch<SetStateAction<string>>
     onAddNewCategory: () => void
     currency: string
+    currencySymbol: string
     onCurrencyChange: (value: string) => void
     recurring: RecurringTransaction[]
-    onAddRecurring: (recurring: Omit<RecurringTransaction, "id" | "lastProcessedDate">) => void
-    onDeleteRecurring: (id: number) => void
+    onDeleteRecurring: (id: string) => void
 }
 
 const currencies = [
@@ -32,7 +32,7 @@ const currencies = [
 ]
 
 export function SettingsDialog({
-    categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory, currency, onCurrencyChange, recurring, onAddRecurring, onDeleteRecurring
+    categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory, currency, currencySymbol, onCurrencyChange, recurring, onDeleteRecurring
 }: SettingsDialogThings) {
     return (
         <Dialog>
@@ -83,8 +83,7 @@ export function SettingsDialog({
                     <div>
                         <RecurringManager 
                             recurring={recurring} 
-                            categories={categories} 
-                            onAdd={onAddRecurring}
+                            currencySymbol={currencySymbol}
                             onDelete={onDeleteRecurring} 
                             />
                     </div>

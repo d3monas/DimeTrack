@@ -143,7 +143,7 @@ export default function Home() {
   const filteredTransactions = filterTransactionsByPeriod(transactions, filterPeriod)
   const categoryTotals = getCategoryTotals(filteredTransactions)
 
-  function addTransaction() {
+  function addTransaction(isRecurring: boolean, interval: RecurringTransaction["interval"]) {
     const numberCheck = Number(amount)
 
     if (!description || !amount || !category || Number.isNaN(numberCheck) || numberCheck <= 0) {
@@ -151,7 +151,7 @@ export default function Home() {
     }
 
     const newTransaction: Transaction = {
-      id: Date.now(),
+      id: crypto.randomUUID(),
       description,
       amount: numberCheck,
       type: transactionType,
@@ -160,6 +160,20 @@ export default function Home() {
     }
 
     setTransactions((prev) => [newTransaction, ...prev])
+
+    if (isRecurring) {
+      const newRecurring: RecurringTransaction = {
+        id: crypto.randomUUID(),
+        description,
+        amount: numberCheck,
+        type: transactionType,
+        category,
+        interval,
+        lastProcessedDate: new Date().toISOString(),
+      }
+      setRecurring((prev) => [...prev, newRecurring])
+    }
+
     setDescription("")
     setAmount("")
     setCategory("")
@@ -167,7 +181,7 @@ export default function Home() {
     setOpen(false)
   }
 
-  function deleteTransaction(id: number) {
+  function deleteTransaction(id: string) {
     const transaction = transactions.find((transaction) => transaction.id === id)
 
     if (transaction && transaction.category === defaultSavingsCategory) {
@@ -184,7 +198,7 @@ export default function Home() {
     setTransactions((prev) => prev.filter((transaction) => transaction.id !== id))
   }
 
-  function editTransaction(id: number, description: string, amount: number, type : "income" | "expense", category: string) {
+  function editTransaction(id: string, description: string, amount: number, type : "income" | "expense", category: string) {
     setTransactions((prev) => 
       prev.map((transaction) =>
       transaction.id === id ? { ...transaction, description, amount, category, type }: transaction
@@ -255,7 +269,7 @@ export default function Home() {
     })
 
     const savingsTransaction: Transaction = {
-      id: Date.now(),
+      id: crypto.randomUUID(),
       description: `Savings towards ${goal.name}`,
       amount,
       type: "expense",
@@ -276,16 +290,7 @@ export default function Home() {
     }
   }, [isLoaded])
 
-  function addRecurring(recurring: Omit<RecurringTransaction, "id" | "lastProcessedDate">) {
-    const newRecurring: RecurringTransaction = { 
-      ...recurring,
-      id: Date.now(),
-      lastProcessedDate: new Date().toISOString()
-    }
-    setRecurring((prev) => [...prev, newRecurring])
-  }
-
-  function deleteRecurring(id: number) {
+  function deleteRecurring(id: string) {
     setRecurring((prev) => prev.filter((recurring) => recurring.id !== id))
   }
 
@@ -302,9 +307,9 @@ export default function Home() {
               onAddNewCategory={addCategory} 
               onDeleteCategory={deleteCategory} 
               currency={currency}
+              currencySymbol={currencySymbol}
               onCurrencyChange={setCurrency}
               recurring={recurring}
-              onAddRecurring={addRecurring}
               onDeleteRecurring={deleteRecurring} />
           </div>
         </header>

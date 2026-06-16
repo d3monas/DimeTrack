@@ -11,7 +11,7 @@ type EditTransactionDialogThings = {
     transaction: Transaction | null
     open: boolean
     onClose: () => void
-    onSave: (id: number, description: string, amount: number, type: "income" | "expense", category: string) => void
+    onSave: (id: string, description: string, amount: number, type: "income" | "expense", category: string) => void
     categories: string[]
 }
 

@@ -14,7 +14,7 @@ const filterLabels: Record<FilterPeriod, string> = {
 
 type Things = {
     transactions: Transaction[]
-    onDelete(id: number): void
+    onDelete(id: string): void
     onEditClick: (transaction: Transaction) => void
     currencySymbol: string
     filter: FilterPeriod

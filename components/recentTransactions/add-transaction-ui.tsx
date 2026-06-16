@@ -5,6 +5,8 @@ import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { FieldError } from "../fieldError"
+import { Checkbox } from "../ui/checkbox"
+import type { RecurringTransaction } from "@/types/recurringTransaction"
 
 type AddTransactionDialogThings = {
     open: boolean
@@ -18,13 +20,19 @@ type AddTransactionDialogThings = {
     categories: string[]
     category: string
     setCategory: (value: string) => void
-    onSave: () => void
+    onSave: (isRecurring: boolean, interval: RecurringTransaction["interval"]) => void
+}
+
+const intervalLabels: Record<RecurringTransaction["interval"], string> = {
+    daily: "Daily", weekly: "Weekly", monthly: "Monthly", yearly: "Yearly"
 }
 
 export function AddTransactionDialog({
     open, setOpen, description, setDescription, amount, setAmount, transactionType, setTransactionType, category, setCategory, onSave, categories
 }: AddTransactionDialogThings) {
     const [errors, setErrors] = useState<Record<string, string>>({})
+    const [isRecurring, setIsRecurring] = useState(false)
+    const [interval, setInterval] = useState<RecurringTransaction["interval"]>("monthly")
 
     function validate() {
         const newErrors: Record<string, string> = {}
@@ -48,8 +56,10 @@ export function AddTransactionDialog({
 
     function handleSave() {
         if (validate()) {
-            onSave()
+            onSave(isRecurring, interval)
             setErrors({})
+            setIsRecurring(false)
+            setInterval("monthly")
         }
     }
 
@@ -57,6 +67,8 @@ export function AddTransactionDialog({
         setOpen(value)
         if (!value) {
             setErrors({})
+            setIsRecurring(false)
+            setInterval("monthly")
         }
     }
 
@@ -82,12 +94,10 @@ export function AddTransactionDialog({
 
                     <div>
                         <Label>Type</Label>
-
                         <Select value={transactionType} onValueChange={(value) => setTransactionType(value as "expense" | "income")}>
                             <SelectTrigger>
                                 <SelectValue />
                             </SelectTrigger>
-
                             <SelectContent>
                                 <SelectItem value="expense">Expense</SelectItem>
                                 <SelectItem value="income">Income</SelectItem>
@@ -118,6 +128,26 @@ export function AddTransactionDialog({
                             if (errors.amount) setErrors((p) => ({ ...p, amount: "" })) }} placeholder="5" />
                         <FieldError message={errors.amount} />
                     </div>
+
+                    <div className="flex items-center gap-2">
+                        <Checkbox id="recurring" checked={isRecurring} onCheckedChange={(checked) => setIsRecurring(checked === true)} />
+                        <Label htmlFor="recurring" className="cursor-pointer">Recurring transaction</Label>
+                    </div>
+
+                    {isRecurring && (
+                        <div>
+                            <Label>Repeat every</Label>
+                            <Select value={interval} onValueChange={(value) => setInterval(value as RecurringTransaction["interval"])}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    {(Object.keys(intervalLabels) as RecurringTransaction["interval"][]).map((i) => (
+                                        <SelectItem key={i} value={i}>{intervalLabels[i]}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+
                     <Button className="w-full" onClick={handleSave}>Save Transaction</Button>
                 </div>
             </DialogContent>

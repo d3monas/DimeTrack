@@ -1,6 +1,6 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts"
 
-type Things = {
+type SpendingChartThings = {
     totals: Record<string, number>
 }
 
@@ -13,7 +13,7 @@ const colors = [
     "#06b6d4",
 ]
 
-export function SpendingChart({ totals }: Things) {
+export function SpendingChart({ totals }: SpendingChartThings) {
     const data = Object.entries(totals).map(([category, amount]) => ({ category, amount }))
 
     if (data.length === 0) {
