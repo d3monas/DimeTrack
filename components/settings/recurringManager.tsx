@@ -16,7 +16,7 @@ export function RecurringManager({ recurring, currencySymbol, onDelete }: Recurr
         return (
             <div>
                 <h3 className="font-semibold">Recurring Transactions</h3>
-                <p className="text-sm text-muted-foreground">No recurring transactions yet - to add: check "Recurring transaction" when adding a transaction</p>
+                <p className="text-sm text-muted-foreground">No recurring transactions yet. To add: check "Recurring transaction" when adding a transaction</p>
             </div>
         )
     }
