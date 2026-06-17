@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { Transaction } from "@/types/transaction"
 import { Button } from "../ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
@@ -5,6 +6,7 @@ import type { FilterPeriod } from "@/lib/calculations"
 import { defaultSavingsCategory } from "@/lib/consts"
 import { PaginationUI } from "../paginationUI"
 import { pagination } from "@/lib/pagination"
+import { Input } from "../ui/input"
 
 const filterLabels: Record<FilterPeriod, string> = {
     today: "Today",
@@ -28,32 +30,54 @@ type Things = {
 export function TransactionList({
     transactions, onDelete, onEditClick, currencySymbol, filter, onFilterChange
 }: Things) {
-    const { pageItems, currentPage, totalPages, nextPage, prevPage } = pagination(transactions, transactionsPerPage, filter)
+    const [searchTerm, setSearchTerm] = useState("")
+
+    const searchedTransactions = transactions.filter((transactions) => {
+        if (!searchTerm.trim()) {
+            return true
+        }
+        const query = searchTerm.toLowerCase()
+        return (
+            transactions.description.toLowerCase().includes(query) ||
+            transactions.category.toLowerCase().includes(query) ||
+            transactions.amount.toFixed(2).includes(query)
+        )
+    })
+
+    const { pageItems, currentPage, totalPages, nextPage, prevPage } = pagination(searchedTransactions, transactionsPerPage, `${filter}-${searchTerm}`)
     return (
         <div>
             <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Recent Transactions</h2>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm" className="flex items-center gap-1">
-                            {filterLabels[filter]} <span className="text-xs">▾</span>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        {(Object.keys(filterLabels) as FilterPeriod[]).map((period) => (
-                            <DropdownMenuItem
-                                key={period}
-                                className={filter === period ? "font-semibold" : ""}
-                                onClick={() => onFilterChange(period)}>
-                                {filterLabels[period]}
-                            </DropdownMenuItem>
-                        ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="flex items-center gap-2">
+                    <Input 
+                    placeholder="Search"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="h-8 w-40 text-sm" 
+                    />
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm" className="flex items-center gap-1">
+                                {filterLabels[filter]} <span className="text-xs">▾</span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {(Object.keys(filterLabels) as FilterPeriod[]).map((period) => (
+                                <DropdownMenuItem
+                                    key={period}
+                                    className={filter === period ? "font-semibold" : ""}
+                                    onClick={() => onFilterChange(period)}>
+                                    {filterLabels[period]}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </div>
 
-            {transactions.length === 0 ? (
-                <p className="text-muted-foreground">No transactions for this period</p>
+            {searchedTransactions.length === 0 ? (
+                <p className="text-muted-foreground">{searchTerm.trim() ? "No transactions match your search" : "No transactions for this period"}</p>
             ) : (
                 <>
                 <div className="space-y-4">
