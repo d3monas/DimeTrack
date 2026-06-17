@@ -6,4 +6,5 @@ export type RecurringTransaction = {
     category: string
     interval: "daily" | "weekly" | "monthly" | "yearly"
     lastProcessedDate: string
+    createdAt: string
 }

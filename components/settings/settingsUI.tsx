@@ -48,14 +48,14 @@ export function SettingsDialog({
                 <div className="space-y-4">
                     <div>
                         <h3 className="font-semibold mb-2">Categories</h3>
-                        <div className="flex gap-2">
+                        <div className="flex flex-col gap-2 sm:flex-row">
                             <Input value={newCategory} onChange={(e) => setNewCategory(e.target.value)} placeholder="New Category" />
                             <Button onClick={onAddNewCategory}>Add</Button>
                         </div>
                         <div className="space-y-2 mt-4">
                             {categories.map((category) => (
-                                <div key={category} className="flex items-center justify-between rounded-md p-2">
-                                    <span>{category}</span>
+                                <div key={category} className="flex flex-wrap items-center justify-between gap-2 rounded-md p-2">
+                                    <span className="break-all">{category}</span>
                                     {category === defaultSavingsCategory ? (
                                         <span className="text-xs text-muted-foreground px-2 py-1 rounded-md border">Default</span>
                                     ) : (

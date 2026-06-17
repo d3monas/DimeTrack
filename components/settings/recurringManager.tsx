@@ -27,10 +27,11 @@ export function RecurringManager({ recurring, currencySymbol, onDelete }: Recurr
 
             <div className="space-y-2">
                 {recurring.map((recurring) => (
-                <div key={recurring.id} className="flex items-center justify-between rounded-md border p-3">
-                    <div>
+                <div key={recurring.id} className="flex flex-wrap items-center justify-between gap-2 rounded-md border p-3">
+                    <div className="min-w-0">
                         <p className="font-medium text-sm">{recurring.description}</p>
                         <p className="text-xs text-muted-foreground">{intervalLabels[recurring.interval]}</p>
+                        <p className="text-xs text-muted-foreground">Created {new Date(recurring.createdAt).toLocaleString()}</p>
                     </div>
                     <div className="flex items-center gap-3">
                         <span className={`text-sm font-medium ${recurring.type === "income" ? "text-green-600" : "text-red-600"}`}>

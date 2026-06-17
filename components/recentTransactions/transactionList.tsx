@@ -52,33 +52,35 @@ export function TransactionList({
     const { pageItems, currentPage, totalPages, nextPage, prevPage } = pagination(searchedTransactions, transactionsPerPage, `${filter}-${searchTerm}`)
     return (
         <div>
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <h2 className="text-xl font-semibold">Recent Transactions</h2>
-                <div className="flex items-center gap-2">
-                    <Input 
-                    placeholder="Search"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="h-8 w-40 text-sm" 
+                <div className="flex flex-wrap items-center gap-2">
+                    <Input
+                        placeholder="Search"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="h-8 w-full text-sm sm:w-40"
                     />
-                    <Button variant="outline" size="sm" onClick={handleExport}>Export CSV</Button>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm" className="flex items-center gap-1">
-                                {filterLabels[filter]} <span className="text-xs">▾</span>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            {(Object.keys(filterLabels) as FilterPeriod[]).map((period) => (
-                                <DropdownMenuItem
-                                    key={period}
-                                    className={filter === period ? "font-semibold" : ""}
-                                    onClick={() => onFilterChange(period)}>
-                                    {filterLabels[period]}
-                                </DropdownMenuItem>
-                            ))}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div className="flex gap-2">
+                        <Button variant="outline" size="sm" onClick={handleExport}>Export CSV</Button>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" size="sm" className="flex items-center gap-1">
+                                    {filterLabels[filter]} <span className="text-xs">▾</span>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                {(Object.keys(filterLabels) as FilterPeriod[]).map((period) => (
+                                    <DropdownMenuItem
+                                        key={period}
+                                        className={filter === period ? "font-semibold" : ""}
+                                        onClick={() => onFilterChange(period)}>
+                                        {filterLabels[period]}
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
                 </div>
             </div>
 
@@ -88,12 +90,12 @@ export function TransactionList({
                 <>
                 <div className="space-y-4">
                     {pageItems.map((transaction) => (
-                        <div key={transaction.id} className="flex items-center justify-between border-b pb-3 last:border-0">
-                            <div>
+                        <div key={transaction.id} className="flex flex-wrap gap-2 items-center justify-between border-b pb-3 last:border-0">
+                            <div className="min-w-0">
                                 <p className="font-medium">{transaction.description}</p>
 
-                                <div className="flex gap-2 text-sm text-muted-foreground">
-                                    <span>{new Date(transaction.date).toLocaleDateString()}</span>
+                                <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+                                    <span>{new Date(transaction.date).toLocaleString()}</span>
                                     <span>•</span>
                                     <span>{transaction.category}</span>
                                 </div>

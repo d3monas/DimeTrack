@@ -74,7 +74,7 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol
 
   if (allCategories.length === 0) {
     return (
-      <div className="mt-6 rounded-2xl border p-6">
+      <div className="mt-6 rounded-2xl border p-4 sm:p-6">
         <h2 className="mb-4 text-xl font-semibold">Budget Overview</h2>
         <p className="text-muted-foreground">No categories yet! Create some in settings to get started</p>
       </div>
@@ -82,7 +82,7 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol
   }
 
   return (
-    <div className="mt-6 rounded-2xl border p-6">
+    <div className="mt-6 rounded-2xl border p-4 sm:p-6">
       <h2 className="mb-4 text-xl font-semibold">Budget Overview</h2>
 
       <div className="space-y-5">
@@ -96,11 +96,11 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol
 
           return (
             <div key={category}>
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="font-medium">{category}</span>
 
                 {isEditing ? (
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="text-muted-foreground">{currencySymbol}</span>
                     <Input
                       className="h-8 w-24 text-sm"
@@ -124,7 +124,7 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol
                     <Button size="sm" className="h-8" variant="ghost" onClick={editCancel}>Cancel</Button>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-3">
                     {hasLimit ? (
                       <span className={`text-sm ${getTextColor(progress)}`}>{currencySymbol}{spent.toFixed(2)} / {currencySymbol}{limit.toFixed(2)}</span>
                     ) : (

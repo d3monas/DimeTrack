@@ -64,7 +64,7 @@ export function GoalCard({ goal, progress, remaining, onEdit, onContribute, curr
 
     if (!goal) {
         return (
-            <div className="mt-6 rounded-2xl border p-6">
+            <div className="mt-6 rounded-2xl border p-4 sm:p-6">
                 <h2 className="text-xl font-semibold">Savings Goal</h2>
                 <Button size="lg" variant="default" onClick={onEdit} className="mt-4">Create goal</Button>
             </div>
@@ -72,16 +72,18 @@ export function GoalCard({ goal, progress, remaining, onEdit, onContribute, curr
     }
 
     return (
-        <div className="mt-6 rounded-2xl border p-6">
-            <div className="flex items-center justify-between">
+        <div className="mt-6 rounded-2xl border p-4 sm:p-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 className="text-xl font-semibold">{goal.name}</h2>
                     <p className="text-muted-foreground">Savings Goal</p>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-4">
                     <p className="font-bold">{currencySymbol}{goal.currentAmount.toFixed(2)} / {currencySymbol}{goal.targetAmount.toFixed(2)}</p>
-                    <Button size="sm" variant="outline" onClick={() => setContributeOpen(true)}>Contribute to goal</Button>
-                    <Button size="sm" variant="outline" onClick={onEdit}>Edit</Button>
+                    <div className="flex gap-2">
+                        <Button size="sm" variant="outline" onClick={() => setContributeOpen(true)}>Contribute to goal</Button>
+                        <Button size="sm" variant="outline" onClick={onEdit}>Edit</Button>
+                    </div>
                 </div>
             </div>
 
@@ -99,9 +101,9 @@ export function GoalCard({ goal, progress, remaining, onEdit, onContribute, curr
                     <p className="mb-2 text-sm font-medium">Contribution History</p>
                     <div className="space-y-2">
                         {pageItems.map((transaction) => (
-                            <div key={transaction.id} className="flex items-center justify-between rounded-md border p-2">
+                            <div key={transaction.id} className="flex flex-wrap gap-2 items-center justify-between rounded-md border p-2">
                                 <div>
-                                    <p className="text-sm">{new Date(transaction.date).toLocaleDateString()}</p>
+                                    <p className="text-sm">{new Date(transaction.date).toLocaleString()}</p>
                                     <p className="text-xs text-muted-foreground">Total: {currencySymbol}{transaction.runningTotal.toFixed(2)}</p>
                                 </div>
                                 <span className="text-sm font-medium text-green-600">+{currencySymbol}{transaction.amount.toFixed(2)}</span>

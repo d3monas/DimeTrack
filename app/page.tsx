@@ -170,6 +170,7 @@ export default function Home() {
         category,
         interval,
         lastProcessedDate: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
       }
       setRecurring((prev) => [...prev, newRecurring])
     }
@@ -296,39 +297,39 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="mx-auto max-w-6xl p-6">
-        <header className="mb-8 flex items-start justify-between">
+      <div className="mx-auto max-w-6xl p-4 sm:p-6">
+        <header className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-4xl font-bold">DimeTrack</h1>
-            <SettingsDialog 
-              categories={categories} 
-              newCategory={newCategory} 
-              setNewCategory={setNewCategory} 
-              onAddNewCategory={addCategory} 
-              onDeleteCategory={deleteCategory} 
-              currency={currency}
-              currencySymbol={currencySymbol}
-              onCurrencyChange={setCurrency}
-              recurring={recurring}
-              onDeleteRecurring={deleteRecurring} />
+            <h1 className="text-4xl font-bold sm:text-4xl">DimeTrack</h1>
           </div>
+          <SettingsDialog
+            categories={categories}
+            newCategory={newCategory}
+            setNewCategory={setNewCategory}
+            onAddNewCategory={addCategory}
+            onDeleteCategory={deleteCategory}
+            currency={currency}
+            currencySymbol={currencySymbol}
+            onCurrencyChange={setCurrency}
+            recurring={recurring}
+            onDeleteRecurring={deleteRecurring} />
         </header>
 
         {/* Current balance card */}
-        <div className="grid gap-6 md:grid-cols-3">
-          <div className="rounded-2xl border p-6">
+        <div className="grid gap-4 md:grid-cols-3 sm:gap-6">
+          <div className="rounded-2xl border p-4 sm:p-6">
             <p className="text-sm text-muted-foreground">Current Balance <span className="text-xs">(All Time)</span></p>
-            <h2 className="mt-2 text-3xl font-bold">{currencySymbol}{balance.toFixed(2)}</h2>
+            <h2 className="mt-2 text-2xl font-bold sm:text-3xl">{currencySymbol}{balance.toFixed(2)}</h2>
           </div>
 
-          <div className="rounded-2xl border p-6">
+          <div className="rounded-2xl border p-4 sm:p-6">
             <p className="text-sm text-muted-foreground">Income this month</p>
-            <h2 className="mt-2 text-3xl font-bold text-green-600">{currencySymbol}{income.toFixed(2)}</h2>
+            <h2 className="mt-2 text-2xl font-bold text-green-600 sm:text-3xl">{currencySymbol}{income.toFixed(2)}</h2>
           </div>
 
-          <div className="rounded-2xl border p-6">
+          <div className="rounded-2xl border p-4 sm:p-6">
             <p className="text-sm text-muted-foreground">Expenses this month</p>
-            <h2 className="mt-2 text-3xl font-bold text-red-600">{currencySymbol}{expenses.toFixed(2)}</h2>
+            <h2 className="mt-2 text-2xl font-bold text-red-600 sm:text-3xl">{currencySymbol}{expenses.toFixed(2)}</h2>
           </div>
         </div>
 
