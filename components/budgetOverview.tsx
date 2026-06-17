@@ -9,6 +9,42 @@ type BudgetOverviewThings = {
   currencySymbol: string
 }
 
+function getBarColor(progress: number) {
+  if (progress >= 100) {
+    return "bg-red-600"
+  }
+  if (progress >= 80) {
+    return "bg-orange-500"
+  }
+  if (progress >= 50) {
+    return "bg-yellow-500"
+  }
+  return "bg-green-600"
+}
+
+function getTextColor(progress: number) {
+  if (progress >= 100) {
+    return "text-red-600 font-medium"
+  }
+  if (progress >= 80) {
+    return "text-orange-500 font-medium"
+  }
+  if (progress >= 50) {
+    return "text-yellow-500 font-medium"
+  }
+  return "font-medium"
+}
+
+function getWarning(progress: number) {
+  if (progress >= 100) {
+    return "Over budget"
+  }
+  if (progress >= 80) {
+    return "Approaching limit"
+  }
+  return null
+}
+
 export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol }: BudgetOverviewThings) {
   const [editingCategory, setEditingCategory] = useState<string | null>(null)
   const [editingValue, setEditingValue] = useState("")
@@ -55,9 +91,8 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol
           const spent = totals[category] ?? 0
           const hasLimit = limit > 0
           const progress = hasLimit ? (spent / limit) * 100 : 0
-          const isOver = hasLimit && progress > 100
           const isEditing = editingCategory === category
-
+          const warning = hasLimit ? getWarning(progress): null
 
           return (
             <div key={category}>
@@ -91,7 +126,7 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol
                 ) : (
                   <div className="flex items-center gap-3">
                     {hasLimit ? (
-                      <span className={`text-sm ${isOver ? "text-red-600 font-medium" : "text-muted-foreground"}`}>{currencySymbol}{spent.toFixed(2)} / {currencySymbol}{limit.toFixed(2)}</span>
+                      <span className={`text-sm ${getTextColor(progress)}`}>{currencySymbol}{spent.toFixed(2)} / {currencySymbol}{limit.toFixed(2)}</span>
                     ) : (
                       <span className="text-sm text-muted-foreground">No limit set</span>
                     )}
@@ -103,10 +138,13 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol
               {hasLimit && !isEditing && (
                 <div className="mt-2 h-3 rounded-full bg-muted">
                   <div
-                    className={`h-full rounded-full transition-all ${isOver ? "bg-red-600" : "bg-green-600"}`}
+                    className={`h-full rounded-full transition-all ${getBarColor(progress)}`}
                     style={{ width: `${Math.min(progress, 100)}%` }}
                   />
                 </div>
+              )}
+              {warning && (
+                <p className={`mt-1 text-xs ${progress >= 100 ? "text-red-600" : "text-orange-500"}`}>⚠ {warning}</p>
               )}
             </div>
           )
