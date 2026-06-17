@@ -7,6 +7,7 @@ import { defaultSavingsCategory } from "@/lib/consts"
 import { PaginationUI } from "../paginationUI"
 import { pagination } from "@/lib/pagination"
 import { Input } from "../ui/input"
+import { exportToCSV } from "@/lib/csv"
 
 const filterLabels: Record<FilterPeriod, string> = {
     today: "Today",
@@ -44,6 +45,10 @@ export function TransactionList({
         )
     })
 
+    function handleExport() {
+        exportToCSV(searchedTransactions)
+    }
+
     const { pageItems, currentPage, totalPages, nextPage, prevPage } = pagination(searchedTransactions, transactionsPerPage, `${filter}-${searchTerm}`)
     return (
         <div>
@@ -56,6 +61,7 @@ export function TransactionList({
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="h-8 w-40 text-sm" 
                     />
+                    <Button variant="outline" size="sm" onClick={handleExport}>Export CSV</Button>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline" size="sm" className="flex items-center gap-1">
