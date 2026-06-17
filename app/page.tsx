@@ -2,8 +2,8 @@
 // components
 import { useState, useEffect } from "react"
 import { TransactionList } from "@/components/recentTransactions/transactionList"
-import { GoalCard } from "@/components/goalCard"
-import { GoalDialog } from "@/components/add-goal-ui"
+import { GoalCard } from "@/components/goals/goalCard"
+import { GoalDialog } from "@/components/goals/add-goal-ui"
 import { AddTransactionDialog } from "@/components/recentTransactions/add-transaction-ui"
 import { CategoryBreakdown } from "@/components/categoryBreakdown"
 import { SpendingChart } from "@/components/spendingCharts"
@@ -333,7 +333,7 @@ export default function Home() {
         </div>
 
         {/* Goal card */}
-        <GoalCard goal={goal} progress={progress} remaining={remaining} onContribute={contributeToGoal} onEdit={() => setGoalDialogOpen(true)} currencySymbol={currencySymbol} />
+        <GoalCard goal={goal} progress={progress} remaining={remaining} onContribute={contributeToGoal} onEdit={() => setGoalDialogOpen(true)} currencySymbol={currencySymbol} transactions={transactions}/>
 
         {/* Edit goal button */}
         <GoalDialog open={goalDialogOpen} setOpen={setGoalDialogOpen} goal={goal} onSave={saveGoal} />

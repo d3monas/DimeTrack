@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react"
-import { Label } from "./ui/label"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog"
-import { Input } from "./ui/input"
-import { Button } from "./ui/button"
+import { Label } from "../ui/label"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
+import { Input } from "../ui/input"
+import { Button } from "../ui/button"
 import type { Goal } from "@/types/goal"
 import { FieldError } from "@/components/fieldError"
 
