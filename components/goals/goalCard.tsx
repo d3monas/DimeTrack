@@ -7,6 +7,8 @@ import { Label } from "../ui/label"
 import { FieldError } from "../fieldError"
 import type { Transaction } from "@/types/transaction"
 import { defaultSavingsCategory } from "@/lib/consts"
+import { PaginationUI } from "../paginationUI"
+import { pagination } from "@/lib/pagination"
 
 type GoalCardThings = {
     goal: Goal | null
@@ -25,10 +27,9 @@ export function GoalCard({ goal, progress, remaining, onEdit, onContribute, curr
     const [contributeOpen, setContributeOpen] = useState(false)
     const [contributeAmount, setContributeAmount] = useState("")
     const [errors, setErrors] = useState<Record<string, string>>({})
-    const [page, setPage] = useState(0)
-
+    
     const contributions = transactions.filter((transaction) => transaction.category === defaultSavingsCategory)
-
+    
     // sorting algo from oldest to newest to calculate correctly
     const chronological = [...contributions].sort(
         (a,b) => new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -40,11 +41,9 @@ export function GoalCard({ goal, progress, remaining, onEdit, onContribute, curr
             ...transaction, runningTotal
         }
     })
-
     const newestFirst = [...withRunningTotal].reverse()
-    const totalPages = Math.max(1, Math.ceil(newestFirst.length / contributionsPerPage))
-    const currentPage = Math.min(page, totalPages - 1)
-    const pageItems = newestFirst.slice(currentPage * contributionsPerPage, currentPage * contributionsPerPage + contributionsPerPage)
+    const { pageItems, currentPage, totalPages, nextPage, prevPage } = pagination(newestFirst, contributionsPerPage)
+
 
     function handleContribute() {
         const newErrors: Record<string, string> = {}
@@ -109,13 +108,7 @@ export function GoalCard({ goal, progress, remaining, onEdit, onContribute, curr
                             </div> 
                         ))}
                     </div>
-                    {totalPages > 1 && (
-                        <div className="mt-3 flex items-center justify-between">
-                            <Button variant="outline" size="sm" disabled={currentPage === 0} onClick={() => setPage((page) => page - 1)}>Previous</Button>
-                            <span className="text-xs text-muted-foreground">Page {currentPage + 1} of {totalPages}</span>
-                            <Button variant="outline" size="sm" disabled={currentPage === totalPages - 1} onClick={() => setPage((page) => page + 1)}>Next</Button>
-                        </div>
-                    )}
+                    <PaginationUI currentPage={currentPage} totalPages={totalPages} onPrev={prevPage} onNext={nextPage} />
                 </div>
             )}
 

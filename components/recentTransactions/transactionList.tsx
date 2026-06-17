@@ -3,6 +3,8 @@ import { Button } from "../ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import type { FilterPeriod } from "@/lib/calculations"
 import { defaultSavingsCategory } from "@/lib/consts"
+import { PaginationUI } from "../paginationUI"
+import { pagination } from "@/lib/pagination"
 
 const filterLabels: Record<FilterPeriod, string> = {
     today: "Today",
@@ -11,6 +13,8 @@ const filterLabels: Record<FilterPeriod, string> = {
     year: "This year",
     lifetime: "All time"
 }
+
+const transactionsPerPage = 8
 
 type Things = {
     transactions: Transaction[]
@@ -24,6 +28,7 @@ type Things = {
 export function TransactionList({
     transactions, onDelete, onEditClick, currencySymbol, filter, onFilterChange
 }: Things) {
+    const { pageItems, currentPage, totalPages, nextPage, prevPage } = pagination(transactions, transactionsPerPage, filter)
     return (
         <div>
             <div className="mb-4 flex items-center justify-between">
@@ -50,8 +55,9 @@ export function TransactionList({
             {transactions.length === 0 ? (
                 <p className="text-muted-foreground">No transactions for this period</p>
             ) : (
+                <>
                 <div className="space-y-4">
-                    {transactions.map((transaction) => (
+                    {pageItems.map((transaction) => (
                         <div key={transaction.id} className="flex items-center justify-between border-b pb-3 last:border-0">
                             <div>
                                 <p className="font-medium">{transaction.description}</p>
@@ -75,6 +81,8 @@ export function TransactionList({
                         </div>
                     ))}
                 </div>
+                <PaginationUI currentPage={currentPage} totalPages={totalPages} onPrev={prevPage} onNext={nextPage} />
+                </>
             )}
         </div>
     )
