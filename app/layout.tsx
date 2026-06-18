@@ -15,8 +15,16 @@ const fontMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "DimeTrack",
-  description: "A simple money tracking app",
+  title: "DimeTrack - Money tracking made simple",
+  description: "A free, open-source money tracker and savings planner.",
+  metadataBase: new URL("https://dime-track.vercel.app/"),
+  openGraph: {
+    title: "DimeTrack",
+    description: "A free, open-source money tracker and savings planner.",
+    url: "https://dime-track.vercel.app/",
+    siteName: "DimeTrack",
+    type: "website",
+  }
 }
 
 export default function RootLayout({
