@@ -19,11 +19,12 @@ At the top of the page you can see your current balance, income & expenses this 
 <img width="1034" height="120" alt="Screenshot 2026-06-18 144125" src="https://github.com/user-attachments/assets/f3ca9eeb-bb62-4cd5-9d2f-46132a740c66" />
 
 These are the settings, here you can manage your categories (delete & create them), select your preferred currency and manage recurring transactions.
+<br>
 <img width="375" height="381" alt="image" src="https://github.com/user-attachments/assets/7fc7008e-0026-43d7-8e7e-6e69a500469c" />
 
 How to add a transaction?
 <img width="370" height="384" alt="image" src="https://github.com/user-attachments/assets/ce7148d6-f69f-4bf2-9739-c5a211e7ed38" />
-
+<br>
 Well, press the "Add transaction" button. Then this dialog will appear. Here, type the name of the transaction (food, subscription, salary). Then select transaction type: either expense or income.
 Select a category that you want to assign the transaction to and enter the amount of the transaction. Lastly, if your transaction is recurring (it's a subscription for example), then you select the recurring transaction button and
 choose when does your transaction repeat. It can be daily, weekly, monthly, yearly.
