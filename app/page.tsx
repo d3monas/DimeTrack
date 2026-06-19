@@ -10,6 +10,7 @@ import { SpendingChart } from "@/components/spendingCharts"
 import { BudgetOverview } from "@/components/budgetOverview"
 import { SettingsDialog } from "@/components/settings/settingsUI"
 import { EditTransactionDialog } from "@/components/recentTransactions/edit-transaction-ui"
+import { ThemeToggle } from "@/components/theme-provider"
 
 // types
 import type { Transaction } from "@/types/transaction"
@@ -302,17 +303,20 @@ export default function Home() {
           <div>
             <h1 className="text-4xl font-bold sm:text-4xl">DimeTrack</h1>
           </div>
-          <SettingsDialog
-            categories={categories}
-            newCategory={newCategory}
-            setNewCategory={setNewCategory}
-            onAddNewCategory={addCategory}
-            onDeleteCategory={deleteCategory}
-            currency={currency}
-            currencySymbol={currencySymbol}
-            onCurrencyChange={setCurrency}
-            recurring={recurring}
-            onDeleteRecurring={deleteRecurring} />
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <SettingsDialog
+              categories={categories}
+              newCategory={newCategory}
+              setNewCategory={setNewCategory}
+              onAddNewCategory={addCategory}
+              onDeleteCategory={deleteCategory}
+              currency={currency}
+              currencySymbol={currencySymbol}
+              onCurrencyChange={setCurrency}
+              recurring={recurring}
+              onDeleteRecurring={deleteRecurring} />
+          </div>
         </header>
 
         {/* Current balance card */}
