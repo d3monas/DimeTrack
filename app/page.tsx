@@ -11,6 +11,7 @@ import { BudgetOverview } from "@/components/budgetOverview"
 import { SettingsDialog } from "@/components/settings/settingsUI"
 import { EditTransactionDialog } from "@/components/recentTransactions/edit-transaction-ui"
 import { ThemeToggle } from "@/components/theme-provider"
+import { LoadingSkeleton } from "@/components/loadingSkeleton"
 
 // types
 import type { Transaction } from "@/types/transaction"
@@ -143,6 +144,8 @@ export default function Home() {
   const expenses = calculateExpenses(thisMonthTransactions)
   const filteredTransactions = filterTransactionsByPeriod(transactions, filterPeriod)
   const categoryTotals = getCategoryTotals(filteredTransactions)
+  const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+  const firstOfMonthLabel = firstOfMonth.toLocaleDateString(undefined, {month: "long", day: "numeric"})
 
   function addTransaction(isRecurring: boolean, interval: RecurringTransaction["interval"]) {
     const numberCheck = Number(amount)
@@ -296,6 +299,14 @@ export default function Home() {
     setRecurring((prev) => prev.filter((recurring) => recurring.id !== id))
   }
 
+  if (!isLoaded) {
+    return (
+      <main className="min-h-screen bg-background">
+        <LoadingSkeleton />
+      </main>
+    )
+  }
+
   return (
     <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-6xl p-4 sm:p-6">
@@ -327,12 +338,12 @@ export default function Home() {
           </div>
 
           <div className="rounded-2xl border p-4 sm:p-6">
-            <p className="text-sm text-muted-foreground">Income this month</p>
+            <p className="text-sm text-muted-foreground">Income since - {firstOfMonthLabel}</p>
             <h2 className="mt-2 text-2xl font-bold text-green-600 sm:text-3xl">{currencySymbol}{income.toFixed(2)}</h2>
           </div>
 
           <div className="rounded-2xl border p-4 sm:p-6">
-            <p className="text-sm text-muted-foreground">Expenses this month</p>
+            <p className="text-sm text-muted-foreground">Expenses since - {firstOfMonthLabel}</p>
             <h2 className="mt-2 text-2xl font-bold text-red-600 sm:text-3xl">{currencySymbol}{expenses.toFixed(2)}</h2>
           </div>
         </div>
