@@ -50,6 +50,7 @@ Built with:
 - Tailwind CSS
 - shadcn/ui
 - Recharts
+- lucid-react
 
 Check it out here: https://dime-track.vercel.app/
 

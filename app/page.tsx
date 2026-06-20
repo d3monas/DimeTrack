@@ -1,400 +1,79 @@
-"use client"
-// components
-import { useState, useEffect } from "react"
-import { TransactionList } from "@/components/recentTransactions/transactionList"
-import { GoalCard } from "@/components/goals/goalCard"
-import { GoalDialog } from "@/components/goals/add-goal-ui"
-import { AddTransactionDialog } from "@/components/recentTransactions/add-transaction-ui"
-import { CategoryBreakdown } from "@/components/categoryBreakdown"
-import { SpendingChart } from "@/components/spendingCharts"
-import { BudgetOverview } from "@/components/budgetOverview"
-import { SettingsDialog } from "@/components/settings/settingsUI"
-import { EditTransactionDialog } from "@/components/recentTransactions/edit-transaction-ui"
-import { ThemeToggle } from "@/components/theme-provider"
-import { LoadingSkeleton } from "@/components/loadingSkeleton"
+import Link from "next/link"
+import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Wallet, Target, PieChart, RefreshCw, ShieldCheck, Download } from "lucide-react"
 
-// types
-import type { Transaction } from "@/types/transaction"
-import type { Goal } from "@/types/goal"
-import type { FilterPeriod } from "@/lib/calculations"
-import type { RecurringTransaction } from "@/types/recurringTransaction"
-
-// libs
-import { calculateIncome, calculateExpenses, filterTransactionsByPeriod } from "@/lib/calculations"
-import { saveTransactions, saveGoal as saveGoalStorage, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring } from "@/lib/localstorage"
-import { getCategoryTotals } from "@/lib/categories"
-import { defaultSavingsCategory } from "@/lib/consts"
-import { processRecurring } from "@/lib/recurring"
-
-export default function Home() {
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [goal, setGoal] = useState<Goal | null>(null)
-  const [categories, setCategories] = useState<string[]>([])
-  const [budgets, setBudgets] = useState<Record<string, number>>({})
-
-  const [description, setDescription] = useState("")
-  const [amount, setAmount] = useState("")
-  const [transactionType, setTransactionType] = useState<"income" | "expense">("expense")
-  const [category, setCategory] = useState("")
-  const [newCategory, setNewCategory] = useState("")
-
-  const [open, setOpen] = useState(false)
-  const [goalDialogOpen, setGoalDialogOpen] = useState(false)
-
-  const [isLoaded, setIsLoaded] = useState(false)
-
-  const [currency, setCurrency] = useState("USD")
-
-  const [filterPeriod, setFilterPeriod] = useState<FilterPeriod>("lifetime")
-
-  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
-
-  const [recurring, setRecurring] = useState<RecurringTransaction[]>([])
-
-  // load localstorage 
-  useEffect(() => {
-    const data = loadAllData()
-    setTransactions(data.transactions)
-    setCategories(data.categories)
-    setBudgets(data.budgets)
-    setCurrency(data.currency)
-    setRecurring(data.recurring)
-    if (data.goal) {
-      setGoal(data.goal)
+const features = [
+    {
+        icon: Wallet,
+        title: "Track income & expenses",
+        description: "Add, edit and search transactions with categories and budgets."
+    },
+    {
+        icon: Target,
+        title: "Savings goals",
+        description: "Set a goal, contribute towards it and see your progress with contribution history."
+    },
+    {
+        icon: PieChart,
+        title: "Spending insights",
+        description: "See where your money goes with category breakdowns and a visual spending chart."
+    },
+    {
+        icon: RefreshCw,
+        title: "Recurring transactions",
+        description: "Add recurring transactions with a daily, weekly, monthly or yearly interval."
+    },
+    {
+        icon: ShieldCheck,  
+        title: "Private and secure",
+        description: "DimeTrack doesn't use accounts, servers or cloud. Everything stays in your browsers local storage."
+    },
+    {
+        icon: Download,
+        title: "Exportable data",
+        description: "Export your transactions to CSV at any time."
     }
-    setIsLoaded(true)
-  }, [])
+]
 
-  // write to localstorage on data change
-  useEffect(() => {
-    if (!isLoaded) {
-      return
-    }
-    if (goal) {
-      saveGoalStorage(goal)
-    } else {
-      localStorage.removeItem('goal')
-    }
-  }, [isLoaded,goal])
-
-  useEffect(() => {
-    if (isLoaded) {
-      saveTransactions(transactions)
-    }
-  }, [isLoaded,transactions])
-
-  useEffect(() => {
-    if (isLoaded) {
-      saveCategories(categories)
-    }
-  }, [isLoaded,categories])
-
-  useEffect(() => {
-    if (isLoaded) {
-      saveBudgets(budgets)
-    }
-  }, [isLoaded,budgets])
-
-  useEffect(() => {
-    if (!isLoaded) {
-      return
-    }
-    setBudgets((prev) => {
-      const updated = { ...prev }
-      categories.forEach((category) => {
-        if (!(category in updated)) {
-          updated[category] = 0
-        }
-      })
-      return updated
-    })
-  }, [categories])
-
-  useEffect(() => {
-    if (isLoaded) {
-      saveCurrency(currency)
-    }
-  }, [isLoaded, currency])
-
-  useEffect(() => {
-    if (isLoaded) {
-      saveRecurring(recurring)
-    }
-  }, [isLoaded, recurring])
-
-
-  const lifetimeIncome = calculateIncome(transactions)
-  const lifetimeExpenses = calculateExpenses(transactions)
-  const balance = lifetimeIncome - lifetimeExpenses
-  const progress = goal ? (goal.currentAmount / goal.targetAmount) * 100 : 0
-  const remaining = goal ? goal.targetAmount - goal.currentAmount : 0
-  const currencySymbol = { USD: "$", EUR: "€", GBP: "£", JPY: "¥", CAD: "CA$", AUD: "A$", CHF: "Fr", INR: "₹" }[currency] ?? "$"
-  
-  const now = new Date()
-  const thisMonthTransactions = transactions.filter((transaction) => {
-    const date = new Date(transaction.date)
-    if (isNaN(date.getTime())) {
-      return false
-    }
+export default function LandingPage() {
     return (
-      date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()
+        <main className="min-h-screen bg-background">
+            <section className="mx-auto max-w-5xl px-4 pt-20 pb-16 text-center sm:px-6">
+                <h1 className="text-4xl font-bold tracking-light sm:text-5xl md:text-6xl">Money tracking, <br/>made simple.</h1>
+                <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
+                    DimeTrack is a free, open-source money tracker and savings planner. No accounts, servers or subscriptions.
+                </p>
+                <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                    <Button size="lg" asChild>
+                        <Link href="/app">Open DimeTrack</Link>
+                    </Button>
+                    <Button size="lg" variant="outline" asChild>
+                        <a href="https://github.com/d3monas/dimetrack" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                    </Button>
+                </div>
+            </section>
+
+            <section className="mx-auto max-w-5xl px-4 pb-20 sm:px-6">
+                <div className="overflow-hidden rounded-2xl shadow-lg">
+                    <Image src="/dashboard.png" alt="DimeTrack dashboard" width={1400} height={900} className="w-full" priority />
+                </div>
+            </section>
+
+            <section className="mx-auto max-w-5xl px-4 pb-20 sm:px-6">
+                <h2 className="text-center text-3xl font-bold sm:text-4xl">Features</h2>
+                <div className="mt-12 grid gap-6 sm:grid-cols-2 md:grid-cols-3">
+                    {features.map((feature) => {
+                        return (
+                            <div key={feature.title} className="rounded-2xl border p-6">
+                                <feature.icon className="h-6 w-6 text-primary" />
+                                <h3 className="mt-4 semibold">{feature.title}</h3>
+                                <p className="mt-2 text-sm text-muted-foreground">{feature.description}</p>
+                            </div>
+                        )
+                    })}
+                </div>
+            </section>
+        </main>
     )
-  })
-  const income = calculateIncome(thisMonthTransactions)
-  const expenses = calculateExpenses(thisMonthTransactions)
-  const filteredTransactions = filterTransactionsByPeriod(transactions, filterPeriod)
-  const categoryTotals = getCategoryTotals(filteredTransactions)
-  const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-  const firstOfMonthLabel = firstOfMonth.toLocaleDateString(undefined, {month: "long", day: "numeric"})
-
-  function addTransaction(isRecurring: boolean, interval: RecurringTransaction["interval"]) {
-    const numberCheck = Number(amount)
-
-    if (!description || !amount || !category || Number.isNaN(numberCheck) || numberCheck <= 0) {
-      return
-    }
-
-    const newTransaction: Transaction = {
-      id: crypto.randomUUID(),
-      description,
-      amount: numberCheck,
-      type: transactionType,
-      category,
-      date: new Date().toISOString(),
-    }
-
-    setTransactions((prev) => [newTransaction, ...prev])
-
-    if (isRecurring) {
-      const newRecurring: RecurringTransaction = {
-        id: crypto.randomUUID(),
-        description,
-        amount: numberCheck,
-        type: transactionType,
-        category,
-        interval,
-        lastProcessedDate: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-      }
-      setRecurring((prev) => [...prev, newRecurring])
-    }
-
-    setDescription("")
-    setAmount("")
-    setCategory("")
-    setTransactionType("expense")
-    setOpen(false)
-  }
-
-  function deleteTransaction(id: string) {
-    const transaction = transactions.find((transaction) => transaction.id === id)
-
-    if (transaction && transaction.category === defaultSavingsCategory) {
-      setGoal((prev) => {
-        if (!prev) {
-          return prev
-        }
-        return {
-          ...prev, currentAmount: Math.max(0, prev.currentAmount - transaction.amount)
-        }
-      })
-    }
-
-    setTransactions((prev) => prev.filter((transaction) => transaction.id !== id))
-  }
-
-  function editTransaction(id: string, description: string, amount: number, type : "income" | "expense", category: string) {
-    setTransactions((prev) => 
-      prev.map((transaction) =>
-      transaction.id === id ? { ...transaction, description, amount, category, type }: transaction
-    ))
-  }
-
-  function saveGoal(name: string, currentAmount: number, targetAmount: number) {
-    setGoal({ name, currentAmount, targetAmount })
-  }
-
-  function addCategory() {
-    if (!newCategory) {
-      return
-    }
-
-    if (categories.includes(newCategory.trim())) {
-      return
-    }
-    setCategories((prev) => [...prev, newCategory.trim()])
-    setNewCategory("")
-  }
-
-  function deleteCategory(categoryToDelete: string) {
-    if (categoryToDelete === defaultSavingsCategory) {
-      return
-    }
-
-    setCategories((prev) =>
-      prev.filter((category) => category !== categoryToDelete)
-    )
-    setBudgets((prev) => {
-      const updated = { ...prev }
-      delete updated[categoryToDelete]
-      return updated
-    })
-
-    setTransactions(prev =>
-      prev.map(transaction =>
-        transaction.category === categoryToDelete ? { ...transaction, category: "Uncategorized" } : transaction
-      )
-    )
-  }
-
-  function updateBudget(category: string, limit: number) {
-    setBudgets((prev) => ({...prev, [category]: limit}))
-  }
-
-  function contributeToGoal(amount: number) {
-    if (!goal) {
-      return
-    }
-
-    setGoal((prev) => {
-      if (!prev) {
-        return prev
-      }
-      return {
-        ...prev, currentAmount: prev.currentAmount + amount
-      }
-    })
-
-    setCategories((prev) => {
-      if (prev.includes(defaultSavingsCategory)) {
-        return prev
-      } else {
-        return [...prev, defaultSavingsCategory]
-      }
-    })
-
-    const savingsTransaction: Transaction = {
-      id: crypto.randomUUID(),
-      description: `Savings towards ${goal.name}`,
-      amount,
-      type: "expense",
-      category: defaultSavingsCategory,
-      date: new Date().toISOString(),
-    }
-    setTransactions((prev) => [savingsTransaction, ...prev])
-  }
-
-  useEffect(() => {
-    if (!isLoaded || recurring.length === 0) {
-      return
-    }
-    const { newTransactions, updatedRecurring } = processRecurring(recurring)
-    if (newTransactions.length > 0) {
-      setTransactions((prev) => [...newTransactions, ...prev])
-      setRecurring(updatedRecurring)
-    }
-  }, [isLoaded])
-
-  function deleteRecurring(id: string) {
-    setRecurring((prev) => prev.filter((recurring) => recurring.id !== id))
-  }
-
-  if (!isLoaded) {
-    return (
-      <main className="min-h-screen bg-background">
-        <LoadingSkeleton />
-      </main>
-    )
-  }
-
-  return (
-    <main className="min-h-screen bg-background">
-      <div className="mx-auto max-w-6xl p-4 sm:p-6">
-        <header className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-4xl font-bold sm:text-4xl">DimeTrack</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <SettingsDialog
-              categories={categories}
-              newCategory={newCategory}
-              setNewCategory={setNewCategory}
-              onAddNewCategory={addCategory}
-              onDeleteCategory={deleteCategory}
-              currency={currency}
-              currencySymbol={currencySymbol}
-              onCurrencyChange={setCurrency}
-              recurring={recurring}
-              onDeleteRecurring={deleteRecurring} />
-          </div>
-        </header>
-
-        {/* Current balance card */}
-        <div className="grid gap-4 md:grid-cols-3 sm:gap-6">
-          <div className="rounded-2xl border p-4 sm:p-6">
-            <p className="text-sm text-muted-foreground">Current Balance <span className="text-xs">(All Time)</span></p>
-            <h2 className="mt-2 text-2xl font-bold sm:text-3xl">{currencySymbol}{balance.toFixed(2)}</h2>
-          </div>
-
-          <div className="rounded-2xl border p-4 sm:p-6">
-            <p className="text-sm text-muted-foreground">Income since - {firstOfMonthLabel}</p>
-            <h2 className="mt-2 text-2xl font-bold text-green-600 sm:text-3xl">{currencySymbol}{income.toFixed(2)}</h2>
-          </div>
-
-          <div className="rounded-2xl border p-4 sm:p-6">
-            <p className="text-sm text-muted-foreground">Expenses since - {firstOfMonthLabel}</p>
-            <h2 className="mt-2 text-2xl font-bold text-red-600 sm:text-3xl">{currencySymbol}{expenses.toFixed(2)}</h2>
-          </div>
-        </div>
-
-        {/* Goal card */}
-        <GoalCard goal={goal} progress={progress} remaining={remaining} onContribute={contributeToGoal} onEdit={() => setGoalDialogOpen(true)} currencySymbol={currencySymbol} transactions={transactions}/>
-
-        {/* Edit goal button */}
-        <GoalDialog open={goalDialogOpen} setOpen={setGoalDialogOpen} goal={goal} onSave={saveGoal} />
-
-        {/* Add transaction button */}
-        <div className="mt-6 flex justify-end">
-          <AddTransactionDialog
-            open={open}
-            setOpen={setOpen}
-            description={description}
-            setDescription={setDescription}
-            amount={amount}
-            setAmount={setAmount}
-            categories={categories.filter(category => category !== defaultSavingsCategory)}
-            category={category}
-            setCategory={setCategory}
-            transactionType={transactionType}
-            setTransactionType={setTransactionType}
-            onSave={addTransaction}
-          />
-        </div>
-
-        {/* Recent transactions card */}
-        <div className="mt-6 rounded-2xl border p-6">
-          <EditTransactionDialog 
-            transaction={editingTransaction}
-            open={!!editingTransaction} 
-            onClose={() => setEditingTransaction(null)} 
-            categories={categories.filter(category => category !== defaultSavingsCategory)}
-            onSave={editTransaction} />
-          <TransactionList 
-            transactions={filteredTransactions} 
-            onEditClick={setEditingTransaction} 
-            onDelete={deleteTransaction} 
-            currencySymbol={currencySymbol} 
-            filter={filterPeriod} 
-            onFilterChange={setFilterPeriod} />
-        </div>
-        {/* Breakdown into categories */}
-        <CategoryBreakdown totals={categoryTotals} currencySymbol={currencySymbol} />
-        {/* chart */}
-        <SpendingChart totals={categoryTotals} />
-        {/* budget */}
-        <BudgetOverview totals={categoryTotals} budgets={budgets} onUpdateBudget={updateBudget} currencySymbol={currencySymbol} />
-      </div>
-    </main>
-  )
 }
