@@ -105,8 +105,10 @@ export function TransactionList({
                                 <span className={`font-medium ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}>
                                     {transaction.type === "income" ? "+" : "-"}{currencySymbol}{transaction.amount.toFixed(2)}
                                 </span>
-                                {transaction.category !== defaultSavingsCategory && (
+                                {transaction.category !== defaultSavingsCategory ? (
                                     <Button variant="ghost" size="sm" onClick={() => onEditClick(transaction)}>✎</Button>
+                                ) : (
+                                    <span className="w-8" />
                                 )}
                                 <Button variant="ghost" size="sm" className="text-red-500" onClick={() => onDelete(transaction.id)}>✕</Button>
                             </div>
