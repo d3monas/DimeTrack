@@ -27,7 +27,7 @@ const features = [
     {
         icon: RefreshCw,
         title: "Recurring transactions",
-        description: "Add recurring transactions with a daily, weekly, monthly or yearly interval."
+        description: "Add recurring transactions with a daily, weekly, monthly, yearly or custom intervals."
     },
     {
         icon: ShieldCheck,  

@@ -38,21 +38,22 @@ export function processRecurring(recurring: RecurringTransaction[]): { newTransa
     const now = new Date()
     const newTransactions: Transaction[] = []
     const updatedRecurring = recurring.map((recurring) => {
-        const nextDate = getNextDate(recurring)
-        if (nextDate <= now) {
+        let current = recurring
+        let nextDate = getNextDate(current)
+
+        while (nextDate <= now) {
             newTransactions.push({
                 id: crypto.randomUUID(),
-                description: recurring.description,
-                amount: recurring.amount,
-                type: recurring.type,
-                category: recurring.category,
+                description: current.description,
+                amount: current.amount,
+                type: current.type,
+                category: current.category,
                 date: new Date().toISOString(),
             })
-            return {
-                ...recurring, lastProcessedDate: new Date().toISOString()
-            }
+            current = {...current, lastProcessedDate: nextDate.toISOString()}
+            nextDate = getNextDate(current)
         }
-        return recurring
+        return current
     })
     return { 
         newTransactions, updatedRecurring 
