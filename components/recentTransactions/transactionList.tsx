@@ -88,34 +88,34 @@ export function TransactionList({
                 <p className="text-muted-foreground">{searchTerm.trim() ? "No transactions match your search" : "No transactions for this period"}</p>
             ) : (
                 <>
-                <div className="space-y-4">
-                    {pageItems.map((transaction) => (
-                        <div key={transaction.id} className="flex flex-wrap gap-2 items-center justify-between border-b pb-3 last:border-0">
-                            <div className="min-w-0">
-                                <p className="font-medium">{transaction.description}</p>
+                    <div className="space-y-4">
+                            {pageItems.map((transaction) => (
+                                <div key={transaction.id} className="flex flex-wrap gap-2 items-center justify-between border-b pb-3 last:border-0">
+                                    <div className="min-w-0">
+                                        <p className="font-medium">{transaction.description}</p>
 
-                                <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                                    <span>{new Date(transaction.date).toLocaleString()}</span>
-                                    <span>•</span>
-                                    <span>{transaction.category}</span>
+                                        <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+                                            <span>{new Date(transaction.date).toLocaleString()}</span>
+                                            <span>•</span>
+                                            <span>{transaction.category}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-2">
+                                        <span className={`font-medium ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}>
+                                            {transaction.type === "income" ? "+" : "-"}{currencySymbol}{transaction.amount.toFixed(2)}
+                                        </span>
+                                        {transaction.category !== defaultSavingsCategory ? (
+                                            <Button variant="ghost" size="sm" onClick={() => onEditClick(transaction)}>✎</Button>
+                                        ) : (
+                                            <span className="w-8" />
+                                        )}
+                                        <Button variant="ghost" size="sm" className="text-red-500" onClick={() => onDelete(transaction.id)}>✕</Button>
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div className="flex items-center gap-2">
-                                <span className={`font-medium ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}>
-                                    {transaction.type === "income" ? "+" : "-"}{currencySymbol}{transaction.amount.toFixed(2)}
-                                </span>
-                                {transaction.category !== defaultSavingsCategory ? (
-                                    <Button variant="ghost" size="sm" onClick={() => onEditClick(transaction)}>✎</Button>
-                                ) : (
-                                    <span className="w-8" />
-                                )}
-                                <Button variant="ghost" size="sm" className="text-red-500" onClick={() => onDelete(transaction.id)}>✕</Button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                <PaginationUI currentPage={currentPage} totalPages={totalPages} onPrev={prevPage} onNext={nextPage} />
+                            ))}
+                    </div>
+                    <PaginationUI currentPage={currentPage} totalPages={totalPages} onPrev={prevPage} onNext={nextPage} />
                 </>
             )}
         </div>

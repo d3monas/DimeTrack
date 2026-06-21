@@ -138,7 +138,7 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol
               {hasLimit && !isEditing && (
                 <div className="mt-2 h-3 rounded-full bg-muted">
                   <div
-                    className={`h-full rounded-full transition-all ${getBarColor(progress)}`}
+                    className={`h-full rounded-full transition-all duration-700 ease-out ${getBarColor(progress)}`}
                     style={{ width: `${Math.min(progress, 100)}%` }}
                   />
                 </div>

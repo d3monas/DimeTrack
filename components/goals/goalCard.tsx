@@ -89,7 +89,7 @@ export function GoalCard({ goal, progress, remaining, onEdit, onContribute, curr
 
             <div className="mt-4 h-3 overflow-hidden rounded-full bg-muted">
                 <div
-                    className="h-full rounded-full bg-green-600"
+                    className="h-full rounded-full bg-green-600 transition-all duration-700 ease-out"
                     style={{ width: `${Math.min(progress, 100)}%` }}
                 />
             </div>
