@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
+import { getNextDate } from "@/lib/recurring"
 
 type RecurringManagerThings = {
     recurring: RecurringTransaction[]
@@ -7,8 +8,18 @@ type RecurringManagerThings = {
     onDelete: (id: string) => void
 }
 
-const intervalLabels: Record<RecurringTransaction["interval"], string> = {
-    daily: "Daily", weekly: "Weekly", monthly: "Monthly", yearly: "Yearly"
+function getIntervalLabel(recurring: RecurringTransaction): string {
+    if (recurring.interval === "custom") {
+        const value = recurring.customIntervalValue ?? 1
+        const unit = recurring.customIntervalUnit ?? "days"
+        return (
+            `Every ${value} ${value === 1 ? unit.slice(0, -1) : unit}`
+        )
+    }
+    const labels: Record<RecurringTransaction["interval"], string> = {
+        daily: "Daily", weekly: "Weekly", monthly: "Monthly", yearly: "Yearly", custom: "Custom"
+    }
+    return labels[recurring.interval]
 }
 
 export function RecurringManager({ recurring, currencySymbol, onDelete }: RecurringManagerThings) {
@@ -30,8 +41,9 @@ export function RecurringManager({ recurring, currencySymbol, onDelete }: Recurr
                 <div key={recurring.id} className="flex flex-wrap items-center justify-between gap-2 rounded-md border p-3">
                     <div className="min-w-0">
                         <p className="font-medium text-sm">{recurring.description}</p>
-                        <p className="text-xs text-muted-foreground">{intervalLabels[recurring.interval]}</p>
-                        <p className="text-xs text-muted-foreground">Created {new Date(recurring.createdAt).toLocaleString()}</p>
+                        <p className="text-xs text-muted-foreground">Renews: {getIntervalLabel(recurring)}</p>
+                        <p className="text-xs text-muted-foreground">Created on {new Date(recurring.createdAt).toLocaleString()}</p>
+                        <p className="text-xs text-muted-foreground">Next renewal at {getNextDate(recurring).toLocaleString()}</p>
                     </div>
                     <div className="flex items-center gap-3">
                         <span className={`text-sm font-medium ${recurring.type === "income" ? "text-green-600" : "text-red-600"}`}>

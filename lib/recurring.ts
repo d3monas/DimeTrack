@@ -1,9 +1,9 @@
 import type { RecurringTransaction } from "@/types/recurringTransaction";
 import type { Transaction } from "@/types/transaction";
 
-export function getNextDate(lastProcessedDate: string, interval: RecurringTransaction["interval"]): Date {
-    const date = new Date(lastProcessedDate)
-    switch (interval) {
+export function getNextDate(recurring: RecurringTransaction): Date {
+    const date = new Date(recurring.lastProcessedDate)
+    switch (recurring.interval) {
         case "daily":
             date.setDate(date.getDate() +1)
             break;
@@ -16,6 +16,20 @@ export function getNextDate(lastProcessedDate: string, interval: RecurringTransa
         case "yearly":
             date.setFullYear(date.getFullYear() +1)
             break;
+        case "custom": {
+            const value = recurring.customIntervalValue ?? 1
+            const unit = recurring.customIntervalUnit ?? "days"
+            if (unit === "days") {
+                date.setDate(date.getDate() + value)
+            }
+            if (unit === "weeks") {
+                date.setDate(date.getDate() + value * 7)
+            }
+            if (unit === "months") {
+                date.setMonth(date.getMonth() + value)
+            }
+            break
+        }
     }
     return date
 }
@@ -24,7 +38,7 @@ export function processRecurring(recurring: RecurringTransaction[]): { newTransa
     const now = new Date()
     const newTransactions: Transaction[] = []
     const updatedRecurring = recurring.map((recurring) => {
-        const nextDate = getNextDate(recurring.lastProcessedDate, recurring.interval)
+        const nextDate = getNextDate(recurring)
         if (nextDate <= now) {
             newTransactions.push({
                 id: crypto.randomUUID(),

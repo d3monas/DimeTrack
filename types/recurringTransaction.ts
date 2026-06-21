@@ -4,7 +4,9 @@ export type RecurringTransaction = {
     amount: number
     type: "income" | "expense"
     category: string
-    interval: "daily" | "weekly" | "monthly" | "yearly"
+    interval: "daily" | "weekly" | "monthly" | "yearly" | "custom"
+    customIntervalValue?: number
+    customIntervalUnit?: "days" | "weeks" | "months"
     lastProcessedDate: string
     createdAt: string
 }

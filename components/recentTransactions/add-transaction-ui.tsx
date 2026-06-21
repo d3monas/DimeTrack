@@ -20,11 +20,11 @@ type AddTransactionDialogThings = {
     categories: string[]
     category: string
     setCategory: (value: string) => void
-    onSave: (isRecurring: boolean, interval: RecurringTransaction["interval"]) => void
+    onSave: (isRecurring: boolean, interval: RecurringTransaction["interval"], customIntervalValue?: number, customIntervalUnit?: "days" | "weeks" | "months") => void
 }
 
 const intervalLabels: Record<RecurringTransaction["interval"], string> = {
-    daily: "Daily", weekly: "Weekly", monthly: "Monthly", yearly: "Yearly"
+    daily: "Daily", weekly: "Weekly", monthly: "Monthly", yearly: "Yearly", custom: "Custom"
 }
 
 export function AddTransactionDialog({
@@ -33,6 +33,8 @@ export function AddTransactionDialog({
     const [errors, setErrors] = useState<Record<string, string>>({})
     const [isRecurring, setIsRecurring] = useState(false)
     const [interval, setInterval] = useState<RecurringTransaction["interval"]>("monthly")
+    const [customValue, setCustomValue] = useState("1")
+    const [customUnit, setCustomUnit] = useState<"days" | "weeks" | "months">("weeks")
 
     function validate() {
         const newErrors: Record<string, string> = {}
@@ -48,18 +50,30 @@ export function AddTransactionDialog({
         if (!category) {
             newErrors.category = "Please select a category"
         }
+        if (isRecurring && interval === "custom") {
+            const parsedCustom = Number(customValue)
+            if (!customValue || Number.isNaN(parsedCustom) || parsedCustom <= 0) {
+                newErrors.customValue = "Enter a valid number"
+            }
+        }
         setErrors(newErrors)
         return (
             Object.keys(newErrors).length === 0
         )
     }
 
+    function resetRecurringState() {
+        setIsRecurring(false)
+        setInterval("monthly")
+        setCustomValue("1")
+        setCustomUnit("weeks")
+    }
+
     function handleSave() {
         if (validate()) {
-            onSave(isRecurring, interval)
+            onSave(isRecurring, interval, interval === "custom" ? Number(customValue) : undefined, interval === "custom" ? customUnit: undefined)
             setErrors({})
-            setIsRecurring(false)
-            setInterval("monthly")
+            resetRecurringState()
         }
     }
 
@@ -67,8 +81,7 @@ export function AddTransactionDialog({
         setOpen(value)
         if (!value) {
             setErrors({})
-            setIsRecurring(false)
-            setInterval("monthly")
+            resetRecurringState()
         }
     }
 
@@ -135,21 +148,44 @@ export function AddTransactionDialog({
                     </div>
 
                     {isRecurring && (
-                        <div>
-                            <Label>Repeat every</Label>
-                            <Select value={interval} onValueChange={(value) => setInterval(value as RecurringTransaction["interval"])}>
-                                <SelectTrigger><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    {(Object.keys(intervalLabels) as RecurringTransaction["interval"][]).map((i) => (
-                                        <SelectItem key={i} value={i}>{intervalLabels[i]}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                        <div className="space-y-3">
+                            <div>
+                                <Label>Repeat every</Label>
+                                <Select value={interval} onValueChange={(value) => setInterval(value as RecurringTransaction["interval"])}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        {(Object.keys(intervalLabels) as RecurringTransaction["interval"][]).map((i) => (
+                                            <SelectItem key={i} value={i}>{intervalLabels[i]}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {interval === "custom" && (
+                                <div className="flex items-end gap-2">
+                                    <div className="flex-1">
+                                        <Label>Every</Label>
+                                        <Input type="number" min="1" value={customValue}
+                                            onChange={(e) => { setCustomValue(e.target.value); if (errors.customValue) setErrors((p) => ({ ...p, customValue: "" })) }}
+                                            placeholder="2" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <Select value={customUnit} onValueChange={(value) => setCustomUnit(value as "days" | "weeks" | "months")}>
+                                            <SelectTrigger><SelectValue /></SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="days">Days</SelectItem>
+                                                <SelectItem value="weeks">Weeks</SelectItem>
+                                                <SelectItem value="months">Months</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                            )}
+                            <FieldError message={errors.customValue} />
                         </div>
                     )}
-
-                    <Button className="w-full" onClick={handleSave}>Save Transaction</Button>
                 </div>
+                    <Button className="w-full" onClick={handleSave}>Save Transaction</Button>
             </DialogContent>
         </Dialog>
     )

@@ -147,7 +147,7 @@ export default function Home() {
   const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
   const firstOfMonthLabel = firstOfMonth.toLocaleDateString(undefined, {month: "long", day: "numeric"})
 
-  function addTransaction(isRecurring: boolean, interval: RecurringTransaction["interval"]) {
+  function addTransaction(isRecurring: boolean, interval: RecurringTransaction["interval"], customIntervalValue?: number, customIntervalUnit?: "days" | "weeks" | "months") {
     const numberCheck = Number(amount)
 
     if (!description || !amount || !category || Number.isNaN(numberCheck) || numberCheck <= 0) {
@@ -173,6 +173,8 @@ export default function Home() {
         type: transactionType,
         category,
         interval,
+        customIntervalValue,
+        customIntervalUnit,
         lastProcessedDate: new Date().toISOString(),
         createdAt: new Date().toISOString(),
       }
