@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { EmptyState } from "./emptyState"
 
 type BudgetOverviewThings = {
   totals: Record<string, number>
@@ -76,7 +77,7 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol
     return (
       <div className="mt-6 rounded-2xl border p-4 sm:p-6">
         <h2 className="mb-4 text-xl font-semibold">Budget Overview</h2>
-        <p className="text-muted-foreground">No categories yet! Create some in settings to get started</p>
+        <EmptyState message="You don't have any categories yet. Create some in settings" />
       </div>
     )
   }

@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
 import { getNextDate } from "@/lib/recurring"
+import { EmptyState } from "../emptyState"
 
 type RecurringManagerThings = {
     recurring: RecurringTransaction[]
@@ -27,7 +28,7 @@ export function RecurringManager({ recurring, currencySymbol, onDelete }: Recurr
         return (
             <div>
                 <h3 className="font-semibold">Recurring Transactions</h3>
-                <p className="text-sm text-muted-foreground">No recurring transactions yet. To add: check "Recurring transaction" when adding a transaction</p>
+                <EmptyState message="No recurring transactions yet. To add: check 'Recurring transaction' when adding a transaction" />
             </div>
         )
     }

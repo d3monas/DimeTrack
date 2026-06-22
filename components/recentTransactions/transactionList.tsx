@@ -8,6 +8,7 @@ import { PaginationUI } from "../paginationUI"
 import { pagination } from "@/lib/pagination"
 import { Input } from "../ui/input"
 import { exportToCSV } from "@/lib/csv"
+import { EmptyState } from "../emptyState"
 
 const filterLabels: Record<FilterPeriod, string> = {
     today: "Today",
@@ -85,7 +86,7 @@ export function TransactionList({
             </div>
 
             {searchedTransactions.length === 0 ? (
-                <p className="text-muted-foreground">{searchTerm.trim() ? "No transactions match your search" : "No transactions for this period"}</p>
+                <EmptyState message={searchTerm.trim() ? `No results match "${searchTerm}". Try a different search term.` : "No transactions for this period"} />
             ) : (
                 <>
                     <div className="space-y-4">

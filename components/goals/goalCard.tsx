@@ -9,6 +9,7 @@ import type { Transaction } from "@/types/transaction"
 import { defaultSavingsCategory } from "@/lib/consts"
 import { PaginationUI } from "../paginationUI"
 import { pagination } from "@/lib/pagination"
+import { EmptyState } from "../emptyState"
 
 type GoalCardThings = {
     goal: Goal | null
@@ -66,6 +67,7 @@ export function GoalCard({ goal, progress, remaining, onEdit, onContribute, curr
         return (
             <div className="mt-6 rounded-2xl border p-4 sm:p-6">
                 <h2 className="text-xl font-semibold">Savings Goal</h2>
+                <EmptyState message="You haven't set a savings goal yet. Create one to start tracking progress" />
                 <Button size="lg" variant="default" onClick={onEdit} className="mt-4">Create goal</Button>
             </div>
         )

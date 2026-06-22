@@ -1,4 +1,5 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts"
+import { EmptyState } from "./emptyState"
 
 type SpendingChartThings = {
     totals: Record<string, number>
@@ -20,7 +21,7 @@ export function SpendingChart({ totals }: SpendingChartThings) {
         return (
             <div className="rounded-2xl border p-6 mt-6">
                 <h2 className="mb-4 text-xl font-semibold">Spending Breakdown</h2>
-                <p className="text-muted-foreground">Add some expenses to see spending trends</p>
+                <EmptyState message="Your spending breakdown will appear here as soon as you add some expenses" />
             </div>
         )
     }
