@@ -74,8 +74,10 @@ export default function LandingPage() {
             </section>
 
             <section className="mx-auto max-w-5xl px-4 pb-20 relative z-10 sm:px-6">
-                <div className="overflow-hidden shadow-lg">
-                    <Image key={screenshotSrc} src={screenshotSrc} alt="DimeTrack dashboard" width={1742} height={1040} className="w-full h-auto block" priority />
+                <div className="overflow-hidden">
+                    {mounted && (
+                        <Image src={screenshotSrc} alt="DimeTrack dashboard" width={1742} height={1040} className="w-full h-auto block" priority />
+                    )}
                 </div>
             </section>
 
