@@ -2,7 +2,6 @@
 // components
 import { useState, useEffect } from "react"
 import { TransactionList } from "@/components/recentTransactions/transactionList"
-import { GoalCard } from "@/components/goals/goalCard"
 import { GoalDialog } from "@/components/goals/add-goal-ui"
 import { AddTransactionDialog } from "@/components/recentTransactions/add-transaction-ui"
 import { CategoryBreakdown } from "@/components/categoryBreakdown"
@@ -12,6 +11,7 @@ import { SettingsDialog } from "@/components/settings/settingsUI"
 import { EditTransactionDialog } from "@/components/recentTransactions/edit-transaction-ui"
 import { ThemeToggle } from "@/components/theme-provider"
 import { LoadingSkeleton } from "@/components/loadingSkeleton"
+import { GoalsSelection } from "@/components/goals/goalsSelection"
 
 // types
 import type { Transaction } from "@/types/transaction"
@@ -21,14 +21,15 @@ import type { RecurringTransaction } from "@/types/recurringTransaction"
 
 // libs
 import { calculateIncome, calculateExpenses, filterTransactionsByPeriod } from "@/lib/calculations"
-import { saveTransactions, saveGoal as saveGoalStorage, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring } from "@/lib/localstorage"
+import { saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring, saveGoals } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
-import { defaultSavingsCategory } from "@/lib/consts"
+import { savingsCategoryForGoal, isSavingsCategory } from "@/lib/consts"
 import { processRecurring } from "@/lib/recurring"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [goal, setGoal] = useState<Goal | null>(null)
+  const [goals, setGoals] = useState<Goal[]>([])
+  const [editingGoal, setEditingGoal] = useState<Goal | null>(null)
   const [categories, setCategories] = useState<string[]>([])
   const [budgets, setBudgets] = useState<Record<string, number>>({})
 
@@ -59,23 +60,11 @@ export default function Home() {
     setBudgets(data.budgets)
     setCurrency(data.currency)
     setRecurring(data.recurring)
-    if (data.goal) {
-      setGoal(data.goal)
-    }
+    setGoals(data.goals)
     setIsLoaded(true)
   }, [])
 
   // write to localstorage on data change
-  useEffect(() => {
-    if (!isLoaded) {
-      return
-    }
-    if (goal) {
-      saveGoalStorage(goal)
-    } else {
-      localStorage.removeItem('goal')
-    }
-  }, [isLoaded,goal])
 
   useEffect(() => {
     if (isLoaded) {
@@ -122,12 +111,16 @@ export default function Home() {
     }
   }, [isLoaded, recurring])
 
+  useEffect(() => {
+    if (isLoaded) {
+      saveGoals(goals)
+    }
+  }, [isLoaded, goals])
+
 
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
   const balance = lifetimeIncome - lifetimeExpenses
-  const progress = goal ? (goal.currentAmount / goal.targetAmount) * 100 : 0
-  const remaining = goal ? goal.targetAmount - goal.currentAmount : 0
   const currencySymbol = { USD: "$", EUR: "€", GBP: "£", JPY: "¥", CAD: "CA$", AUD: "A$", CHF: "Fr", INR: "₹" }[currency] ?? "$"
   
   const now = new Date()
@@ -191,17 +184,13 @@ export default function Home() {
   function deleteTransaction(id: string) {
     const transaction = transactions.find((transaction) => transaction.id === id)
 
-    if (transaction && transaction.category === defaultSavingsCategory) {
-      setGoal((prev) => {
-        if (!prev) {
-          return prev
-        }
-        return {
-          ...prev, currentAmount: Math.max(0, prev.currentAmount - transaction.amount)
-        }
-      })
+    if (transaction && isSavingsCategory(transaction.category)) {
+      setGoals((prev) =>
+        prev.map((goal) =>
+          savingsCategoryForGoal(goal.name) === transaction.category ? {...goal, currentAmount: Math.max(0, goal.currentAmount - transaction.amount)}: goal
+        )
+      )
     }
-
     setTransactions((prev) => prev.filter((transaction) => transaction.id !== id))
   }
 
@@ -212,8 +201,43 @@ export default function Home() {
     ))
   }
 
-  function saveGoal(name: string, currentAmount: number, targetAmount: number) {
-    setGoal({ name, currentAmount, targetAmount })
+  function saveGoal(id: string| null, name: string, currentAmount: number, targetAmount: number) {
+    if (id) {
+      const existingGoal = goals.find((goal) => goal.id === id)
+      if (existingGoal && existingGoal.name !== name) {
+        const oldCategory = savingsCategoryForGoal(existingGoal.name)
+        const newCategory = savingsCategoryForGoal(name)
+
+        setCategories((prev) => prev.map((category) => (category === oldCategory ? newCategory : category)))
+        setBudgets((prev) => {
+          if (!(oldCategory in prev)) {
+            return prev
+          }
+          const updated = {...prev}
+          updated[newCategory] = updated[oldCategory]
+          delete updated[oldCategory]
+          return updated
+        })
+        setTransactions((prev) =>
+          prev.map((transaction) => (transaction.category === oldCategory ? { ...transaction, category: newCategory }: transaction))
+        )
+      }
+      setGoals((prev) => 
+        prev.map((goal) => (goal.id === id ? { ...goal, name, currentAmount, targetAmount }: goal))
+      )
+    } else {
+      const newGoal: Goal = {
+        id: crypto.randomUUID(),
+        name,
+        currentAmount,
+        targetAmount
+      }
+      setGoals((prev) => [...prev, newGoal])
+    }
+  }
+
+  function deleteGoal(id: string) {
+    setGoals((prev) => prev.filter((goal) => goal.id !== id))
   }
 
   function addCategory() {
@@ -229,7 +253,8 @@ export default function Home() {
   }
 
   function deleteCategory(categoryToDelete: string) {
-    if (categoryToDelete === defaultSavingsCategory) {
+
+    if (isSavingsCategory(categoryToDelete)) {
       return
     }
 
@@ -253,26 +278,23 @@ export default function Home() {
     setBudgets((prev) => ({...prev, [category]: limit}))
   }
 
-  function contributeToGoal(amount: number) {
+  function contributeToGoal(goalId: string, amount: number) {
+    const goal = goals.find((goal) => goal.id === goalId)
     if (!goal) {
       return
     }
 
-    setGoal((prev) => {
-      if (!prev) {
-        return prev
-      }
-      return {
-        ...prev, currentAmount: prev.currentAmount + amount
-      }
-    })
+    const goalCategory = savingsCategoryForGoal(goal.name)
+
+    setGoals((prev) =>
+      prev.map((goal) => (goal.id === goalId ? { ...goal, currentAmount: goal.currentAmount + amount } : goal))
+    )
 
     setCategories((prev) => {
-      if (prev.includes(defaultSavingsCategory)) {
+      if (prev.includes(goalCategory)) {
         return prev
-      } else {
-        return [...prev, defaultSavingsCategory]
       }
+      return [...prev, goalCategory]
     })
 
     const savingsTransaction: Transaction = {
@@ -280,11 +302,11 @@ export default function Home() {
       description: `Savings towards ${goal.name}`,
       amount,
       type: "expense",
-      category: defaultSavingsCategory,
+      category: goalCategory,
       date: new Date().toISOString(),
     }
     setTransactions((prev) => [savingsTransaction, ...prev])
-  }
+    }
 
   useEffect(() => {
     if (!isLoaded || recurring.length === 0) {
@@ -351,10 +373,18 @@ export default function Home() {
         </div>
 
         {/* Goal card */}
-        <GoalCard goal={goal} progress={progress} remaining={remaining} onContribute={contributeToGoal} onEdit={() => setGoalDialogOpen(true)} currencySymbol={currencySymbol} transactions={transactions}/>
+        <GoalsSelection
+          goals={goals}
+          transactions={transactions}
+          currencySymbol={currencySymbol}
+          onCreateGoal={() => { setEditingGoal(null); setGoalDialogOpen(true)}}
+          onEditGoal={(goal) => { setEditingGoal(goal); setGoalDialogOpen(true) }}
+          onDeleteGoal={deleteGoal}
+          onContribute={contributeToGoal}
+        />
 
         {/* Edit goal button */}
-        <GoalDialog open={goalDialogOpen} setOpen={setGoalDialogOpen} goal={goal} onSave={saveGoal} />
+        <GoalDialog open={goalDialogOpen} setOpen={setGoalDialogOpen} goal={editingGoal} onSave={saveGoal} />
 
         {/* Add transaction button */}
         <div className="mt-6 flex justify-end">
@@ -365,7 +395,7 @@ export default function Home() {
             setDescription={setDescription}
             amount={amount}
             setAmount={setAmount}
-            categories={categories.filter(category => category !== defaultSavingsCategory)}
+            categories={categories.filter(category => !isSavingsCategory(category))}
             category={category}
             setCategory={setCategory}
             transactionType={transactionType}
@@ -379,8 +409,8 @@ export default function Home() {
           <EditTransactionDialog 
             transaction={editingTransaction}
             open={!!editingTransaction} 
-            onClose={() => setEditingTransaction(null)} 
-            categories={categories.filter(category => category !== defaultSavingsCategory)}
+            onClose={() => setEditingTransaction(null)}
+            categories={categories.filter(category => !isSavingsCategory(category))}
             onSave={editTransaction} />
           <TransactionList 
             transactions={filteredTransactions} 

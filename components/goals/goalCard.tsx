@@ -6,16 +6,17 @@ import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import { FieldError } from "../fieldError"
 import type { Transaction } from "@/types/transaction"
-import { defaultSavingsCategory } from "@/lib/consts"
+import { savingsCategoryForGoal } from "@/lib/consts"
 import { PaginationUI } from "../paginationUI"
 import { pagination } from "@/lib/pagination"
 import { EmptyState } from "../emptyState"
 
 type GoalCardThings = {
-    goal: Goal | null
+    goal: Goal
     progress: number
     remaining: number
     onEdit: () => void
+    onDelete: () => void
     onContribute: (amount: number) => void
     currencySymbol: string
     transactions: Transaction[]
@@ -23,13 +24,14 @@ type GoalCardThings = {
 
 const contributionsPerPage = 3
 
-export function GoalCard({ goal, progress, remaining, onEdit, onContribute, currencySymbol, transactions }: GoalCardThings) {
+export function GoalCard({ goal, progress, remaining, onEdit, onDelete, onContribute, currencySymbol, transactions }: GoalCardThings) {
 
     const [contributeOpen, setContributeOpen] = useState(false)
     const [contributeAmount, setContributeAmount] = useState("")
     const [errors, setErrors] = useState<Record<string, string>>({})
     
-    const contributions = transactions.filter((transaction) => transaction.category === defaultSavingsCategory)
+    const goalCategory = savingsCategoryForGoal(goal.name)
+    const contributions = transactions.filter((transaction) => transaction.category === goalCategory)
     
     // sorting algo from oldest to newest to calculate correctly
     const chronological = [...contributions].sort(
@@ -63,16 +65,6 @@ export function GoalCard({ goal, progress, remaining, onEdit, onContribute, curr
         setErrors({})
     }
 
-    if (!goal) {
-        return (
-            <div className="mt-6 rounded-2xl border p-4 sm:p-6">
-                <h2 className="text-xl font-semibold">Savings Goal</h2>
-                <EmptyState message="You haven't set a savings goal yet. Create one to start tracking progress" />
-                <Button size="lg" variant="default" onClick={onEdit} className="mt-4">Create goal</Button>
-            </div>
-        )
-    }
-
     return (
         <div className="mt-6 rounded-2xl border p-4 sm:p-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -85,6 +77,7 @@ export function GoalCard({ goal, progress, remaining, onEdit, onContribute, curr
                     <div className="flex gap-2">
                         <Button size="sm" variant="outline" onClick={() => setContributeOpen(true)}>Contribute to goal</Button>
                         <Button size="sm" variant="outline" onClick={onEdit}>Edit</Button>
+                        <Button size="sm" variant="destructive" onClick={onDelete}>Delete</Button>
                     </div>
                 </div>
             </div>
@@ -98,26 +91,32 @@ export function GoalCard({ goal, progress, remaining, onEdit, onContribute, curr
 
             <p className="mt-2 text-sm text-muted-foreground">{remaining <= 0 ? "🥳 You reached your goal!" : `${currencySymbol}${remaining.toFixed(2)} remaining`}</p>
 
-            {newestFirst.length > 0 && (
-                <div className="mt-4 border-t pt-4">
-                    <p className="mb-2 text-sm font-medium">Contribution History</p>
-                    <div className="space-y-2">
-                        {pageItems.map((transaction) => (
-                            <div key={transaction.id} className="flex flex-wrap gap-2 items-center justify-between rounded-md border p-2">
-                                <div>
-                                    <p className="text-sm">{new Date(transaction.date).toLocaleString()}</p>
-                                    <p className="text-xs text-muted-foreground">Total: {currencySymbol}{transaction.runningTotal.toFixed(2)}</p>
+            <div className="mt-4 border-t pt-4">
+                <p className="mb-2 text-sm font-medium">Contribution History</p>
+                {newestFirst.length === 0 ? (
+                    <EmptyState message="No contributions for this goal yet" />
+                ) : (
+                    <>
+                        <div className="space-y-2">
+                            {pageItems.map((transaction) => (
+                                <div key={transaction.id} className="flex flex-wrap gap-2 items-center justify-between rounded-md border p-2">
+                                    <div>
+                                        <p className="text-sm">{new Date(transaction.date).toLocaleString()}</p>
+                                        <p className="text-xs text-muted-foreground">Total: {currencySymbol}{transaction.runningTotal.toFixed(2)}</p>
+                                    </div>
+                                    <span className="text-sm font-medium text-green-600">+{currencySymbol}{transaction.amount.toFixed(2)}</span>
                                 </div>
-                                <span className="text-sm font-medium text-green-600">+{currencySymbol}{transaction.amount.toFixed(2)}</span>
-                            </div> 
-                        ))}
-                    </div>
-                    <PaginationUI currentPage={currentPage} totalPages={totalPages} onPrev={prevPage} onNext={nextPage} />
-                </div>
-            )}
+                            ))}
+                        </div>
+                        <PaginationUI currentPage={currentPage} totalPages={totalPages} onPrev={prevPage} onNext={nextPage} />
+                    </>
+                )}
+            </div>
 
-            <Dialog open={contributeOpen} onOpenChange={(value) => { setContributeOpen(value)
-                if (!value) { setContributeAmount(""); setErrors({}) } }}>
+            <Dialog open={contributeOpen} onOpenChange={(value) => {
+                setContributeOpen(value)
+                if (!value) { setContributeAmount(""); setErrors({}) }
+            }}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Contribute to {goal.name}</DialogTitle>
@@ -127,13 +126,14 @@ export function GoalCard({ goal, progress, remaining, onEdit, onContribute, curr
                             <Label>Amount</Label>
                             <Input type="number" min="0.01" step="0.01" placeholder="0.00" value={contributeAmount} onChange={(e) => {
                                 setContributeAmount(e.target.value)
-                                if (errors.amount) setErrors({})}} />
+                                if (errors.amount) setErrors({})
+                            }} />
                             <FieldError message={errors.amount} />
                         </div>
                         <Button className="w-full" onClick={handleContribute}>Confirm</Button>
                     </div>
                 </DialogContent>
             </Dialog>
-        </div>
+        </div >
     )
 }

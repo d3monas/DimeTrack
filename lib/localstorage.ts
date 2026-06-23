@@ -60,6 +60,53 @@ export function loadGoal(): Goal | null {
     }
 }
 
+// new localstorage save for multiple goals, also have to keep the old localstorage load & save goal for migration
+export function saveGoals(goals: Goal[]) {
+    if (!isBrowser) {
+        return
+    }
+    localStorage.setItem("goals", JSON.stringify(goals))
+}
+
+export function loadGoals(): Goal[] {
+    if (!isBrowser) {
+        return []
+    }
+    try {
+        const saved = localStorage.getItem("goals")
+        if (saved) {
+            const parsed = JSON.parse(saved)
+            if (Array.isArray(parsed)) {
+                return parsed
+            }
+        }
+
+        // old goal migration
+        const oldSaved = localStorage.getItem("goal")
+        if (oldSaved) {
+            const oldGoal = JSON.parse(oldSaved)
+            if (
+                typeof oldGoal.name === "string" &&
+                typeof oldGoal.currentAmount === "number" &&
+                typeof oldGoal.targetAmount === "number"
+            ) {
+                const migrated: Goal[] = [{
+                    id: crypto.randomUUID(),
+                    name: oldGoal.name,
+                    currentAmount: oldGoal.currentAmount,
+                    targetAmount: oldGoal.targetAmount,
+                }]
+                localStorage.setItem("goals", JSON.stringify(migrated))
+                localStorage.removeItem("goal")
+                return migrated
+            }
+        }
+        return []
+    } catch {
+        return []
+    }
+}
+
 // categories
 export function saveCategories(categories: string[]) {
     if (!isBrowser) {
@@ -161,7 +208,7 @@ export function loadAllData() {
         transactions: loadTransactions(),
         categories: loadCategories(),
         budgets: loadBudgets(),
-        goal: loadGoal(),
+        goals: loadGoals(),
         currency: loadCurrency(),
         recurring: loadRecurring(),
     }

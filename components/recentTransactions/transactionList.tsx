@@ -3,7 +3,7 @@ import { Transaction } from "@/types/transaction"
 import { Button } from "../ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import type { FilterPeriod } from "@/lib/calculations"
-import { defaultSavingsCategory } from "@/lib/consts"
+import { isSavingsCategory } from "@/lib/consts"
 import { PaginationUI } from "../paginationUI"
 import { pagination } from "@/lib/pagination"
 import { Input } from "../ui/input"
@@ -106,7 +106,7 @@ export function TransactionList({
                                         <span className={`font-medium ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}>
                                             {transaction.type === "income" ? "+" : "-"}{currencySymbol}{transaction.amount.toFixed(2)}
                                         </span>
-                                        {transaction.category !== defaultSavingsCategory ? (
+                                        {!isSavingsCategory(transaction.category) ? (
                                             <Button variant="ghost" size="sm" onClick={() => onEditClick(transaction)}>✎</Button>
                                         ) : (
                                             <span className="w-8" />

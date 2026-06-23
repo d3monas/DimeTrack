@@ -3,7 +3,7 @@ import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import { Dispatch, SetStateAction } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import { defaultSavingsCategory } from "@/lib/consts"
+import { isSavingsCategory } from "@/lib/consts"
 import { RecurringManager } from "./recurringManager"
 import type { RecurringTransaction } from "@/types/recurringTransaction" 
 
@@ -56,7 +56,7 @@ export function SettingsDialog({
                             {categories.map((category) => (
                                 <div key={category} className="flex flex-wrap items-center justify-between gap-2 rounded-md p-2">
                                     <span className="break-all">{category}</span>
-                                    {category === defaultSavingsCategory ? (
+                                    {isSavingsCategory(category) ? (
                                         <span className="text-xs text-muted-foreground px-2 py-1 rounded-md border">Default</span>
                                     ) : (
                                         <Button variant="destructive" size="sm" onClick={() => onDeleteCategory(category)}>Delete</Button>
