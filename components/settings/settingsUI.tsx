@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog"
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
-import { Dispatch, SetStateAction } from "react"
+import { Dispatch, SetStateAction, useRef } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { isSavingsCategory } from "@/lib/consts"
 import { RecurringManager } from "./recurringManager"
@@ -18,6 +18,7 @@ type SettingsDialogThings = {
     onCurrencyChange: (value: string) => void
     recurring: RecurringTransaction[]
     onDeleteRecurring: (id: string) => void
+    onImportCSV: (file: File) => void
 }
 
 const currencies = [
@@ -32,8 +33,10 @@ const currencies = [
 ]
 
 export function SettingsDialog({
-    categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory, currency, currencySymbol, onCurrencyChange, recurring, onDeleteRecurring
+    categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory, currency, currencySymbol, onCurrencyChange, recurring, onDeleteRecurring, onImportCSV
 }: SettingsDialogThings) {
+    const fileInputRef = useRef<HTMLInputElement>(null)
+
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -86,6 +89,20 @@ export function SettingsDialog({
                             currencySymbol={currencySymbol}
                             onDelete={onDeleteRecurring} 
                             />
+                    </div>
+
+                    <div>
+                        <h3 className="font-semibold mb-2">Data Management</h3>
+                        <p className="text-sm text-muted-foreground mb-3">Import transactions from a CSV file</p>
+                        <Input type="file" accept=".csv" ref={fileInputRef} className="hidden" 
+                            onChange={(e) => {
+                                const file = e.target.files?.[0]
+                                if (file) {
+                                    onImportCSV(file)
+                                    e.target.value = ""
+                                }
+                            }} />
+                        <Button variant="outline" onClick={() => fileInputRef.current?.click()}>Import CSV</Button>
                     </div>
                 </div>
             </DialogContent>

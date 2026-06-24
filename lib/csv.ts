@@ -31,3 +31,56 @@ function escapeCSVField(field: string): string {
     }
     return field
 }
+
+export function importFromCSV(file: File): Promise<Transaction[]> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+
+        reader.onload = (e) => {
+            try {
+                const text = e.target?.result as string
+                const lines = text.split(/\r?\n/)
+                if (lines.length < 2) {
+                    return resolve([])
+                }
+
+                const transactions: Transaction[] = []
+
+                for (let i = 1; i < lines.length; i++) {
+                    if (!lines[i]) {
+                        continue
+                    }
+
+                    const values = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+                    if (!values || values.length < 5) {
+                        continue
+                    }
+
+                    const cleanValues = values.map(v => v.replace(/^"|"$/g, "").replace(/""/g, '"'));
+                    const dateStr = cleanValues[0]
+                    const date = new Date(dateStr)
+
+                    if (isNaN(date.getTime())) {
+                        continue
+                    }
+
+                    transactions.push({
+                        id: crypto.randomUUID(),
+                        date: date.toISOString(),
+                        description: cleanValues[1],
+                        category: cleanValues[2],
+                        type: cleanValues[3] as "income" | "expense",
+                        amount: parseFloat(cleanValues[4]) || 0,
+                    });
+                }
+
+                resolve(transactions)
+            } catch (error) {
+                reject(error)
+            }
+        }
+
+        reader.onerror = reject
+        reader.readAsText(file)
+    })
+}

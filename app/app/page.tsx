@@ -25,6 +25,7 @@ import { saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllDat
 import { getCategoryTotals } from "@/lib/categories"
 import { savingsCategoryForGoal, isSavingsCategory } from "@/lib/consts"
 import { processRecurring } from "@/lib/recurring"
+import { importFromCSV } from "@/lib/csv"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -323,6 +324,32 @@ export default function Home() {
     setRecurring((prev) => prev.filter((recurring) => recurring.id !== id))
   }
 
+  async function handleImportCSV(file: File) {
+    try {
+      const importedTransactions = await importFromCSV(file)
+      if (importedTransactions.length === 0) {
+        alert("No valid transactions found in your uploaded CSV")
+        return
+      }
+
+      setTransactions(prev => [...importedTransactions, ...prev])
+
+      const newCategories = new Set<string>();
+      importedTransactions.forEach((transaction) => newCategories.add(transaction.category))
+
+      setCategories(prev => {
+        const existing = new Set(prev);
+        const categoriesToAdd = Array.from(newCategories).filter(category => !existing.has(category) && !isSavingsCategory(category));
+        return [...prev, ...categoriesToAdd];
+      });
+
+      alert(`Successfully imported ${importedTransactions.length} transactions`)
+    } catch (error) {
+      console.error(error)
+      alert("Failed to import CSV. Please make sure it's formatted correctly and try again")
+    }
+  }
+
   if (!isLoaded) {
     return (
       <main className="min-h-screen bg-background">
@@ -350,7 +377,8 @@ export default function Home() {
               currencySymbol={currencySymbol}
               onCurrencyChange={setCurrency}
               recurring={recurring}
-              onDeleteRecurring={deleteRecurring} />
+              onDeleteRecurring={deleteRecurring} 
+              onImportCSV={handleImportCSV} />
           </div>
         </header>
 
