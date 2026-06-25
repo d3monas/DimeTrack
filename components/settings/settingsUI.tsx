@@ -19,6 +19,8 @@ type SettingsDialogThings = {
     recurring: RecurringTransaction[]
     onDeleteRecurring: (id: string) => void
     onImportCSV: (file: File) => void
+    onExportBackup: () => void
+    onImportBackup: (file: File) => void
 }
 
 const currencies = [
@@ -33,9 +35,10 @@ const currencies = [
 ]
 
 export function SettingsDialog({
-    categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory, currency, currencySymbol, onCurrencyChange, recurring, onDeleteRecurring, onImportCSV
+    categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory, currency, currencySymbol, onCurrencyChange, recurring, onDeleteRecurring, onImportCSV, onExportBackup, onImportBackup
 }: SettingsDialogThings) {
     const fileInputRef = useRef<HTMLInputElement>(null)
+    const backupInputRef = useRef<HTMLInputElement>(null)
 
     return (
         <Dialog>
@@ -92,6 +95,8 @@ export function SettingsDialog({
                     </div>
 
                     <div>
+                        {/* csv import, will prob delete later */}
+                        <div> 
                         <h3 className="font-semibold mb-2">Data Management</h3>
                         <p className="text-sm text-muted-foreground mb-3">Import transactions from a CSV file</p>
                         <Input type="file" accept=".csv" ref={fileInputRef} className="hidden" 
@@ -103,6 +108,22 @@ export function SettingsDialog({
                                 }
                             }} />
                         <Button variant="outline" onClick={() => fileInputRef.current?.click()}>Import CSV</Button>
+                        </div>
+
+                        <div className="border-t mt-2">
+                            <p className="text-sm text-muted-foreground mt-2">Transfer <b>ALL</b> your data between devices or browsers</p>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                                <Button variant="outline" size="sm" onClick={onExportBackup}>Export Backup</Button>
+                                <Input type="file" accept=".json" ref={backupInputRef} className="hidden" onChange={(e) => {
+                                    const file = e.target.files?.[0]
+                                    if (file) {
+                                        onImportBackup(file)
+                                        e.target.value = ""
+                                    }
+                                }} />
+                                <Button variant="outline" size="sm" onClick={() => backupInputRef.current?.click()}>Import Backup</Button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </DialogContent>

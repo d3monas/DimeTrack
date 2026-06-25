@@ -26,6 +26,7 @@ import { getCategoryTotals } from "@/lib/categories"
 import { savingsCategoryForGoal, isSavingsCategory } from "@/lib/consts"
 import { processRecurring } from "@/lib/recurring"
 import { importFromCSV } from "@/lib/csv"
+import { exportToJSON, importFromJSON } from "@/lib/data"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -350,6 +351,35 @@ export default function Home() {
     }
   }
 
+  function handleExportBackup() {
+    exportToJSON({
+      transactions,
+      goals,
+      categories,
+      budgets,
+      currency,
+      recurring
+    })
+  }
+
+  async function handleImportBackup(file: File) {
+    try { 
+      const data = await importFromJSON(file)
+      
+      setTransactions(data.transactions || [])
+      setGoals(data.goals || [])
+      setCategories(data.categories || [])
+      setBudgets(data.budgets || {})
+      setCurrency(data.currency || "USD")
+      setRecurring(data.recurring || [])
+
+      alert("Backup file imported successfully")
+    } catch (error) {
+      console.error(error)
+      alert("Failed to import backup file. Make sure it's a valid backup file and try again")
+    }
+  }
+
   if (!isLoaded) {
     return (
       <main className="min-h-screen bg-background">
@@ -378,7 +408,9 @@ export default function Home() {
               onCurrencyChange={setCurrency}
               recurring={recurring}
               onDeleteRecurring={deleteRecurring} 
-              onImportCSV={handleImportCSV} />
+              onImportCSV={handleImportCSV} 
+              onExportBackup={handleExportBackup}
+              onImportBackup={handleImportBackup} />
           </div>
         </header>
 
