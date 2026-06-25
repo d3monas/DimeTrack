@@ -142,7 +142,7 @@ export default function Home() {
   const categoryTotals = getCategoryTotals(filteredTransactions)
   const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
   const firstOfMonthLabel = firstOfMonth.toLocaleDateString(undefined, {month: "long", day: "numeric"})
-  const monthlyTrends = getMonthlyTrends(filteredTransactions)
+  const monthlyTrends = getMonthlyTrends(transactions)
 
   function addTransaction(isRecurring: boolean, interval: RecurringTransaction["interval"], customIntervalValue?: number, customIntervalUnit?: "days" | "weeks" | "months") {
     const numberCheck = Number(amount)

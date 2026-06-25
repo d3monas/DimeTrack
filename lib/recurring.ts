@@ -17,7 +17,7 @@ export function getNextDate(recurring: RecurringTransaction): Date {
             date.setFullYear(date.getFullYear() +1)
             break;
         case "custom": {
-            const value = recurring.customIntervalValue ?? 1
+            const value = Math.max(1, recurring.customIntervalValue ?? 1)
             const unit = recurring.customIntervalUnit ?? "days"
             if (unit === "days") {
                 date.setDate(date.getDate() + value)

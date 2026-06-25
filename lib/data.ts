@@ -11,7 +11,7 @@ type AppBackupThings = {
 
 export function exportToJSON(data: AppBackupThings, filename = "dimetrack-backup.json") {
     const jsonContent = JSON.stringify(data, null, 2)
-    const blob = new Blob([jsonContent], { type: "application/json/charset-utf-8" })
+    const blob = new Blob([jsonContent], { type: "application/json;charset-utf-8" })
     const url = URL.createObjectURL(blob)
     const link = document.createElement("a")
 
