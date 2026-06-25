@@ -50,3 +50,33 @@ export function filterTransactionsByPeriod(transactions: Transaction[], period: 
         return true
     })
 }
+
+export type MonthlyTrend = {
+    month: string
+    income: number
+    expenses: number
+}
+
+export function getMonthlyTrends(transactions: Transaction[]): MonthlyTrend[] {
+    const now = new Date()
+    const trends: MonthlyTrend[] = []
+
+    for (let i = 5; i >= 0; i--) {
+        const targetDate = new Date(now.getFullYear(), now.getMonth() - i, 1)
+        const monthName = targetDate.toLocaleDateString('default', { month: 'short' })
+
+        const monthTransactions = transactions.filter(transaction => {
+            const date = new Date(transaction.date)
+            return (
+                date.getMonth() === targetDate.getMonth() && date.getFullYear() === targetDate.getFullYear()
+            )
+        })
+
+        trends.push({
+            month: monthName,
+            income: monthTransactions.filter(transaction => transaction.type === "income").reduce((sum, transaction) => sum + transaction.amount, 0),
+            expenses: monthTransactions.filter(transaction => transaction.type === "expense").reduce((sum, transaction) => sum + transaction.amount, 0)
+        })
+    }
+    return trends
+}

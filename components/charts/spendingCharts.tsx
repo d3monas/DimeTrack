@@ -1,5 +1,5 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts"
-import { EmptyState } from "./emptyState"
+import { EmptyState } from "../emptyState"
 
 type SpendingChartThings = {
     totals: Record<string, number>

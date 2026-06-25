@@ -5,13 +5,14 @@ import { TransactionList } from "@/components/recentTransactions/transactionList
 import { GoalDialog } from "@/components/goals/add-goal-ui"
 import { AddTransactionDialog } from "@/components/recentTransactions/add-transaction-ui"
 import { CategoryBreakdown } from "@/components/categoryBreakdown"
-import { SpendingChart } from "@/components/spendingCharts"
+import { SpendingChart } from "@/components/charts/spendingCharts"
 import { BudgetOverview } from "@/components/budgetOverview"
 import { SettingsDialog } from "@/components/settings/settingsUI"
 import { EditTransactionDialog } from "@/components/recentTransactions/edit-transaction-ui"
 import { ThemeToggle } from "@/components/theme-provider"
 import { LoadingSkeleton } from "@/components/loadingSkeleton"
 import { GoalsSelection } from "@/components/goals/goalsSelection"
+import { TrendChart } from "@/components/charts/trendChart"
 
 // types
 import type { Transaction } from "@/types/transaction"
@@ -20,7 +21,7 @@ import type { FilterPeriod } from "@/lib/calculations"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
 
 // libs
-import { calculateIncome, calculateExpenses, filterTransactionsByPeriod } from "@/lib/calculations"
+import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends } from "@/lib/calculations"
 import { saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring, saveGoals } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 import { savingsCategoryForGoal, isSavingsCategory } from "@/lib/consts"
@@ -141,6 +142,7 @@ export default function Home() {
   const categoryTotals = getCategoryTotals(filteredTransactions)
   const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
   const firstOfMonthLabel = firstOfMonth.toLocaleDateString(undefined, {month: "long", day: "numeric"})
+  const monthlyTrends = getMonthlyTrends(filteredTransactions)
 
   function addTransaction(isRecurring: boolean, interval: RecurringTransaction["interval"], customIntervalValue?: number, customIntervalUnit?: "days" | "weeks" | "months") {
     const numberCheck = Number(amount)
@@ -482,6 +484,8 @@ export default function Home() {
         </div>
         {/* Breakdown into categories */}
         <CategoryBreakdown totals={categoryTotals} currencySymbol={currencySymbol} />
+        {/* Trend */}
+        <TrendChart data={monthlyTrends} currencySymbol={currencySymbol} />
         {/* chart */}
         <SpendingChart totals={categoryTotals} />
         {/* budget */}
