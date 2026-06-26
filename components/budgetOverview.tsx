@@ -8,6 +8,7 @@ type BudgetOverviewThings = {
   budgets: Record<string, number>
   onUpdateBudget: (category: string, limit: number) => void
   currencySymbol: string
+  monthlyIncome: number
 }
 
 function getBarColor(progress: number) {
@@ -46,11 +47,15 @@ function getWarning(progress: number) {
   return null
 }
 
-export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol }: BudgetOverviewThings) {
+export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol, monthlyIncome }: BudgetOverviewThings) {
   const [editingCategory, setEditingCategory] = useState<string | null>(null)
   const [editingValue, setEditingValue] = useState("")
 
   const allCategories = Object.keys(budgets)
+  
+  const totalAssigned = Object.values(budgets).reduce((sum, limit) => sum + limit, 0)
+  const availableToBudget = monthlyIncome - totalAssigned
+  const totalSpent = Object.values(totals).reduce((sum, spent) => sum + spent, 0)
 
   function editStart(category: string, currentLimit: number) {
     setEditingCategory(category)
@@ -85,6 +90,29 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol
   return (
     <div className="mt-6 rounded-2xl border p-4 sm:p-6">
       <h2 className="mb-4 text-xl font-semibold">Budget Overview</h2>
+
+      <div className={`mb-6 rounded-xl p-4 ${availableToBudget < 0 ? "bg-red-500/10" : "bg-green-500/10"}`}>
+        <p className="text-sm text-muted-foreground">Ready to Budget (This Month)</p>
+        <h3 className={`text-2xl font-bold ${availableToBudget < 0 ? "text-red-600" : "text-green-600"}`}>{currencySymbol}{availableToBudget.toFixed(2)}</h3>
+        <p className="text-xs text-muted-foreground mt-1">
+          {availableToBudget < 0 ? "You have assigned more money than you earned this month" : availableToBudget === 0 ? "You have assigned all your money this month" : "Assign the remaining income to your categories"}
+        </p>
+      </div>
+
+      <div className="mb-6 flex flex-wrap gap-4 text-sm">
+        <div>
+          <span className="text-muted-foreground">Income: </span>
+          <span className="font-medium text-green-600">{currencySymbol}{monthlyIncome.toFixed(2)}</span>
+        </div>
+        <div>
+          <span className="text-muted-foreground">Assigned: </span>
+          <span className="font-medium">{currencySymbol}{totalAssigned.toFixed(2)}</span>
+        </div>
+        <div>
+          <span className="text-muted-foreground">Spent: </span>
+          <span className="font-medium text-red-600">{currencySymbol}{totalSpent.toFixed(2)}</span>
+        </div>
+      </div>
 
       <div className="space-y-5">
         {allCategories.map((category) => {

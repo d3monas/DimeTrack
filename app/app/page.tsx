@@ -13,6 +13,7 @@ import { ThemeToggle } from "@/components/theme-provider"
 import { LoadingSkeleton } from "@/components/loadingSkeleton"
 import { GoalsSelection } from "@/components/goals/goalsSelection"
 import { TrendChart } from "@/components/charts/trendChart"
+import { UpcomingTransactions } from "@/components/upcomingTransactions"
 
 // types
 import type { Transaction } from "@/types/transaction"
@@ -434,6 +435,8 @@ export default function Home() {
           </div>
         </div>
 
+        <UpcomingTransactions recurring={recurring} currencySymbol={currencySymbol} />
+
         {/* Goal card */}
         <GoalsSelection
           goals={goals}
@@ -489,7 +492,7 @@ export default function Home() {
         {/* chart */}
         <SpendingChart totals={categoryTotals} />
         {/* budget */}
-        <BudgetOverview totals={categoryTotals} budgets={budgets} onUpdateBudget={updateBudget} currencySymbol={currencySymbol} />
+        <BudgetOverview totals={categoryTotals} budgets={budgets} onUpdateBudget={updateBudget} currencySymbol={currencySymbol} monthlyIncome={income} />
       </div>
     </main>
   )
