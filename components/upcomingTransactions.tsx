@@ -28,7 +28,7 @@ export function UpcomingTransactions({ recurring, currencySymbol }: UpcomingTran
     if (upcoming.length === 0) {
         return (
             <div className="rounded-2xl border mt-6 p-4 sm:p-6">
-                <h2>Upcoming transactions</h2>
+                <h2 className="mb-4 text-xl font-semibold">Upcoming transactions</h2>
                 <EmptyState message="No recurring transactions due in the next 7 days" />
             </div>
         )
