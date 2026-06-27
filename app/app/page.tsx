@@ -14,6 +14,7 @@ import { LoadingSkeleton } from "@/components/loadingSkeleton"
 import { GoalsSelection } from "@/components/goals/goalsSelection"
 import { TrendChart } from "@/components/charts/trendChart"
 import { UpcomingTransactions } from "@/components/upcomingTransactions"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 // types
 import type { Transaction } from "@/types/transaction"
@@ -410,8 +411,8 @@ export default function Home() {
               currencySymbol={currencySymbol}
               onCurrencyChange={setCurrency}
               recurring={recurring}
-              onDeleteRecurring={deleteRecurring} 
-              onImportCSV={handleImportCSV} 
+              onDeleteRecurring={deleteRecurring}
+              onImportCSV={handleImportCSV}
               onExportBackup={handleExportBackup}
               onImportBackup={handleImportBackup} />
           </div>
@@ -435,64 +436,86 @@ export default function Home() {
           </div>
         </div>
 
-        <UpcomingTransactions recurring={recurring} currencySymbol={currencySymbol} />
 
-        {/* Goal card */}
-        <GoalsSelection
-          goals={goals}
-          transactions={transactions}
-          currencySymbol={currencySymbol}
-          onCreateGoal={() => { setEditingGoal(null); setGoalDialogOpen(true)}}
-          onEditGoal={(goal) => { setEditingGoal(goal); setGoalDialogOpen(true) }}
-          onDeleteGoal={deleteGoal}
-          onContribute={contributeToGoal}
-        />
+        <Tabs defaultValue="overview" className="w-full mt-6">
+          <TabsList className="grid w-full grid-cols-3 max-w-md">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="transactions">Transactions</TabsTrigger>
+            <TabsTrigger value="budgets">Budgets & Goals</TabsTrigger>
+          </TabsList>
 
-        {/* Edit goal button */}
-        <GoalDialog open={goalDialogOpen} setOpen={setGoalDialogOpen} goal={editingGoal} onSave={saveGoal} />
+          {/* Overview tab */}
+          <TabsContent value="overview" className="space-y-6 mt-4">
+            {/* upcoming recurring transactions */}
+            <UpcomingTransactions recurring={recurring} currencySymbol={currencySymbol} />
+            {/* Trend */}
+            <TrendChart data={monthlyTrends} currencySymbol={currencySymbol} />
 
-        {/* Add transaction button */}
-        <div className="mt-6 flex justify-end">
-          <AddTransactionDialog
-            open={open}
-            setOpen={setOpen}
-            description={description}
-            setDescription={setDescription}
-            amount={amount}
-            setAmount={setAmount}
-            categories={categories.filter(category => !isSavingsCategory(category))}
-            category={category}
-            setCategory={setCategory}
-            transactionType={transactionType}
-            setTransactionType={setTransactionType}
-            onSave={addTransaction}
-          />
-        </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              {/* Breakdown into categories */}
+              <CategoryBreakdown totals={categoryTotals} currencySymbol={currencySymbol} />
+              {/* chart */}
+              <SpendingChart totals={categoryTotals} />
+            </div>
+          </TabsContent>
 
-        {/* Recent transactions card */}
-        <div className="mt-6 rounded-2xl border p-6">
-          <EditTransactionDialog 
-            transaction={editingTransaction}
-            open={!!editingTransaction} 
-            onClose={() => setEditingTransaction(null)}
-            categories={categories.filter(category => !isSavingsCategory(category))}
-            onSave={editTransaction} />
-          <TransactionList 
-            transactions={filteredTransactions} 
-            onEditClick={setEditingTransaction} 
-            onDelete={deleteTransaction} 
-            currencySymbol={currencySymbol} 
-            filter={filterPeriod} 
-            onFilterChange={setFilterPeriod} />
-        </div>
-        {/* Breakdown into categories */}
-        <CategoryBreakdown totals={categoryTotals} currencySymbol={currencySymbol} />
-        {/* Trend */}
-        <TrendChart data={monthlyTrends} currencySymbol={currencySymbol} />
-        {/* chart */}
-        <SpendingChart totals={categoryTotals} />
-        {/* budget */}
-        <BudgetOverview totals={categoryTotals} budgets={budgets} onUpdateBudget={updateBudget} currencySymbol={currencySymbol} monthlyIncome={income} />
+          {/* transactions tab */}
+          <TabsContent value="transactions" className="space-y-6 mt-4">
+            <div className="flex justify-end">
+              {/* Add transaction button */}
+              <AddTransactionDialog
+                open={open}
+                setOpen={setOpen}
+                description={description}
+                setDescription={setDescription}
+                amount={amount}
+                setAmount={setAmount}
+                categories={categories.filter(category => !isSavingsCategory(category))}
+                category={category}
+                setCategory={setCategory}
+                transactionType={transactionType}
+                setTransactionType={setTransactionType}
+                onSave={addTransaction}
+              />
+            </div>
+
+            {/* Recent transactions card */}
+            <div className="rounded-2xl border p-6">
+              <EditTransactionDialog
+                transaction={editingTransaction}
+                open={!!editingTransaction}
+                onClose={() => setEditingTransaction(null)}
+                categories={categories.filter(category => !isSavingsCategory(category))}
+                onSave={editTransaction} />
+              <TransactionList
+                transactions={filteredTransactions}
+                onEditClick={setEditingTransaction}
+                onDelete={deleteTransaction}
+                currencySymbol={currencySymbol}
+                filter={filterPeriod}
+                onFilterChange={setFilterPeriod} />
+            </div>
+          </TabsContent>
+
+          {/* budgets and goals tab */}
+          <TabsContent value="budgets" className="space-y-6 mt-4">
+            {/* Goal card */}
+            <GoalsSelection
+              goals={goals}
+              transactions={transactions}
+              currencySymbol={currencySymbol}
+              onCreateGoal={() => { setEditingGoal(null); setGoalDialogOpen(true) }}
+              onEditGoal={(goal) => { setEditingGoal(goal); setGoalDialogOpen(true) }}
+              onDeleteGoal={deleteGoal}
+              onContribute={contributeToGoal}
+            />
+
+            {/* Edit goal button */}
+            <GoalDialog open={goalDialogOpen} setOpen={setGoalDialogOpen} goal={editingGoal} onSave={saveGoal} />
+            {/* budget */}
+            <BudgetOverview totals={categoryTotals} budgets={budgets} onUpdateBudget={updateBudget} currencySymbol={currencySymbol} monthlyIncome={income} />
+          </TabsContent>
+        </Tabs>
       </div>
     </main>
   )
