@@ -21,6 +21,7 @@ type SettingsDialogThings = {
     onImportCSV: (file: File) => void
     onExportBackup: () => void
     onImportBackup: (file: File) => void
+    onClearData: () => void
 }
 
 const currencies = [
@@ -35,7 +36,7 @@ const currencies = [
 ]
 
 export function SettingsDialog({
-    categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory, currency, currencySymbol, onCurrencyChange, recurring, onDeleteRecurring, onImportCSV, onExportBackup, onImportBackup
+    categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory, currency, currencySymbol, onCurrencyChange, recurring, onDeleteRecurring, onImportCSV, onExportBackup, onImportBackup, onClearData
 }: SettingsDialogThings) {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const backupInputRef = useRef<HTMLInputElement>(null)
@@ -123,6 +124,16 @@ export function SettingsDialog({
                                 }} />
                                 <Button variant="outline" size="sm" onClick={() => backupInputRef.current?.click()}>Import Backup</Button>
                             </div>
+                        </div>
+
+                        <div className="border-t border-red-500/30 pt-4 mt-4">
+                            <h3 className="font-semibold mb-2 text-red-600">Danger</h3>  
+                            <p className="text-sm text-muted-foreground mb-3">This will permanently delete <b>ALL</b> your data</p>
+                            <Button variant="destructive" size="sm" onClick={() => {
+                                if (confirm("Are you sure you want to wipe your data? This action cannot be undone.")) {
+                                    onClearData()
+                                }
+                            }}>Clear all data</Button>
                         </div>
                     </div>
                 </div>

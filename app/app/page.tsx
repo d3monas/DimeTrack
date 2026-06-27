@@ -384,6 +384,24 @@ export default function Home() {
     }
   }
 
+  function handleClearData() {
+    localStorage.removeItem("transactions")
+    localStorage.removeItem("goals")
+    localStorage.removeItem("categories")
+    localStorage.removeItem("budgets")
+    localStorage.removeItem("currency")
+    localStorage.removeItem("recurring")
+
+    setTransactions([])
+    setGoals([])
+    setCategories([])
+    setBudgets({})
+    setCurrency("USD")
+    setRecurring([])
+
+    alert("All data has been cleared")
+  }
+
   if (!isLoaded) {
     return (
       <main className="min-h-screen bg-background">
@@ -414,7 +432,8 @@ export default function Home() {
               onDeleteRecurring={deleteRecurring}
               onImportCSV={handleImportCSV}
               onExportBackup={handleExportBackup}
-              onImportBackup={handleImportBackup} />
+              onImportBackup={handleImportBackup}
+              onClearData={handleClearData} />
           </div>
         </header>
 
