@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
 import { getNextDate } from "@/lib/recurring"
 import { EmptyState } from "../emptyState"
+import { recurringIntervalLabels } from "@/lib/consts"
 
 type RecurringManagerThings = {
     recurring: RecurringTransaction[]
@@ -17,10 +18,7 @@ function getIntervalLabel(recurring: RecurringTransaction): string {
             `Every ${value} ${value === 1 ? unit.slice(0, -1) : unit}`
         )
     }
-    const labels: Record<RecurringTransaction["interval"], string> = {
-        daily: "Daily", weekly: "Weekly", monthly: "Monthly", yearly: "Yearly", custom: "Custom"
-    }
-    return labels[recurring.interval]
+    return recurringIntervalLabels[recurring.interval]
 }
 
 export function RecurringManager({ recurring, currencySymbol, onDelete }: RecurringManagerThings) {

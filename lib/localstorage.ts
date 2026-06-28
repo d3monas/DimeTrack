@@ -32,20 +32,15 @@ export function loadTransactions(): Transaction[] {
 }
 
 // goal
-export function saveGoal(goal: Goal) {
-    if (!isBrowser) {
-        return
-    }
-    localStorage.setItem("goal", JSON.stringify(goal))
-}
-
-export function loadGoal(): Goal | null {
+function loadGoal(): Goal | null {
     if (!isBrowser) {
         return null
     } 
     try {
         const saved = localStorage.getItem("goal")
-        if (!saved) return null
+        if (!saved) {
+            return null
+        }
         const parsed = JSON.parse(saved)
         if (
             typeof parsed.name !== "string" ||
@@ -60,7 +55,7 @@ export function loadGoal(): Goal | null {
     }
 }
 
-// new localstorage save for multiple goals, also have to keep the old localstorage load & save goal for migration
+// new localstorage save for multiple goals
 export function saveGoals(goals: Goal[]) {
     if (!isBrowser) {
         return
@@ -82,24 +77,17 @@ export function loadGoals(): Goal[] {
         }
 
         // old goal migration
-        const oldSaved = localStorage.getItem("goal")
-        if (oldSaved) {
-            const oldGoal = JSON.parse(oldSaved)
-            if (
-                typeof oldGoal.name === "string" &&
-                typeof oldGoal.currentAmount === "number" &&
-                typeof oldGoal.targetAmount === "number"
-            ) {
-                const migrated: Goal[] = [{
-                    id: crypto.randomUUID(),
-                    name: oldGoal.name,
-                    currentAmount: oldGoal.currentAmount,
-                    targetAmount: oldGoal.targetAmount,
-                }]
-                localStorage.setItem("goals", JSON.stringify(migrated))
-                localStorage.removeItem("goal")
-                return migrated
-            }
+        const oldGoal = loadGoal()
+        if (oldGoal) {
+            const migrated: Goal[] = [{
+                id: crypto.randomUUID(),
+                name: oldGoal.name,
+                currentAmount: oldGoal.currentAmount,
+                targetAmount: oldGoal.targetAmount,
+            }]
+            localStorage.setItem("goals", JSON.stringify(migrated))
+            localStorage.removeItem("goal")
+            return migrated
         }
         return []
     } catch {

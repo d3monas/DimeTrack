@@ -1,17 +1,19 @@
 import { Transaction } from "@/types/transaction"
+import { Goal } from "@/types/goal"
+import { RecurringTransaction } from "@/types/recurringTransaction"
 
 type AppBackupThings = {
     transactions: Transaction[]
-    goals: any[]
+    goals: Goal[]
     categories: string[]
     budgets: Record<string, number>
     currency: string
-    recurring: any[]
+    recurring: RecurringTransaction[]
 }
 
 export function exportToJSON(data: AppBackupThings, filename = "dimetrack-backup.json") {
     const jsonContent = JSON.stringify(data, null, 2)
-    const blob = new Blob([jsonContent], { type: "application/json;charset-utf-8" })
+    const blob = new Blob([jsonContent], { type: "application/json;charset=utf-8" })
     const url = URL.createObjectURL(blob)
     const link = document.createElement("a")
 
@@ -32,7 +34,14 @@ export function importFromJSON(file: File): Promise<AppBackupThings> {
                 const text = e.target?.result as string
                 const parsed = JSON.parse(text)
 
-                if (!Array.isArray(parsed.transactions) || !Array.isArray(parsed.categories)) {
+                if (
+                    !Array.isArray(parsed.transactions) || 
+                    !Array.isArray(parsed.categories) ||
+                    !Array.isArray(parsed.goals) ||
+                    !Array.isArray(parsed.recurring) ||
+                    typeof parsed.budgets !== "object" || parsed.budgets === null ||
+                    typeof parsed.currency !== "string"
+                ) {
                     return reject(new Error("Invalid backup file format"))
                 }
 

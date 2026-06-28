@@ -95,11 +95,12 @@ export function EditTransactionDialog({ transaction, open, onClose, onSave, cate
 
                     <div>
                         <Label>Category</Label>
-                        <Select value={category} onValueChange={(value) => { setCategory(value); 
+                        <Select value={category} onValueChange={(value) => { 
+                            setCategory(value); 
                             if (errors.category) {
                                 setErrors((p) => ({ ...p, category: "" })) }}
                             }>
-                            <SelectTrigger className={errors.category ? "border-red-500" : ""}>
+                            <SelectTrigger>
                                 <SelectValue placeholder="Select a category" />
                             </SelectTrigger>
 

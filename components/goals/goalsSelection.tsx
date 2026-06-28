@@ -46,7 +46,7 @@ export function GoalsSelection({ goals, transactions, currencySymbol, onCreateGo
                 transactions={transactions}
             />
             <div className="mt-3 flex items-center justify-between">
-                <PaginationUI currentPage={index} totalPages={goals.length} onPrev={() => setIndex((i) => i - 1)} onNext={() => setIndex((i) => i + 1)} />
+                <PaginationUI currentPage={currentIndex} totalPages={goals.length} onPrev={() => setIndex((i) => i - 1)} onNext={() => setIndex((i) => i + 1)} />
                 <Button size="sm" variant="outline" onClick={onCreateGoal}>New Goal</Button>
             </div>
         </div>

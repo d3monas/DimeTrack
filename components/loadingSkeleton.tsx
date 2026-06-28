@@ -40,7 +40,7 @@ export function LoadingSkeleton() {
                 <Skeleton className="h-6 w-40" />
                 <div className="mt-4 space-y-4">
                     {[1,2,3].map((i) => (
-                        <div key={i} className="flex items-center justify-between border pb-3 last:border-0">
+                        <div key={i} className="flex items-center justify-between border-b pb-3 last:border-0">
                         <div>
                             <Skeleton className="h-4 w-32" />
                             <Skeleton className="mt-2 h-3 w-24" />

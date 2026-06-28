@@ -10,7 +10,7 @@ export function CategoryBreakdown({ totals, currencySymbol }: CategoryBreakdownT
 
     if (entries.length === 0) {
         return (
-            <div className="mt-6 rounded-2xl border p-6">
+            <div className="mt-6 rounded-2xl border p-4 sm:p-6">
                 <h2 className="mb-4 text-xl font-semibold">Spending by Category</h2>
                 <EmptyState message="No expenses yet" />
             </div>
@@ -18,7 +18,7 @@ export function CategoryBreakdown({ totals, currencySymbol }: CategoryBreakdownT
     }
 
     return (
-        <div className="mt-6 rounded-2xl border p-6">
+        <div className="mt-6 rounded-2xl border p-4 sm:p-6">
             <h2 className="mb-4 text-xl font-semibold">Spending by Category</h2>
 
             <div className="space-y-3">

@@ -30,7 +30,7 @@ export function TrendChart({ data, currencySymbol }: TrendChartThings) {
 
     if (!hasData) {
         return (
-            <div className="mt-6 rounded-2xl border p-6">
+            <div className="mt-6 rounded-2xl border p-4 sm:p-6">
                 <h2 className="mb-4 text-xl font-semibold">Income vs Expenses (Last 6 Months)</h2>
                 <EmptyState message="Your 6-month trend will appear here as soon as you add some transactions" />
             </div>
@@ -38,7 +38,7 @@ export function TrendChart({ data, currencySymbol }: TrendChartThings) {
     }
 
     return (
-        <div className="mt-6 rounded-2xl border p-6">
+        <div className="mt-6 rounded-2xl border p-4 sm:p-6">
             <h2 className="mb-4 text-xl font-semibold">Income vs Expenses (Last 6 Months)</h2>
 
             <div className="h-72 w-full">

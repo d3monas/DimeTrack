@@ -48,7 +48,7 @@ export function processRecurring(recurring: RecurringTransaction[]): { newTransa
                 amount: current.amount,
                 type: current.type,
                 category: current.category,
-                date: new Date().toISOString(),
+                date: nextDate.toISOString()
             })
             current = {...current, lastProcessedDate: nextDate.toISOString()}
             nextDate = getNextDate(current)

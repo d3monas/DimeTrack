@@ -47,6 +47,9 @@ export function GoalDialog({ open, setOpen, goal, onSave }: GoalDialogThings) {
         } else if (parsedTarget <= 0) {
             newErrors.target = "Target amount must be greater than 0"
         }
+        if (targetDate && new Date(targetDate) <= new Date()) {
+            newErrors.targetDate = "Target date must be in the future"
+        }
         setErrors(newErrors)
         return (
             Object.keys(newErrors).length === 0
@@ -94,7 +97,12 @@ export function GoalDialog({ open, setOpen, goal, onSave }: GoalDialogThings) {
 
                     <div>
                         <Label>Target Date (optional)</Label>
-                        <Input type="date" value={targetDate} onChange={(e) => setTargetDate(e.target.value)} />
+                        <Input type="date" value={targetDate} onChange={(e) => { setTargetDate(e.target.value) 
+                            if (errors.targetDate) {
+                                setErrors((p) => ({ ...p, targetDate: "" }))
+                            }
+                        }} />
+                        <FieldError message={errors.targetDate} />
                     </div>
 
 

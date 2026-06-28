@@ -96,19 +96,18 @@ export function SettingsDialog({
                     </div>
 
                     <div>
-                        {/* csv import, will prob delete later */}
-                        <div> 
-                        <h3 className="font-semibold mb-2">Data Management</h3>
-                        <p className="text-sm text-muted-foreground mb-3">Import transactions from a CSV file</p>
-                        <Input type="file" accept=".csv" ref={fileInputRef} className="hidden" 
-                            onChange={(e) => {
-                                const file = e.target.files?.[0]
-                                if (file) {
-                                    onImportCSV(file)
-                                    e.target.value = ""
-                                }
-                            }} />
-                        <Button variant="outline" onClick={() => fileInputRef.current?.click()}>Import CSV</Button>
+                        <div>
+                            <h3 className="font-semibold mb-2">Data Management</h3>
+                            <p className="text-sm text-muted-foreground mb-3">Import transactions from a CSV file</p>
+                            <Input type="file" accept=".csv" ref={fileInputRef} className="hidden"
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0]
+                                    if (file) {
+                                        onImportCSV(file)
+                                        e.target.value = ""
+                                    }
+                                }} />
+                            <Button variant="outline" onClick={() => fileInputRef.current?.click()}>Import CSV</Button>
                         </div>
 
                         <div className="border-t mt-2">

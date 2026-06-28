@@ -22,7 +22,7 @@ export function UpcomingTransactions({ recurring, currencySymbol }: UpcomingTran
             ...recurring, nextDate, daysDiff
         }
     })
-    .filter((recurring) => recurring.daysDiff >= 0 && recurring.daysDiff <= 7)
+    .filter((recurring) => recurring.daysDiff >= 0 && recurring.nextDate <= sevenDaysFromNow)
     .sort((a, b) => a.daysDiff - b.daysDiff)
 
     if (upcoming.length === 0) {

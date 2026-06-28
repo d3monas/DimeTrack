@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { FieldError } from "../fieldError"
 import { Checkbox } from "../ui/checkbox"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
+import { recurringIntervalLabels } from "@/lib/consts"
 
 type AddTransactionDialogThings = {
     open: boolean
@@ -21,10 +22,6 @@ type AddTransactionDialogThings = {
     category: string
     setCategory: (value: string) => void
     onSave: (isRecurring: boolean, interval: RecurringTransaction["interval"], customIntervalValue?: number, customIntervalUnit?: "days" | "weeks" | "months") => void
-}
-
-const intervalLabels: Record<RecurringTransaction["interval"], string> = {
-    daily: "Daily", weekly: "Weekly", monthly: "Monthly", yearly: "Yearly", custom: "Custom"
 }
 
 export function AddTransactionDialog({
@@ -151,37 +148,43 @@ export function AddTransactionDialog({
                         <div className="space-y-3">
                             <div>
                                 <Label>Repeat every</Label>
-                                <Select value={interval} onValueChange={(value) => setInterval(value as RecurringTransaction["interval"])}>
+                                <Select value={interval} onValueChange={(value) => {
+                                    setInterval(value as RecurringTransaction["interval"])
+                                    if (errors.customValue) {
+                                        setErrors((p) => ({ ...p, customValue: "" }))
+                                    }}}>
                                     <SelectTrigger><SelectValue /></SelectTrigger>
                                     <SelectContent>
-                                        {(Object.keys(intervalLabels) as RecurringTransaction["interval"][]).map((i) => (
-                                            <SelectItem key={i} value={i}>{intervalLabels[i]}</SelectItem>
+                                        {(Object.keys(recurringIntervalLabels) as RecurringTransaction["interval"][]).map((i) => (
+                                            <SelectItem key={i} value={i}>{recurringIntervalLabels[i]}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                             </div>
 
                             {interval === "custom" && (
-                                <div className="flex items-end gap-2">
-                                    <div className="flex-1">
-                                        <Label>Every</Label>
-                                        <Input type="number" min="1" value={customValue}
-                                            onChange={(e) => { setCustomValue(e.target.value); if (errors.customValue) setErrors((p) => ({ ...p, customValue: "" })) }}
-                                            placeholder="2" />
+                                <div>
+                                    <div className="flex items-end gap-2">
+                                        <div className="flex-1">
+                                            <Label>Every</Label>
+                                            <Input type="number" min="1" value={customValue}
+                                                onChange={(e) => { setCustomValue(e.target.value); if (errors.customValue) setErrors((p) => ({ ...p, customValue: "" })) }}
+                                                placeholder="2" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <Select value={customUnit} onValueChange={(value) => setCustomUnit(value as "days" | "weeks" | "months")}>
+                                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="days">Days</SelectItem>
+                                                    <SelectItem value="weeks">Weeks</SelectItem>
+                                                    <SelectItem value="months">Months</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
                                     </div>
-                                    <div className="flex-1">
-                                        <Select value={customUnit} onValueChange={(value) => setCustomUnit(value as "days" | "weeks" | "months")}>
-                                            <SelectTrigger><SelectValue /></SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="days">Days</SelectItem>
-                                                <SelectItem value="weeks">Weeks</SelectItem>
-                                                <SelectItem value="months">Months</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
+                                    <FieldError message={errors.customValue} />
                                 </div>
                             )}
-                            <FieldError message={errors.customValue} />
                         </div>
                     )}
                 </div>

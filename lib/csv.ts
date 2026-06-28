@@ -32,6 +32,39 @@ function escapeCSVField(field: string): string {
     return field
 }
 
+function parseCSVLine(line: string): string[] {
+    const fields: string[] = []
+    let current = ""
+    let inQuote = false
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i]
+
+        if (inQuote) {
+            if (char === '"') {
+                if (line[i + 1] === '"') {
+                    current += '"'
+                    i++
+                } else {
+                    inQuote = false
+                }
+            } else {
+                current += char
+            }
+            continue
+        }
+        if (char === '"') {
+            inQuote = true
+        } else if (char === ",") {
+            fields.push(current)
+            current = ""
+        } else {
+            current += char
+        }
+    }
+    fields.push(current)
+    return fields
+}
+
 export function importFromCSV(file: File): Promise<Transaction[]> {
     return new Promise((resolve, reject) => {
         const reader = new FileReader()
@@ -47,30 +80,43 @@ export function importFromCSV(file: File): Promise<Transaction[]> {
                 const transactions: Transaction[] = []
 
                 for (let i = 1; i < lines.length; i++) {
-                    if (!lines[i]) {
+                    if (!lines[i].trim()) {
                         continue
                     }
 
-                    const values = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-                    if (!values || values.length < 5) {
+                    const values = parseCSVLine(lines[i])
+                    if (values.length < 5) {
                         continue
                     }
 
-                    const cleanValues = values.map(v => v.replace(/^"|"$/g, "").replace(/""/g, '"'));
-                    const dateStr = cleanValues[0]
-                    const date = new Date(dateStr)
+                    const [dateString, description, category, typeString, amountString] = values
+                    const date = new Date(dateString)
 
                     if (isNaN(date.getTime())) {
+                        continue
+                    }
+                    
+                    const type = typeString.trim().toLowerCase()
+                    if (type !== "income" && type !== "expense") {
+                        continue
+                    }
+
+                    const amount = parseFloat(amountString)
+                    if (Number.isNaN(amount) || amount <= 0) {
+                        continue
+                    }
+
+                    if (!description.trim() || !category.trim()) {
                         continue
                     }
 
                     transactions.push({
                         id: crypto.randomUUID(),
                         date: date.toISOString(),
-                        description: cleanValues[1],
-                        category: cleanValues[2],
-                        type: cleanValues[3] as "income" | "expense",
-                        amount: parseFloat(cleanValues[4]) || 0,
+                        description: description.trim(),
+                        category: category.trim(),
+                        type,
+                        amount,
                     });
                 }
 

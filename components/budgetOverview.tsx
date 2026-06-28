@@ -121,7 +121,7 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol
           const hasLimit = limit > 0
           const progress = hasLimit ? (spent / limit) * 100 : 0
           const isEditing = editingCategory === category
-          const warning = hasLimit ? getWarning(progress): null
+          const warning = hasLimit ? getWarning(progress) : null
 
           return (
             <div key={category}>
@@ -178,7 +178,7 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol
             </div>
           )
         })}
+      </div>
     </div>
-        </div>
   )
 }

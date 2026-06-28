@@ -19,7 +19,7 @@ export function SpendingChart({ totals }: SpendingChartThings) {
 
     if (data.length === 0) {
         return (
-            <div className="rounded-2xl border p-6 mt-6">
+            <div className="rounded-2xl border p-4 sm:p-6 mt-6">
                 <h2 className="mb-4 text-xl font-semibold">Spending Breakdown</h2>
                 <EmptyState message="Your spending breakdown will appear here as soon as you add some expenses" />
             </div>
@@ -27,7 +27,7 @@ export function SpendingChart({ totals }: SpendingChartThings) {
     }
 
     return (
-        <div className="mt-6 rounded-2xl border p-6">
+        <div className="mt-6 rounded-2xl border p-4 sm:p-6">
             <h2 className="mb-4 text-xl font-semibold">Spending Breakdown</h2>
 
             <div className="h-72 w-full">

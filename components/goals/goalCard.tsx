@@ -54,10 +54,8 @@ export function GoalCard({ goal, progress, remaining, onEdit, onDelete, onContri
         const now = new Date()
 
         if (target > now) {
-            monthsLeft = (target.getFullYear() - now.getFullYear()) * 12 + (target.getMonth() - now.getMonth())
-            if (monthsLeft === 0) {
-                monthsLeft = 1
-            }
+            const daysLeft = (target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+            monthsLeft = Math.max(1, Math.floor(daysLeft / 30))
 
             const amountLeft = goal.targetAmount - goal.currentAmount
             if (amountLeft > 0) {
@@ -158,7 +156,7 @@ export function GoalCard({ goal, progress, remaining, onEdit, onDelete, onContri
 
                         {suggested > 0 && (
                             <div className="rounded-lg border bg-muted/40 p-3 text-sm">
-                                <p className="text-muted-foreground">To reach your goal by {new Date(goal.targetDate!).toLocaleDateString()} ({monthsLeft} months left):</p>
+                                <p className="text-muted-foreground">To reach your goal by {new Date(goal.targetDate!).toLocaleDateString()} ({monthsLeft} month{monthsLeft > 1 ? "s" : ""} left):</p>
                                 <div className="mt-2 flex items-center justify-between">
                                     <span className="font-medium">Suggested: {currencySymbol}{suggested.toFixed(2)}</span>
                                     <Button size="sm" variant="outline" onClick={() => handleContribute(suggested)}>Use Suggested</Button>
@@ -169,6 +167,6 @@ export function GoalCard({ goal, progress, remaining, onEdit, onDelete, onContri
                     </div>
                 </DialogContent>
             </Dialog>
-        </div >
+        </div>
     )
 }
