@@ -207,7 +207,7 @@ export default function Home() {
     ))
   }
 
-  function saveGoal(id: string| null, name: string, currentAmount: number, targetAmount: number) {
+  function saveGoal(id: string| null, name: string, currentAmount: number, targetAmount: number, targetDate?: string) {
     if (id) {
       const existingGoal = goals.find((goal) => goal.id === id)
       if (existingGoal && existingGoal.name !== name) {
@@ -229,14 +229,15 @@ export default function Home() {
         )
       }
       setGoals((prev) => 
-        prev.map((goal) => (goal.id === id ? { ...goal, name, currentAmount, targetAmount }: goal))
+        prev.map((goal) => (goal.id === id ? { ...goal, name, currentAmount, targetAmount, targetDate }: goal))
       )
     } else {
       const newGoal: Goal = {
         id: crypto.randomUUID(),
         name,
         currentAmount,
-        targetAmount
+        targetAmount,
+        targetDate
       }
       setGoals((prev) => [...prev, newGoal])
     }

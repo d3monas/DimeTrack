@@ -10,13 +10,14 @@ type GoalDialogThings = {
     open: boolean
     setOpen: (open: boolean) => void
     goal: Goal | null
-    onSave: (id: string | null, name: string, currentAmount: number, targetAmount: number) => void
+    onSave: (id: string | null, name: string, currentAmount: number, targetAmount: number, targetDate?: string) => void
 }
 
 export function GoalDialog({ open, setOpen, goal, onSave }: GoalDialogThings) {
     const [name, setName] = useState("")
     const [saved, setSaved] = useState("")
     const [target, setTarget] = useState("")
+    const [targetDate, setTargetDate] = useState("")
     const [errors, setErrors] = useState<Record<string, string>>({})
 
     useEffect(() => {
@@ -24,6 +25,7 @@ export function GoalDialog({ open, setOpen, goal, onSave }: GoalDialogThings) {
             setName(goal?.name ?? "")
             setSaved(goal?.currentAmount.toString() ?? "")
             setTarget(goal?.targetAmount.toString() ?? "")
+            setTargetDate(goal?.targetDate ? goal.targetDate.split("T")[0]: "")
             setErrors({})
         }
     }, [open, goal])
@@ -53,7 +55,7 @@ export function GoalDialog({ open, setOpen, goal, onSave }: GoalDialogThings) {
 
     function handleSave() {
         if (validate()) {
-            onSave(goal?.id ?? null, name, Number(saved), Number(target))
+            onSave(goal?.id ?? null, name, Number(saved), Number(target), targetDate || undefined)
             setOpen(false)
         }
     }
@@ -88,6 +90,11 @@ export function GoalDialog({ open, setOpen, goal, onSave }: GoalDialogThings) {
                             if (errors.target) setErrors((p) => ({ ...p, target: "" }))
                         }} placeholder="1000.00" />
                         <FieldError message={errors.target} />
+                    </div>
+
+                    <div>
+                        <Label>Target Date (optional)</Label>
+                        <Input type="date" value={targetDate} onChange={(e) => setTargetDate(e.target.value)} />
                     </div>
 
 

@@ -47,11 +47,31 @@ export function GoalCard({ goal, progress, remaining, onEdit, onDelete, onContri
     const newestFirst = [...withRunningTotal].reverse()
     const { pageItems, currentPage, totalPages, nextPage, prevPage } = pagination(newestFirst, contributionsPerPage)
 
+    let suggested = 0
+    let monthsLeft = 0
+    if (goal.targetDate) {
+        const target = new Date(goal.targetDate)
+        const now = new Date()
 
-    function handleContribute() {
+        if (target > now) {
+            monthsLeft = (target.getFullYear() - now.getFullYear()) * 12 + (target.getMonth() - now.getMonth())
+            if (monthsLeft === 0) {
+                monthsLeft = 1
+            }
+
+            const amountLeft = goal.targetAmount - goal.currentAmount
+            if (amountLeft > 0) {
+                suggested = amountLeft / monthsLeft
+            }
+        }
+    }
+
+
+    function handleContribute(suggested?: number) {
+        const amountToUse = suggested !== undefined ? suggested.toString() : contributeAmount
         const newErrors: Record<string, string> = {}
-        const parsed = Number(contributeAmount)
-        if (!contributeAmount || Number.isNaN(parsed) || parsed <= 0) {
+        const parsed = Number(amountToUse)
+        if (!amountToUse || Number.isNaN(parsed) || parsed <= 0) {
             newErrors.amount = "Please enter a valid amount"
         }
         setErrors(newErrors)
@@ -115,7 +135,10 @@ export function GoalCard({ goal, progress, remaining, onEdit, onDelete, onContri
 
             <Dialog open={contributeOpen} onOpenChange={(value) => {
                 setContributeOpen(value)
-                if (!value) { setContributeAmount(""); setErrors({}) }
+                if (!value) { 
+                    setContributeAmount("")
+                    setErrors({}) 
+                }
             }}>
                 <DialogContent>
                     <DialogHeader>
@@ -126,11 +149,23 @@ export function GoalCard({ goal, progress, remaining, onEdit, onDelete, onContri
                             <Label>Amount</Label>
                             <Input type="number" min="0.01" step="0.01" placeholder="0.00" value={contributeAmount} onChange={(e) => {
                                 setContributeAmount(e.target.value)
-                                if (errors.amount) setErrors({})
+                                if (errors.amount) {
+                                    setErrors({})
+                                }
                             }} />
                             <FieldError message={errors.amount} />
                         </div>
-                        <Button className="w-full" onClick={handleContribute}>Confirm</Button>
+
+                        {suggested > 0 && (
+                            <div className="rounded-lg border bg-muted/40 p-3 text-sm">
+                                <p className="text-muted-foreground">To reach your goal by {new Date(goal.targetDate!).toLocaleDateString()} ({monthsLeft} months left):</p>
+                                <div className="mt-2 flex items-center justify-between">
+                                    <span className="font-medium">Suggested: {currencySymbol}{suggested.toFixed(2)}</span>
+                                    <Button size="sm" variant="outline" onClick={() => handleContribute(suggested)}>Use Suggested</Button>
+                                </div>
+                            </div>
+                        )}
+                        <Button className="w-full" onClick={() => handleContribute()}>Confirm</Button>
                     </div>
                 </DialogContent>
             </Dialog>
