@@ -95,6 +95,10 @@ export function TransactionList({
                                     <div className="min-w-0">
                                         <p className="font-medium">{transaction.description}</p>
 
+                                        {transaction.notes && (
+                                            <p className="text-xs italic text-muted-foreground/80 mt-0.5">{transaction.notes}</p>
+                                        )}
+
                                         <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
                                             <span>{new Date(transaction.date).toLocaleString()}</span>
                                             <span>•</span>

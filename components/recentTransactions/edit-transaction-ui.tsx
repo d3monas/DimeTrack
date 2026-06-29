@@ -1,17 +1,18 @@
 import { useState, useEffect } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
+import { Input } from "../ui/input"
 import type { Transaction } from "@/types/transaction"
 import { FieldError } from "../fieldError"
-import { Label } from "@/components/ui/label"
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
+import { Label } from "../ui/label"
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "../ui/select"
+import { Button } from "../ui/button"
+import { Textarea } from "../ui/textarea"
 
 type EditTransactionDialogThings = {
     transaction: Transaction | null
     open: boolean
     onClose: () => void
-    onSave: (id: string, description: string, amount: number, type: "income" | "expense", category: string) => void
+    onSave: (id: string, description: string, amount: number, type: "income" | "expense", category: string, notes?: string) => void
     categories: string[]
 }
 
@@ -20,6 +21,7 @@ export function EditTransactionDialog({ transaction, open, onClose, onSave, cate
     const [amount, setAmount] = useState("")
     const [type, setType] = useState<"income" | "expense">("expense")
     const [category, setCategory] = useState("")
+    const [notes, setNotes] = useState("")
     const [errors, setErrors] = useState<Record<string, string>>({})
 
     useEffect(() => {
@@ -28,6 +30,7 @@ export function EditTransactionDialog({ transaction, open, onClose, onSave, cate
             setAmount(transaction.amount.toString())
             setType(transaction.type)
             setCategory(transaction.category)
+            setNotes(transaction.notes ?? "")
             setErrors({})
         }
     }, [open, transaction])
@@ -57,7 +60,7 @@ export function EditTransactionDialog({ transaction, open, onClose, onSave, cate
             return
         }
         if (validate()) {
-            onSave(transaction.id, description, Number(amount), type, category)
+            onSave(transaction.id, description, Number(amount), type, category, notes)
             onClose()
         }
     }
@@ -121,6 +124,12 @@ export function EditTransactionDialog({ transaction, open, onClose, onSave, cate
                         }} placeholder="5" />
                         <FieldError message={errors.amount} />
                     </div>
+
+                    <div>
+                        <Label>Notes (optional)</Label>
+                        <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Add any extra details here..." className="resize-none" rows={2} />
+                    </div>
+
                     <Button className="w-full" onClick={handleSave}>Save Changes</Button>
                 </div>
             </DialogContent>

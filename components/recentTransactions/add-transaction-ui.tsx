@@ -8,6 +8,7 @@ import { FieldError } from "../fieldError"
 import { Checkbox } from "../ui/checkbox"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
 import { recurringIntervalLabels } from "@/lib/consts"
+import { Textarea } from "../ui/textarea"
 
 type AddTransactionDialogThings = {
     open: boolean
@@ -21,11 +22,13 @@ type AddTransactionDialogThings = {
     categories: string[]
     category: string
     setCategory: (value: string) => void
+    notes: string
+    setNotes: (value: string) => void
     onSave: (isRecurring: boolean, interval: RecurringTransaction["interval"], customIntervalValue?: number, customIntervalUnit?: "days" | "weeks" | "months") => void
 }
 
 export function AddTransactionDialog({
-    open, setOpen, description, setDescription, amount, setAmount, transactionType, setTransactionType, category, setCategory, onSave, categories
+    open, setOpen, description, setDescription, amount, setAmount, transactionType, setTransactionType, category, setCategory, onSave, categories, notes, setNotes
 }: AddTransactionDialogThings) {
     const [errors, setErrors] = useState<Record<string, string>>({})
     const [isRecurring, setIsRecurring] = useState(false)
@@ -139,6 +142,11 @@ export function AddTransactionDialog({
                         <FieldError message={errors.amount} />
                     </div>
 
+                    <div>
+                        <Label>Notes (optional)</Label>
+                        <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Add any extra details here..." className="resize-none" rows={2} />
+                    </div>
+
                     <div className="flex items-center gap-2">
                         <Checkbox id="recurring" checked={isRecurring} onCheckedChange={(checked) => setIsRecurring(checked === true)} />
                         <Label htmlFor="recurring" className="cursor-pointer">Recurring transaction</Label>
@@ -188,7 +196,7 @@ export function AddTransactionDialog({
                         </div>
                     )}
                 </div>
-                    <Button className="w-full" onClick={handleSave}>Save Transaction</Button>
+                <Button className="w-full" onClick={handleSave}>Save Transaction</Button>
             </DialogContent>
         </Dialog>
     )

@@ -44,6 +44,7 @@ export default function Home() {
   const [transactionType, setTransactionType] = useState<"income" | "expense">("expense")
   const [category, setCategory] = useState("")
   const [newCategory, setNewCategory] = useState("")
+  const [notes, setNotes] = useState("")
 
   const [open, setOpen] = useState(false)
   const [goalDialogOpen, setGoalDialogOpen] = useState(false)
@@ -161,6 +162,7 @@ export default function Home() {
       type: transactionType,
       category,
       date: new Date().toISOString(),
+      notes: notes || undefined,
     }
 
     setTransactions((prev) => [newTransaction, ...prev])
@@ -184,6 +186,7 @@ export default function Home() {
     setDescription("")
     setAmount("")
     setCategory("")
+    setNotes("")
     setTransactionType("expense")
     setOpen(false)
   }
@@ -201,10 +204,10 @@ export default function Home() {
     setTransactions((prev) => prev.filter((transaction) => transaction.id !== id))
   }
 
-  function editTransaction(id: string, description: string, amount: number, type : "income" | "expense", category: string) {
+  function editTransaction(id: string, description: string, amount: number, type : "income" | "expense", category: string, notes?: string) {
     setTransactions((prev) => 
       prev.map((transaction) =>
-      transaction.id === id ? { ...transaction, description, amount, category, type }: transaction
+      transaction.id === id ? { ...transaction, description, amount, category, type, notes: notes || undefined }: transaction
     ))
   }
 
@@ -497,6 +500,8 @@ export default function Home() {
                 transactionType={transactionType}
                 setTransactionType={setTransactionType}
                 onSave={addTransaction}
+                notes={notes}
+                setNotes={setNotes}
               />
             </div>
 

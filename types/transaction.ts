@@ -5,4 +5,5 @@ export type Transaction = {
   type: "income" | "expense"
   category: string
   date: string
+  notes?: string
 }
