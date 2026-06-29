@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono, Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/react"
 import { Metadata } from "next"
+import { Toaster } from "@/components/ui/sonner"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -46,6 +47,7 @@ export default function RootLayout({
       <body className="flex min-h-screen flex-col">
         <ThemeProvider>
           <div className="flex-1">{children}</div>
+          <Toaster richColors position="bottom-right" />
           <Footer />
         </ThemeProvider>
         <Analytics />

@@ -25,8 +25,8 @@ export function exportToJSON(data: AppBackupThings, filename = "dimetrack-backup
     URL.revokeObjectURL(url)
 }
 
-export function importFromJSON(file: File): Promise<AppBackupThings> {
-    return new Promise((resolve, reject) => {
+export function importFromJSON(file: File): Promise<AppBackupThings | null> {
+    return new Promise((resolve) => {
         const reader = new FileReader()
 
         reader.onload = (e) => {
@@ -42,15 +42,14 @@ export function importFromJSON(file: File): Promise<AppBackupThings> {
                     typeof parsed.budgets !== "object" || parsed.budgets === null ||
                     typeof parsed.currency !== "string"
                 ) {
-                    return reject(new Error("Invalid backup file format"))
+                    return resolve(null)
                 }
-
                 resolve(parsed as AppBackupThings)
             } catch (error) {
-                reject(error)
+                resolve(null)
             }
         }
-        reader.onerror = reject
+        reader.onerror = () => resolve(null)
         reader.readAsText(file)
     })
 }

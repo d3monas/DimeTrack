@@ -15,6 +15,7 @@ import { GoalsSelection } from "@/components/goals/goalsSelection"
 import { TrendChart } from "@/components/charts/trendChart"
 import { UpcomingTransactions } from "@/components/upcomingTransactions"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { toast } from "sonner"
 
 // types
 import type { Transaction } from "@/types/transaction"
@@ -334,7 +335,7 @@ export default function Home() {
     try {
       const importedTransactions = await importFromCSV(file)
       if (importedTransactions.length === 0) {
-        alert("No valid transactions found in your uploaded CSV")
+        toast.error("No valid transactions found in your uploaded CSV")
         return
       }
 
@@ -349,10 +350,10 @@ export default function Home() {
         return [...prev, ...categoriesToAdd];
       });
 
-      alert(`Successfully imported ${importedTransactions.length} transactions`)
+      toast.success(`Successfully imported ${importedTransactions.length} transactions`)
     } catch (error) {
       console.error(error)
-      alert("Failed to import CSV. Please make sure it's formatted correctly and try again")
+      toast.error("Failed to import CSV. Please make sure it's formatted correctly and try again")
     }
   }
 
@@ -368,21 +369,21 @@ export default function Home() {
   }
 
   async function handleImportBackup(file: File) {
-    try { 
-      const data = await importFromJSON(file)
-      
-      setTransactions(data.transactions || [])
-      setGoals(data.goals || [])
-      setCategories(data.categories || [])
-      setBudgets(data.budgets || {})
-      setCurrency(data.currency || "USD")
-      setRecurring(data.recurring || [])
+    const data = await importFromJSON(file)
 
-      alert("Backup file imported successfully")
-    } catch (error) {
-      console.error(error)
-      alert("Failed to import backup file. Make sure it's a valid backup file and try again")
+    if (!data) {
+      toast.error("Failed to import backup file. Make sure it's a valid backup file and try again")
+      return
     }
+      
+    setTransactions(data.transactions || [])
+    setGoals(data.goals || [])
+    setCategories(data.categories || [])
+    setBudgets(data.budgets || {})
+    setCurrency(data.currency || "USD")
+    setRecurring(data.recurring || [])
+
+    toast.success("Backup file imported successfully")
   }
 
   function handleClearData() {
@@ -400,7 +401,7 @@ export default function Home() {
     setCurrency("USD")
     setRecurring([])
 
-    alert("All data has been cleared")
+    toast.success("All data has been cleared")
   }
 
   if (!isLoaded) {
@@ -500,7 +501,7 @@ export default function Home() {
             </div>
 
             {/* Recent transactions card */}
-            <div className="rounded-2xl border p-6">
+            <div className="rounded-2xl border p-4 sm:p-6">
               <EditTransactionDialog
                 transaction={editingTransaction}
                 open={!!editingTransaction}
