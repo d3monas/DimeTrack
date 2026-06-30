@@ -25,7 +25,7 @@ import type { RecurringTransaction } from "@/types/recurringTransaction"
 
 // libs
 import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends } from "@/lib/calculations"
-import { saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring, saveGoals } from "@/lib/localstorage"
+import { saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring, saveGoals, clearAllData } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 import { savingsCategoryForGoal, isSavingsCategory } from "@/lib/consts"
 import { processRecurring } from "@/lib/recurring"
@@ -216,20 +216,20 @@ export default function Home() {
       const existingGoal = goals.find((goal) => goal.id === id)
       if (existingGoal && existingGoal.name !== name) {
         const oldCategory = savingsCategoryForGoal(existingGoal.name)
-        const newCategory = savingsCategoryForGoal(name)
+        const renamedCategory = savingsCategoryForGoal(name)
 
-        setCategories((prev) => prev.map((category) => (category === oldCategory ? newCategory : category)))
+        setCategories((prev) => prev.map((category) => (category === oldCategory ? renamedCategory : category)))
         setBudgets((prev) => {
           if (!(oldCategory in prev)) {
             return prev
           }
           const updated = {...prev}
-          updated[newCategory] = updated[oldCategory]
+          updated[renamedCategory] = updated[oldCategory]
           delete updated[oldCategory]
           return updated
         })
         setTransactions((prev) =>
-          prev.map((transaction) => (transaction.category === oldCategory ? { ...transaction, category: newCategory }: transaction))
+          prev.map((transaction) => (transaction.category === oldCategory ? { ...transaction, category: renamedCategory }: transaction))
         )
       }
       setGoals((prev) => 
@@ -390,12 +390,7 @@ export default function Home() {
   }
 
   function handleClearData() {
-    localStorage.removeItem("transactions")
-    localStorage.removeItem("goals")
-    localStorage.removeItem("categories")
-    localStorage.removeItem("budgets")
-    localStorage.removeItem("currency")
-    localStorage.removeItem("recurring")
+    clearAllData()
 
     setTransactions([])
     setGoals([])

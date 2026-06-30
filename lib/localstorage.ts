@@ -201,3 +201,15 @@ export function loadAllData() {
         recurring: loadRecurring(),
     }
 }
+
+export function clearAllData() {
+    if (!isBrowser) {
+        return
+    }
+    localStorage.removeItem("transactions")
+    localStorage.removeItem("goals")
+    localStorage.removeItem("categories")
+    localStorage.removeItem("budgets")
+    localStorage.removeItem("currency")
+    localStorage.removeItem("recurring")
+}
