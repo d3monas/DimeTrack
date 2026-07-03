@@ -131,21 +131,25 @@ export function CalendarView({ transactions, recurring, currencySymbol }: Calend
                             const isNegative = balance < 0
 
                             return (
-                                <div {...props} className="h-24 w-full p-1 flex flex-col justify-between rounded-md text-left hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
-                                    <span className="text-xs">{day}</span>
-
-                                    <div className="flex gap-0.5 justify-center flex-wrap">
-                                        {events.slice(0, 4).map((event) => (
-                                            <span key={event.id} 
-                                            className={cn("h-1.5 w-1.5 rounded-full", event.type === "income" ? "bg-green-500" : "bg-red-500")} />
-                                        ))}
-                                        {events.length > 4 && <div className="text-muted-foreground text-[8px]">+</div>}
+                                <td {...props} className="h-24 w-full p-1 flex flex-col justify-between rounded-md text-left hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                                    
+                                    <div className="w-full">
+                                        <span className="text-xs block mb-1">{day}</span>
+                                        <div className="space-y-0.5">
+                                            {events.slice(0, 2).map((event) => (
+                                                <div key={event.id} className="flex items-center gap-1">
+                                                    <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", event.type === "income" ? "bg-green-500" : "bg-red-500")} />
+                                                    <span className="truncate text-[9px] text-muted-foreground">{event.description}</span>
+                                                </div>
+                                            ))}
+                                            {events.length > 2 && <div className="text-muted-foreground/60 text-[8px]">+ {events.length - 2} more</div>}
+                                        </div>
                                     </div>
 
                                     <div className={cn("text-[10px] font-bold text-right", isNegative ? "text-red-600" : "text-muted-foreground")}>
                                         {balance !== undefined ? `${currencySymbol}${balance.toFixed(0)}` : ''}
                                     </div>
-                                </div>
+                                </td>
                             )
                         }
                     } as any}
