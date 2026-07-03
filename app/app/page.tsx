@@ -16,6 +16,7 @@ import { TrendChart } from "@/components/charts/trendChart"
 import { UpcomingTransactions } from "@/components/upcomingTransactions"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
+import { CalendarView } from "@/components/calendarView"
 
 // types
 import type { Transaction } from "@/types/transaction"
@@ -457,8 +458,9 @@ export default function Home() {
 
 
         <Tabs defaultValue="overview" className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-3 max-w-md">
+          <TabsList className="grid w-full grid-cols-4 max-w-md">
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="calendar">Calendar</TabsTrigger>
             <TabsTrigger value="transactions">Transactions</TabsTrigger>
             <TabsTrigger value="budgets">Budgets & Goals</TabsTrigger>
           </TabsList>
@@ -476,6 +478,11 @@ export default function Home() {
               {/* chart */}
               <SpendingChart totals={categoryTotals} />
             </div>
+          </TabsContent>
+
+          {/* Calendar */}
+          <TabsContent value="calendar" className="space-y-6 mt-4">
+            <CalendarView transactions={transactions} recurring={recurring} currencySymbol={currencySymbol} />
           </TabsContent>
 
           {/* transactions tab */}
