@@ -116,7 +116,6 @@ export function CalendarView({ transactions, recurring, currencySymbol }: Calend
                         head_cell: "text-muted-foreground rounded-md w-full font-normal text-[0.8rem] flex-1",
                         row: "flex w-full mt-2",
                         cell: "h-20 p-0 relative flex-1 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md",
-                        day: "h-20 w-full p-2 flex flex-col items-start rounded-md text-left hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
                         day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
                     } as any}
                     components={{
@@ -132,22 +131,20 @@ export function CalendarView({ transactions, recurring, currencySymbol }: Calend
                             const isNegative = balance < 0
 
                             return (
-                                <div {...props}>
-                                    <span>{day}</span>
+                                <div {...props} className="h-24 w-full p-1 flex flex-col justify-between rounded-md text-left hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                                    <span className="text-xs">{day}</span>
 
-                                    <div className="grow w-full space-y-0.5 overflow-hidden mt-1">
-                                        {events.slice(0, 2).map((event) => (
-                                            <div key={event.id} className="truncate w-full flex items-center gap-1">
-                                                <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", event.type === "income" ? "bg-green-500" : "bg-red-500")} />
-                                                <span className="truncate text-[10px] text-muted-foreground">{event.description}</span>
-                                            </div>
+                                    <div className="flex gap-0.5 justify-center flex-wrap">
+                                        {events.slice(0, 4).map((event) => (
+                                            <span key={event.id} 
+                                            className={cn("h-1.5 w-1.5 rounded-full", event.type === "income" ? "bg-green-500" : "bg-red-500")} />
                                         ))}
-                                        {events.length > 2 && <div className="text-muted-foreground/60 text-[9px]">+ {events.length - 2} more</div>}
+                                        {events.length > 4 && <div className="text-muted-foreground text-[8px]">+</div>}
                                     </div>
 
-                                    {balance !== undefined && (
-                                        <div className={cn("text-[10px] sm:text-xs font-bold mt-2 self-end", isNegative ? "text-red-500" : "text-foreground")}>{currencySymbol}{balance.toFixed(0)}</div>
-                                    )}
+                                    <div className={cn("text-[10px] font-bold text-right", isNegative ? "text-red-600" : "text-muted-foreground")}>
+                                        {balance !== undefined ? `${currencySymbol}${balance.toFixed(0)}` : ''}
+                                    </div>
                                 </div>
                             )
                         }
