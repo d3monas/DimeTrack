@@ -103,7 +103,9 @@ export function TransactionList({
                                             <span>{new Date(transaction.date).toLocaleString()}</span>
                                             <span>•</span>
                                             <span>
-                                                {transaction.splits && transaction.splits.length > 0 ? transaction.splits.map(split => split.category).join(", ") : transaction.category}
+                                                {transaction.splits && transaction.splits.length > 0 
+                                                    ? transaction.splits.map(split => `${split.category} - ${currencySymbol}${split.amount.toFixed(2)}`).join(", ")
+                                                    : transaction.category}
                                             </span>
                                         </div>
                                     </div>
