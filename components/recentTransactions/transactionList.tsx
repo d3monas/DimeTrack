@@ -102,7 +102,9 @@ export function TransactionList({
                                         <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
                                             <span>{new Date(transaction.date).toLocaleString()}</span>
                                             <span>•</span>
-                                            <span>{transaction.category}</span>
+                                            <span>
+                                                {transaction.splits && transaction.splits.length > 0 ? transaction.splits.map(split => split.category).join(", ") : transaction.category}
+                                            </span>
                                         </div>
                                     </div>
 
