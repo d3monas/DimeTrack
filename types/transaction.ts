@@ -6,4 +6,10 @@ export type Transaction = {
   category: string
   date: string
   notes?: string
+  splits?: TransactionSplit[]
+}
+
+export type TransactionSplit = {
+  amount: number
+  category: string
 }

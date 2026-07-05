@@ -9,6 +9,7 @@ import { Checkbox } from "../ui/checkbox"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
 import { recurringIntervalLabels } from "@/lib/consts"
 import { Textarea } from "../ui/textarea"
+import type { TransactionSplit } from "@/types/transaction"
 
 type AddTransactionDialogThings = {
     open: boolean
@@ -24,7 +25,7 @@ type AddTransactionDialogThings = {
     setCategory: (value: string) => void
     notes: string
     setNotes: (value: string) => void
-    onSave: (isRecurring: boolean, interval: RecurringTransaction["interval"], customIntervalValue?: number, customIntervalUnit?: "days" | "weeks" | "months") => void
+    onSave: (isRecurring: boolean, interval: RecurringTransaction["interval"], customIntervalValue?: number, customIntervalUnit?: "days" | "weeks" | "months", splits?: TransactionSplit[]) => void
 }
 
 export function AddTransactionDialog({
@@ -35,6 +36,8 @@ export function AddTransactionDialog({
     const [interval, setInterval] = useState<RecurringTransaction["interval"]>("monthly")
     const [customValue, setCustomValue] = useState("1")
     const [customUnit, setCustomUnit] = useState<"days" | "weeks" | "months">("weeks")
+    const [isSplit, setIsSplit] = useState(false)
+    const [splits, setSplits] = useState<TransactionSplit[]>([{ amount: 0, category: "" }])
 
     function validate() {
         const newErrors: Record<string, string> = {}
@@ -42,13 +45,23 @@ export function AddTransactionDialog({
         if (!description.trim()) {
             newErrors.description = "Description is required"
         }
-        if (!amount.trim() || Number.isNaN(parsedAmount)) {
-            newErrors.amount = "Please enter a valid amount"
-        } else if (parsedAmount <= 0) {
-            newErrors.amount = "Amount must be greater than 0"
-        }
-        if (!category) {
-            newErrors.category = "Please select a category"
+        if (isSplit) {
+            const totalSplits = splits.reduce((sum, s) => sum + Number(s.amount), 0)
+            if (Math.abs(totalSplits - parsedAmount) > 0.01) {
+                newErrors.amount = `Split total ($${totalSplits.toFixed(2)}) must equal amount ($${parsedAmount.toFixed(2)})`
+            }
+            if (splits.some(s => !s.category || Number(s.amount) <= 0)) {
+                newErrors.splits = "All splits must have a category and amount greater than 0"
+            }
+        } else {
+            if (!amount.trim() || Number.isNaN(parsedAmount)) {
+                newErrors.amount = "Please enter a valid amount"
+            } else if (parsedAmount <= 0) {
+                newErrors.amount = "Amount must be greater than 0"
+            }
+            if (!category) {
+                newErrors.category = "Please select a category"
+            }
         }
         if (isRecurring && interval === "custom") {
             const parsedCustom = Number(customValue)
@@ -69,11 +82,18 @@ export function AddTransactionDialog({
         setCustomUnit("weeks")
     }
 
+    function resetSplitState() {
+        setIsSplit(false)
+        setSplits([{ amount: 0, category: "" }])
+    }
+
     function handleSave() {
         if (validate()) {
-            onSave(isRecurring, interval, interval === "custom" ? Number(customValue) : undefined, interval === "custom" ? customUnit: undefined)
+            onSave(isRecurring, interval, interval === "custom" ? Number(customValue) : undefined, interval === "custom" ? customUnit : undefined, isSplit ? splits : undefined)
             setErrors({})
             resetRecurringState()
+            setIsSplit(false)
+            setSplits([{ amount: 0, category: "" }])
         }
     }
 
@@ -99,8 +119,10 @@ export function AddTransactionDialog({
                 <div className="space-y-4">
                     <div>
                         <Label>Description</Label>
-                        <Input value={description} onChange={(e) => { setDescription(e.target.value); 
-                            if (errors.description) setErrors((p) => ({ ...p, description: "" })) }} 
+                        <Input value={description} onChange={(e) => {
+                            setDescription(e.target.value);
+                            if (errors.description) setErrors((p) => ({ ...p, description: "" }))
+                        }}
                             placeholder="Coffee" />
                         <FieldError message={errors.description} />
                     </div>
@@ -119,26 +141,11 @@ export function AddTransactionDialog({
                     </div>
 
                     <div>
-                        <Label>Category</Label>
-                        <Select value={category} onValueChange={(value) => { setCategory(value); 
-                            if (errors.category) setErrors((p) => ({ ...p, category: "" })) }} disabled={categories.length === 0}>
-                            <SelectTrigger>
-                                <SelectValue placeholder={categories.length === 0 ? "No categories yet. To create a category, visit Settings" : "Select a category"} />
-                            </SelectTrigger>
-
-                            <SelectContent>
-                                {categories.map((category) => (
-                                    <SelectItem key={category} value={category}>{category}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <FieldError message={errors.category} />
-                    </div>
-
-                    <div>
-                        <Label>Amount</Label>
-                        <Input type="number" min="0.01" step="0.01" value={amount} onChange={(e) => { setAmount(e.target.value); 
-                            if (errors.amount) setErrors((p) => ({ ...p, amount: "" })) }} placeholder="5" />
+                        <Label>Total Amount</Label>
+                        <Input type="number" min="0.01" step="0.01" value={amount} onChange={(e) => {
+                            setAmount(e.target.value);
+                            if (errors.amount) setErrors((p) => ({ ...p, amount: "" }))
+                        }} placeholder="100" />
                         <FieldError message={errors.amount} />
                     </div>
 
@@ -152,6 +159,67 @@ export function AddTransactionDialog({
                         <Label htmlFor="recurring" className="cursor-pointer">Recurring transaction</Label>
                     </div>
 
+                    <div className="flex items-center gap-2">
+                        <Checkbox id="split" checked={isSplit} onCheckedChange={(checked) => setIsSplit(checked === true)} />
+                        <Label htmlFor="split" className="cursor-pointer">Split into multiple categories</Label>
+                    </div>
+
+                    {isSplit ? (
+                        <div className="space-y-3 rounded-lg border p-3">
+                            {errors.splits && <FieldError message={errors.splits} />}
+                            {splits.map((split, i) => (
+                                <div key={i} className="flex items-end gap-2">
+                                    <div className="flex-1">
+                                        <Label>Category</Label>
+                                        <Select value={split.category} onValueChange={(value) => {
+                                            const newSplits = [...splits]
+                                            newSplits[i].category = value
+                                            setSplits(newSplits)
+                                        }}>
+                                            <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                                            <SelectContent>
+                                                {categories.map((category) => (
+                                                    <SelectItem key={category} value={category}>{category}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="w-24">
+                                        <Label>Amount</Label>
+                                        <Input type="number" min="0.01" step="0.01" value={split.amount || ""} onChange={(e) => {
+                                            const newSplits = [...splits]
+                                            newSplits[i].amount = Number(e.target.value)
+                                            setSplits(newSplits)
+                                        }} />
+                                    </div>
+                                    <Button variant="ghost" size="sm" className="text-red-500" onClick={() => {
+                                        if (splits.length > 1) {
+                                            setSplits(splits.filter((_, a) => a !== i))
+                                        }
+                                    }}>✕</Button>
+                                </div>
+                            ))}
+                            <Button variant="outline" size="sm" onClick={() => setSplits([...splits, { amount: 0, category: "" }])}>Add split</Button>
+                        </div>
+                    ) : (
+                        <div>
+                            <Label>Category</Label>
+                            <Select value={category} disabled={categories.length === 0} onValueChange={(value) => {
+                                setCategory(value)
+                                if (errors.category) {
+                                    setErrors((p) => ({ ...p, category: "" }))
+                                }
+                            }}>
+                                <SelectTrigger><SelectValue placeholder={categories.length === 0 ? "No categories yet. To create a category, visit Settings" : "Select a category"} /></SelectTrigger>
+                                <SelectContent>
+                                    {categories.map((category) => (
+                                        <SelectItem key={category} value={category}>{category}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <FieldError message={errors.category} />
+                        </div>
+                    )}
                     {isRecurring && (
                         <div className="space-y-3">
                             <div>
@@ -160,7 +228,8 @@ export function AddTransactionDialog({
                                     setInterval(value as RecurringTransaction["interval"])
                                     if (errors.customValue) {
                                         setErrors((p) => ({ ...p, customValue: "" }))
-                                    }}}>
+                                    }
+                                }}>
                                     <SelectTrigger><SelectValue /></SelectTrigger>
                                     <SelectContent>
                                         {(Object.keys(recurringIntervalLabels) as RecurringTransaction["interval"][]).map((i) => (

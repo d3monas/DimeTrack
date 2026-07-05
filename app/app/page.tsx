@@ -19,7 +19,7 @@ import { toast } from "sonner"
 import { CalendarView } from "@/components/calendarView"
 
 // types
-import type { Transaction } from "@/types/transaction"
+import type { Transaction, TransactionSplit } from "@/types/transaction"
 import type { Goal } from "@/types/goal"
 import type { FilterPeriod } from "@/lib/calculations"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
@@ -149,10 +149,22 @@ export default function Home() {
   const firstOfMonthLabel = firstOfMonth.toLocaleDateString(undefined, {month: "long", day: "numeric"})
   const monthlyTrends = getMonthlyTrends(transactions)
 
-  function addTransaction(isRecurring: boolean, interval: RecurringTransaction["interval"], customIntervalValue?: number, customIntervalUnit?: "days" | "weeks" | "months") {
+  function addTransaction(
+    isRecurring: boolean, 
+    interval: RecurringTransaction["interval"], 
+    customIntervalValue?: number, 
+    customIntervalUnit?: "days" | "weeks" | "months",
+    splits?: TransactionSplit[],
+  ) {
     const numberCheck = Number(amount)
 
-    if (!description || !amount || !category || Number.isNaN(numberCheck) || numberCheck <= 0) {
+    const hasValidSplits = splits && splits.length > 0 && splits.every(split => split.category && split.amount > 0)
+
+    if (!description || !amount || Number.isNaN(numberCheck) || numberCheck <= 0) {
+      return
+    }
+
+    if (!hasValidSplits && !category) {
       return
     }
 
@@ -161,9 +173,10 @@ export default function Home() {
       description,
       amount: numberCheck,
       type: transactionType,
-      category,
+      category: hasValidSplits ? "Split" : category,
       date: new Date().toISOString(),
       notes: notes || undefined,
+      splits: splits
     }
 
     setTransactions((prev) => [newTransaction, ...prev])
@@ -174,7 +187,7 @@ export default function Home() {
         description,
         amount: numberCheck,
         type: transactionType,
-        category,
+        category: hasValidSplits ? "Split" : category,
         interval,
         customIntervalValue,
         customIntervalUnit,
