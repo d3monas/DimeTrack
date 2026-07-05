@@ -416,6 +416,13 @@ export default function Home() {
     toast.success("All data has been cleared")
   }
 
+  function handleAddNewCategory(name: string) {
+    if (!name.trim() || categories.includes(name.trim())) {
+      return
+    }
+    setCategories(prev => [...prev, name.trim()])
+  }
+
   if (!isLoaded) {
     return (
       <main className="min-h-screen bg-background">
@@ -515,6 +522,7 @@ export default function Home() {
                 transactionType={transactionType}
                 setTransactionType={setTransactionType}
                 onSave={addTransaction}
+                onAddNewCategory={handleAddNewCategory}
                 notes={notes}
                 setNotes={setNotes}
               />
