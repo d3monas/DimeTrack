@@ -14,15 +14,23 @@ type EditTransactionDialogThings = {
     onClose: () => void
     onSave: (id: string, description: string, amount: number, type: "income" | "expense", category: string, notes?: string) => void
     categories: string[]
+    budgets: Record<string, number>
+    categoryTotals: Record<string, number>
+    currencySymbol: string
 }
 
-export function EditTransactionDialog({ transaction, open, onClose, onSave, categories }: EditTransactionDialogThings) {
+export function EditTransactionDialog({ transaction, open, onClose, onSave, categories, budgets, categoryTotals, currencySymbol }: EditTransactionDialogThings) {
     const [description, setDescription] = useState("")
     const [amount, setAmount] = useState("")
     const [type, setType] = useState<"income" | "expense">("expense")
     const [category, setCategory] = useState("")
     const [notes, setNotes] = useState("")
     const [errors, setErrors] = useState<Record<string, string>>({})
+
+    const currentLimit = budgets[category] ?? 0
+    const currentSpent = (categoryTotals[category] ?? 0) - (transaction?.amount ?? 0)
+    const projectedSpent = currentSpent + (Number(amount) || 0)
+    const willExceedBudget = currentLimit > 0 && projectedSpent  > currentLimit
 
     useEffect(() => {
         if (open && transaction) {
@@ -123,6 +131,10 @@ export function EditTransactionDialog({ transaction, open, onClose, onSave, cate
                             if (errors.amount) setErrors((p) => ({ ...p, amount: "" }))
                         }} placeholder="5" />
                         <FieldError message={errors.amount} />
+
+                        {willExceedBudget && (
+                            <p className="text-xs text-red-500 mt-1">This will exceed your budget limit of {currencySymbol}{currentLimit.toFixed(2)} for {category}. (Projected: {currencySymbol}{projectedSpent.toFixed(2)})</p>
+                        )}
                     </div>
 
                     <div>

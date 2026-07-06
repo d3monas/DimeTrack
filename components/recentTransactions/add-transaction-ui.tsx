@@ -27,10 +27,13 @@ type AddTransactionDialogThings = {
     setNotes: (value: string) => void
     onSave: (isRecurring: boolean, interval: RecurringTransaction["interval"], customIntervalValue?: number, customIntervalUnit?: "days" | "weeks" | "months", splits?: TransactionSplit[]) => void
     onAddNewCategory: (name: string) => void
+    budgets: Record<string, number>
+    categoryTotals: Record<string, number>
+    currencySymbol: string
 }
 
 export function AddTransactionDialog({
-    open, setOpen, description, setDescription, amount, setAmount, transactionType, setTransactionType, category, setCategory, onSave, categories, notes, setNotes, onAddNewCategory
+    open, setOpen, description, setDescription, amount, setAmount, transactionType, setTransactionType, category, setCategory, onSave, categories, notes, setNotes, onAddNewCategory, budgets, categoryTotals, currencySymbol
 }: AddTransactionDialogThings) {
     const [errors, setErrors] = useState<Record<string, string>>({})
     const [isRecurring, setIsRecurring] = useState(false)
@@ -41,6 +44,11 @@ export function AddTransactionDialog({
     const [splits, setSplits] = useState<TransactionSplit[]>([{ amount: 0, category: "" }])
     const [isAddingCategory, setIsAddingCategory] = useState(false)
     const [newCategoryName, setNewCategoryName] = useState("")
+
+    const currentLimit = budgets[category] ?? 0
+    const currentSpent = categoryTotals[category] ?? 0
+    const projectedSpent = currentSpent + (Number(amount) || 0)
+    const willExceedBudget = currentLimit > 0 && projectedSpent  > currentLimit
 
     function validate() {
         const newErrors: Record<string, string> = {}
@@ -145,6 +153,10 @@ export function AddTransactionDialog({
                             if (errors.amount) setErrors((p) => ({ ...p, amount: "" }))
                         }} placeholder="100" />
                         <FieldError message={errors.amount} />
+
+                        {willExceedBudget && !isSplit && (
+                            <p className="text-xs text-red-500 mt-1">This will exceed your budget limit of {currencySymbol}{currentLimit.toFixed(2)} for {category}. (Projected: {currencySymbol}{projectedSpent.toFixed(2)})</p>
+                        )}
                     </div>
 
                     <div>

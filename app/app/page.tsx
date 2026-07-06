@@ -523,6 +523,9 @@ export default function Home() {
                 setTransactionType={setTransactionType}
                 onSave={addTransaction}
                 onAddNewCategory={handleAddNewCategory}
+                budgets={budgets}
+                categoryTotals={categoryTotals}
+                currencySymbol={currencySymbol}
                 notes={notes}
                 setNotes={setNotes}
               />
@@ -535,7 +538,10 @@ export default function Home() {
                 open={!!editingTransaction}
                 onClose={() => setEditingTransaction(null)}
                 categories={categories.filter(category => !isSavingsCategory(category))}
-                onSave={editTransaction} />
+                onSave={editTransaction}
+                budgets={budgets}
+                categoryTotals={categoryTotals}
+                currencySymbol={currencySymbol} />
               <TransactionList
                 transactions={filteredTransactions}
                 onEditClick={setEditingTransaction}
