@@ -553,6 +553,7 @@ export default function Home() {
               goals={goals}
               transactions={transactions}
               currencySymbol={currencySymbol}
+              budgets={budgets}
               onCreateGoal={() => { setEditingGoal(null); setGoalDialogOpen(true) }}
               onEditGoal={(goal) => { setEditingGoal(goal); setGoalDialogOpen(true) }}
               onDeleteGoal={deleteGoal}

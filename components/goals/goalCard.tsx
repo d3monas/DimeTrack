@@ -20,11 +20,12 @@ type GoalCardThings = {
     onContribute: (amount: number) => void
     currencySymbol: string
     transactions: Transaction[]
+    budgets: Record<string, number>
 }
 
 const contributionsPerPage = 3
 
-export function GoalCard({ goal, progress, remaining, onEdit, onDelete, onContribute, currencySymbol, transactions }: GoalCardThings) {
+export function GoalCard({ goal, progress, remaining, onEdit, onDelete, onContribute, currencySymbol, transactions, budgets }: GoalCardThings) {
 
     const [contributeOpen, setContributeOpen] = useState(false)
     const [contributeAmount, setContributeAmount] = useState("")
@@ -32,6 +33,9 @@ export function GoalCard({ goal, progress, remaining, onEdit, onDelete, onContri
     
     const goalCategory = savingsCategoryForGoal(goal.name)
     const contributions = transactions.filter((transaction) => transaction.category === goalCategory)
+
+    const projectedTotal = goal.currentAmount + (Number(contributeAmount) || 0)
+    const willExceedGoal = projectedTotal > goal.targetAmount
     
     // sorting algo from oldest to newest to calculate correctly
     const chronological = [...contributions].sort(
@@ -152,6 +156,10 @@ export function GoalCard({ goal, progress, remaining, onEdit, onDelete, onContri
                                 }
                             }} />
                             <FieldError message={errors.amount} />
+
+                            {willExceedGoal && (
+                                <p className="text-xs text-red-500">This contribution will exceeds your remaining target by {currencySymbol}{(projectedTotal - goal.targetAmount).toFixed(2)}. You only need {currencySymbol}{remaining.toFixed(2)} to reach your goal</p>
+                            )}
                         </div>
 
                         {suggested > 0 && (

@@ -10,13 +10,14 @@ type GoalsSelectionThings = {
     goals: Goal[]
     transactions: Transaction[]
     currencySymbol: string
+    budgets: Record<string, number>
     onCreateGoal: () => void
     onEditGoal: (goal: Goal) => void
     onDeleteGoal: (id: string) => void
     onContribute: (goalId: string, amount: number) => void
 }
 
-export function GoalsSelection({ goals, transactions, currencySymbol, onCreateGoal, onEditGoal, onDeleteGoal, onContribute }: GoalsSelectionThings) {
+export function GoalsSelection({ goals, transactions, currencySymbol, budgets ,onCreateGoal, onEditGoal, onDeleteGoal, onContribute }: GoalsSelectionThings) {
     const [index, setIndex] = useState(0)
     const currentIndex = Math.min(index, Math.max(0, goals.length - 1))
     const currentGoal = goals[currentIndex]
@@ -44,6 +45,7 @@ export function GoalsSelection({ goals, transactions, currencySymbol, onCreateGo
                 onContribute={(amount) => onContribute(currentGoal.id, amount)}
                 currencySymbol={currencySymbol}
                 transactions={transactions}
+                budgets={budgets}
             />
             <div className="mt-3 flex items-center justify-between">
                 <PaginationUI currentPage={currentIndex} totalPages={goals.length} onPrev={() => setIndex((i) => i - 1)} onNext={() => setIndex((i) => i + 1)} />
