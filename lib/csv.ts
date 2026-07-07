@@ -1,4 +1,4 @@
-import type { Transaction } from "@/types/transaction";
+import type { Transaction, TransactionSplit } from "@/types/transaction";
 
 export function exportToCSV(transactions: Transaction[], filename="dimetrack-transactions.csv") {
     const headers = ["Date", "Description", "Category", "Type", "Amount", "Notes"]
@@ -102,14 +102,30 @@ export function importFromCSV(file: File): Promise<Transaction[]> {
                     
                     const notesValue = cleanValues[5] ? cleanValues[5] : undefined
 
+                    let categoryStr = cleanValues[2]
+                    let splits: TransactionSplit[] | undefined = undefined
+                    if (categoryStr.startsWith("Split: ")) {
+                        const splitContent = categoryStr.substring(7)
+                        const matches = [...splitContent.matchAll(/([^()]+?)\s*\(([\d.]+)\)/g)]
+
+                        if (matches.length > 0) {
+                            splits = matches.map(match => ({
+                                category: match[1].replace(/,/g, "").trim(),
+                                amount: parseFloat(match[2])
+                            }))
+                            categoryStr = "Split"
+                        }
+                    }
+
                     transactions.push({
                         id: crypto.randomUUID(),
                         date: date.toISOString(),
                         description: cleanValues[1],
-                        category: cleanValues[2],
+                        category: categoryStr,
                         type: cleanValues[3] as "income" | "expense",
                         amount: parseFloat(cleanValues[4]) || 0,
-                        notes: notesValue
+                        notes: notesValue,
+                        splits: splits
                     });
                 }
 

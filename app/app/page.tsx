@@ -380,7 +380,13 @@ export default function Home() {
       setTransactions(prev => [...categorizedTransactions, ...prev])
 
       const newCategories = new Set<string>();
-      categorizedTransactions.forEach((transaction) => newCategories.add(transaction.category))
+      categorizedTransactions.forEach((transaction) => {
+        if (transaction.splits && transaction.splits.length > 0) {
+          transaction.splits.forEach((split) => newCategories.add(split.category))
+        } else {
+          newCategories.add(transaction.category)
+        }
+      })
 
       setCategories(prev => {
         const existing = new Set(prev);
