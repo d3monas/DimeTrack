@@ -5,7 +5,9 @@ import { Dispatch, SetStateAction, useRef } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { isSavingsCategory } from "@/lib/consts"
 import { RecurringManager } from "./recurringManager"
-import type { RecurringTransaction } from "@/types/recurringTransaction" 
+import type { RecurringTransaction } from "@/types/recurringTransaction"
+import { RulesManager } from "./rulesManager"
+import type { Rule } from "@/types/rule"
 
 type SettingsDialogThings = {
     categories: string[]
@@ -22,6 +24,9 @@ type SettingsDialogThings = {
     onExportBackup: () => void
     onImportBackup: (file: File) => void
     onClearData: () => void
+    rules: Rule[]
+    onAddRule: (contains: string, category: string) => void
+    onDeleteRule: (id: string) => void
 }
 
 const currencies = [
@@ -36,7 +41,9 @@ const currencies = [
 ]
 
 export function SettingsDialog({
-    categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory, currency, currencySymbol, onCurrencyChange, recurring, onDeleteRecurring, onImportCSV, onExportBackup, onImportBackup, onClearData
+    categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory, currency, currencySymbol, 
+    onCurrencyChange, recurring, onDeleteRecurring, onImportCSV, onExportBackup, onImportBackup, onClearData,
+    rules, onAddRule, onDeleteRule
 }: SettingsDialogThings) {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const backupInputRef = useRef<HTMLInputElement>(null)
@@ -93,6 +100,10 @@ export function SettingsDialog({
                             currencySymbol={currencySymbol}
                             onDelete={onDeleteRecurring} 
                             />
+                    </div>
+
+                    <div className="border-t pt-4">
+                        <RulesManager rules={rules} categories={categories} onAddRule={onAddRule} onDeleteRule={onDeleteRule} />
                     </div>
 
                     <div>

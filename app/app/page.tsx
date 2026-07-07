@@ -23,6 +23,7 @@ import type { Transaction, TransactionSplit } from "@/types/transaction"
 import type { Goal } from "@/types/goal"
 import type { FilterPeriod } from "@/lib/calculations"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
+import type { Rule } from "@/types/rule"
 
 // libs
 import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends } from "@/lib/calculations"
@@ -32,6 +33,7 @@ import { savingsCategoryForGoal, isSavingsCategory } from "@/lib/consts"
 import { processRecurring } from "@/lib/recurring"
 import { importFromCSV } from "@/lib/csv"
 import { exportToJSON, importFromJSON } from "@/lib/data"
+import { autoCategories } from "@/lib/rules"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -59,6 +61,8 @@ export default function Home() {
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
 
   const [recurring, setRecurring] = useState<RecurringTransaction[]>([])
+
+  const [rules, setRules] = useState<Rule[]>([])
 
   // load localstorage 
   useEffect(() => {
@@ -423,6 +427,19 @@ export default function Home() {
     setCategories(prev => [...prev, name.trim()])
   }
 
+  function addRule(contains: string, category: string) {
+    const newRule: Rule = {
+      id: crypto.randomUUID(),
+      contains,
+      category
+    }
+    setRules(prev => [...prev, newRule])
+  }
+
+  function deleteRule(id: string) {
+    setRules(prev => prev.filter(rule => rule.id !== id))
+  }
+
   if (!isLoaded) {
     return (
       <main className="min-h-screen bg-background">
@@ -454,7 +471,10 @@ export default function Home() {
               onImportCSV={handleImportCSV}
               onExportBackup={handleExportBackup}
               onImportBackup={handleImportBackup}
-              onClearData={handleClearData} />
+              onClearData={handleClearData} 
+              rules={rules}
+              onAddRule={addRule}
+              onDeleteRule={deleteRule} />
           </div>
         </header>
 
