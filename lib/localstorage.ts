@@ -1,6 +1,7 @@
-import { Transaction } from "@/types/transaction"
-import { Goal } from "@/types/goal"
+import type { Transaction } from "@/types/transaction"
+import type { Goal } from "@/types/goal"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
+import type { Rule } from "@/types/rule"
 
 const isBrowser = typeof window !== "undefined"
 
@@ -191,6 +192,33 @@ export function loadRecurring(): RecurringTransaction[] {
     }
 }
 
+// rules
+export function saveRules(rules: Rule[]) {
+    if (!isBrowser) {
+        return
+    }
+    localStorage.setItem("rules", JSON.stringify(rules))
+}
+
+export function loadRules(): Rule[] {
+    if (!isBrowser) {
+        return []
+    }
+    try {
+        const saved = localStorage.getItem("rules")
+        if (!saved) {
+            return []
+        }
+        const parsed = JSON.parse(saved)
+        if (!Array.isArray(parsed)) {
+            return []
+        }
+        return parsed
+    } catch {
+        return []
+    }
+}
+
 export function loadAllData() {
     return {
         transactions: loadTransactions(),
@@ -199,6 +227,7 @@ export function loadAllData() {
         goals: loadGoals(),
         currency: loadCurrency(),
         recurring: loadRecurring(),
+        rules: loadRules(),
     }
 }
 
@@ -212,4 +241,5 @@ export function clearAllData() {
     localStorage.removeItem("budgets")
     localStorage.removeItem("currency")
     localStorage.removeItem("recurring")
+    localStorage.removeItem("rules")
 }

@@ -27,13 +27,12 @@ import type { Rule } from "@/types/rule"
 
 // libs
 import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends } from "@/lib/calculations"
-import { saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring, saveGoals, clearAllData } from "@/lib/localstorage"
+import { saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring, saveGoals, saveRules, clearAllData } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 import { savingsCategoryForGoal, isSavingsCategory } from "@/lib/consts"
 import { processRecurring } from "@/lib/recurring"
 import { importFromCSV } from "@/lib/csv"
 import { exportToJSON, importFromJSON } from "@/lib/data"
-import { autoCategories } from "@/lib/rules"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -73,6 +72,7 @@ export default function Home() {
     setCurrency(data.currency)
     setRecurring(data.recurring)
     setGoals(data.goals)
+    setRules(data.rules)
     setIsLoaded(true)
   }, [])
 
@@ -128,6 +128,12 @@ export default function Home() {
       saveGoals(goals)
     }
   }, [isLoaded, goals])
+
+  useEffect(() => {
+    if (isLoaded) {
+      saveRules(rules)
+    }
+  }, [isLoaded, rules])
 
 
   const lifetimeIncome = calculateIncome(transactions)
@@ -416,6 +422,7 @@ export default function Home() {
     setBudgets({})
     setCurrency("USD")
     setRecurring([])
+    setRules([])
 
     toast.success("All data has been cleared")
   }
