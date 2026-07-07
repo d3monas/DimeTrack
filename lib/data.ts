@@ -1,6 +1,7 @@
-import { Transaction } from "@/types/transaction"
-import { Goal } from "@/types/goal"
-import { RecurringTransaction } from "@/types/recurringTransaction"
+import type { Transaction } from "@/types/transaction"
+import type { Goal } from "@/types/goal"
+import type { RecurringTransaction } from "@/types/recurringTransaction"
+import type { Rule } from "@/types/rule"
 
 type AppBackupThings = {
     transactions: Transaction[]
@@ -9,6 +10,7 @@ type AppBackupThings = {
     budgets: Record<string, number>
     currency: string
     recurring: RecurringTransaction[]
+    rules: Rule[]
 }
 
 export function exportToJSON(data: AppBackupThings, filename = "dimetrack-backup.json") {

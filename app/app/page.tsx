@@ -33,6 +33,7 @@ import { savingsCategoryForGoal, isSavingsCategory } from "@/lib/consts"
 import { processRecurring } from "@/lib/recurring"
 import { importFromCSV } from "@/lib/csv"
 import { exportToJSON, importFromJSON } from "@/lib/data"
+import { autoCategories } from "@/lib/rules"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -366,18 +367,31 @@ export default function Home() {
         return
       }
 
-      setTransactions(prev => [...importedTransactions, ...prev])
+      const categorizedTransactions = importedTransactions.map(transaction => {
+        const matchedCategory = autoCategories(transaction.description, rules)
+        return (
+          matchedCategory ? {
+            ...transaction,
+            category: matchedCategory
+          } : transaction
+        )
+      })
+
+      setTransactions(prev => [...categorizedTransactions, ...prev])
 
       const newCategories = new Set<string>();
-      importedTransactions.forEach((transaction) => newCategories.add(transaction.category))
+      categorizedTransactions.forEach((transaction) => newCategories.add(transaction.category))
 
       setCategories(prev => {
         const existing = new Set(prev);
         const categoriesToAdd = Array.from(newCategories).filter(category => !existing.has(category) && !isSavingsCategory(category));
-        return [...prev, ...categoriesToAdd];
+        return [
+          ...prev,
+          ...categoriesToAdd
+        ]
       });
 
-      toast.success(`Successfully imported ${importedTransactions.length} transactions`)
+      toast.success(`Successfully imported ${categorizedTransactions.length} transactions`)
     } catch (error) {
       console.error(error)
       toast.error("Failed to import CSV. Please make sure it's formatted correctly and try again")
@@ -391,7 +405,8 @@ export default function Home() {
       categories,
       budgets,
       currency,
-      recurring
+      recurring,
+      rules
     })
   }
 
@@ -409,6 +424,7 @@ export default function Home() {
     setBudgets(data.budgets || {})
     setCurrency(data.currency || "USD")
     setRecurring(data.recurring || [])
+    setRules(data.rules || [])
 
     toast.success("Backup file imported successfully")
   }
