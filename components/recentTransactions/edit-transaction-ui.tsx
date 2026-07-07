@@ -7,6 +7,8 @@ import { Label } from "../ui/label"
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "../ui/select"
 import { Button } from "../ui/button"
 import { Textarea } from "../ui/textarea"
+import { autoCategories } from "@/lib/rules"
+import type { Rule } from "@/types/rule"
 
 type EditTransactionDialogThings = {
     transaction: Transaction | null
@@ -17,9 +19,10 @@ type EditTransactionDialogThings = {
     budgets: Record<string, number>
     categoryTotals: Record<string, number>
     currencySymbol: string
+    rules: Rule[]
 }
 
-export function EditTransactionDialog({ transaction, open, onClose, onSave, categories, budgets, categoryTotals, currencySymbol }: EditTransactionDialogThings) {
+export function EditTransactionDialog({ transaction, open, onClose, onSave, categories, budgets, categoryTotals, currencySymbol, rules }: EditTransactionDialogThings) {
     const [description, setDescription] = useState("")
     const [amount, setAmount] = useState("")
     const [type, setType] = useState<"income" | "expense">("expense")
@@ -83,13 +86,21 @@ export function EditTransactionDialog({ transaction, open, onClose, onSave, cate
                 <div className="space-y-4">
                     <div>
                         <Label>Description</Label>
-                        <Input value={description} placeholder="Coffee" onChange={(e) => {setDescription(e.target.value)
-                            if (errors.description) {
-                                setErrors((p) => ({
-                                    ...p, description: ""
-                                }))
+                        <Input value={description} onChange={(e) => {
+                            const text = e.target.value
+                            setDescription(text)
+
+                            const matchedCategory = autoCategories(text, rules)
+                            if (matchedCategory) {
+                                setCategory(matchedCategory)
+                                if (errors.category) {
+                                    setErrors((p) => ({ ...p, category: "" }))
+                                }
+                                if (errors.description) {
+                                    setErrors((p) => ({ ...p, description: "" }))
+                                }
                             }
-                        }} />
+                        }} placeholder="Coffee" />
                         <FieldError message={errors.description} />
                     </div>
 

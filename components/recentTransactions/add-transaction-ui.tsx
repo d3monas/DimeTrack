@@ -10,6 +10,8 @@ import type { RecurringTransaction } from "@/types/recurringTransaction"
 import { recurringIntervalLabels } from "@/lib/consts"
 import { Textarea } from "../ui/textarea"
 import type { TransactionSplit } from "@/types/transaction"
+import { autoCategories } from "@/lib/rules"
+import type { Rule } from "@/types/rule"
 
 type AddTransactionDialogThings = {
     open: boolean
@@ -30,10 +32,13 @@ type AddTransactionDialogThings = {
     budgets: Record<string, number>
     categoryTotals: Record<string, number>
     currencySymbol: string
+    rules: Rule[]
 }
 
 export function AddTransactionDialog({
-    open, setOpen, description, setDescription, amount, setAmount, transactionType, setTransactionType, category, setCategory, onSave, categories, notes, setNotes, onAddNewCategory, budgets, categoryTotals, currencySymbol
+    open, setOpen, description, setDescription, amount, setAmount, transactionType, 
+    setTransactionType, category, setCategory, onSave, categories, notes, setNotes, 
+    onAddNewCategory, budgets, categoryTotals, currencySymbol, rules
 }: AddTransactionDialogThings) {
     const [errors, setErrors] = useState<Record<string, string>>({})
     const [isRecurring, setIsRecurring] = useState(false)
@@ -126,10 +131,20 @@ export function AddTransactionDialog({
                     <div>
                         <Label>Description</Label>
                         <Input value={description} onChange={(e) => {
-                            setDescription(e.target.value);
-                            if (errors.description) setErrors((p) => ({ ...p, description: "" }))
-                        }}
-                            placeholder="Coffee" />
+                            const text = e.target.value
+                            setDescription(text)
+
+                            const matchedCategory = autoCategories(text, rules)
+                            if (matchedCategory) {
+                                setCategory(matchedCategory)
+                                if (errors.category) {
+                                    setErrors((p) => ({ ...p, category: "" }))
+                                }
+                                if (errors.description) {
+                                    setErrors((p) => ({ ...p, description: "" }))
+                                }
+                            }
+                        }} placeholder="Coffee" />
                         <FieldError message={errors.description} />
                     </div>
 

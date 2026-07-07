@@ -555,6 +555,7 @@ export default function Home() {
                 currencySymbol={currencySymbol}
                 notes={notes}
                 setNotes={setNotes}
+                rules={rules}
               />
             </div>
 
@@ -568,7 +569,8 @@ export default function Home() {
                 onSave={editTransaction}
                 budgets={budgets}
                 categoryTotals={categoryTotals}
-                currencySymbol={currencySymbol} />
+                currencySymbol={currencySymbol} 
+                rules={rules} />
               <TransactionList
                 transactions={filteredTransactions}
                 onEditClick={setEditingTransaction}
