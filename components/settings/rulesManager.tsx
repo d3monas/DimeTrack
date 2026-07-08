@@ -34,12 +34,12 @@ export function RulesManager({ rules, categories, onAddRule, onDeleteRule }: Rul
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
                 <div className="flex-1">
                     <Label>If description contains</Label>
-                    <Input value={contains} onChange={(e) => setContains(e.target.value)} placeholder="e.g. Breakfast" />
+                    <Input value={contains} onChange={(e) => setContains(e.target.value)} placeholder="e.g. Breakfast" className="mt-3" />
                 </div>
                 <div className="flex-1">
                     <Label>Set category to</Label>
                     <Select value={category} onValueChange={setCategory} disabled={categories.length === 0}>
-                        <SelectTrigger><SelectValue placeholder={categories.length === 0 ? "No categories" : "Select"} /></SelectTrigger>
+                        <SelectTrigger className="mt-3"><SelectValue placeholder={categories.length === 0 ? "No categories" : "Select"} /></SelectTrigger>
                         <SelectContent>
                             {categories.map((category) => (
                                 <SelectItem key={category} value={category}>{category}</SelectItem>

@@ -67,7 +67,7 @@ export function SettingsDialog({
                         <TabsTrigger value="data">Data</TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="general" className="space-y-6 mt-4">
+                    <TabsContent value="general" className="mt-6">
                         <div>
                             <h3 className="font-semibold mb-2">Currency</h3>
                             <Select value={currency} onValueChange={onCurrencyChange}>
@@ -82,13 +82,13 @@ export function SettingsDialog({
                             </Select>
                         </div>
 
-                        <div className="border-t pt-4">
+                        <div className="border-t pt-6 mt-6">
                             <h3 className="font-semibold mb-2">Categories</h3>
-                            <div className="flex flex-col gap-2 sm:flex-row">
+                            <div className="flex flex-col gap-2 sm:flex-row mb-4">
                                 <Input value={newCategory} onChange={(e) => setNewCategory(e.target.value)} placeholder="New Category" />
                                 <Button onClick={onAddNewCategory}>Add</Button>
                             </div>
-                            <div className="space-y-2 mt-4">
+                            <div className="space-y-2">
                                 {categories.map((category) => (
                                     <div key={category} className="flex flex-wrap items-center justify-between gap-2 rounded-md p-2">
                                         <span className="break-all">{category}</span>
@@ -104,12 +104,10 @@ export function SettingsDialog({
 
                     </TabsContent>
 
-                    <TabsContent value="automation" className="space-y-6 mt-4">
-                        <div className="border-t pt-4">
-                            <RulesManager rules={rules} categories={categories} onAddRule={onAddRule} onDeleteRule={onDeleteRule} />
-                        </div>
+                    <TabsContent value="automation" className="mt-6">
+                        <RulesManager rules={rules} categories={categories} onAddRule={onAddRule} onDeleteRule={onDeleteRule} />
 
-                        <div>
+                        <div className="border-t pt-6 mt-6">
                             <RecurringManager
                                 recurring={recurring}
                                 currencySymbol={currencySymbol}
@@ -117,7 +115,7 @@ export function SettingsDialog({
                         </div>
                     </TabsContent>
 
-                    <TabsContent value="data" className="space-y-6 mt-4">
+                    <TabsContent value="data" className="mt-6">
                         <div>
                             <h3 className="font-semibold mb-2">Data Management</h3>
                             <p className="text-sm text-muted-foreground mb-3">Import transactions from a CSV file</p>
@@ -132,9 +130,10 @@ export function SettingsDialog({
                             <Button variant="outline" onClick={() => fileInputRef.current?.click()}>Import CSV</Button>
                         </div>
 
-                        <div className="border-t mt-2">
-                            <p className="text-sm text-muted-foreground mt-2">Transfer <b>ALL</b> your data between devices or browsers</p>
-                            <div className="flex flex-wrap gap-2 mt-2">
+                        <div className="border-t mt-6 pt-6">
+                            <h3 className="font-semibold mb-2">JSON Backup</h3>
+                            <p className="text-sm text-muted-foreground mb-3">Transfer <b>ALL</b> your data between devices or browsers</p>
+                            <div className="flex flex-wrap gap-2">
                                 <Button variant="outline" size="sm" onClick={onExportBackup}>Export Backup</Button>
                                 <Input type="file" accept=".json" ref={backupInputRef} className="hidden" onChange={(e) => {
                                     const file = e.target.files?.[0]
@@ -147,7 +146,7 @@ export function SettingsDialog({
                             </div>
                         </div>
 
-                        <div className="border-t border-red-500/30 pt-4 mt-4">
+                        <div className="border-t border-red-500/30 pt-6 mt-6">
                             <h3 className="font-semibold mb-2 text-red-600">Danger</h3>
                             <p className="text-sm text-muted-foreground mb-3">This will permanently delete <b>ALL</b> your data</p>
                             <Button variant="destructive" size="sm" onClick={() => {
