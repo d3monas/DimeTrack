@@ -8,6 +8,7 @@ import { RecurringManager } from "./recurringManager"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
 import { RulesManager } from "./rulesManager"
 import type { Rule } from "@/types/rule"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 
 type SettingsDialogThings = {
     categories: string[]
@@ -41,7 +42,7 @@ const currencies = [
 ]
 
 export function SettingsDialog({
-    categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory, currency, currencySymbol, 
+    categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory, currency, currencySymbol,
     onCurrencyChange, recurring, onDeleteRecurring, onImportCSV, onExportBackup, onImportBackup, onClearData,
     rules, onAddRule, onDeleteRule
 }: SettingsDialogThings) {
@@ -59,54 +60,64 @@ export function SettingsDialog({
                     <DialogTitle>Settings</DialogTitle>
                 </DialogHeader>
 
-                <div className="space-y-4">
-                    <div>
-                        <h3 className="font-semibold mb-2">Categories</h3>
-                        <div className="flex flex-col gap-2 sm:flex-row">
-                            <Input value={newCategory} onChange={(e) => setNewCategory(e.target.value)} placeholder="New Category" />
-                            <Button onClick={onAddNewCategory}>Add</Button>
-                        </div>
-                        <div className="space-y-2 mt-4">
-                            {categories.map((category) => (
-                                <div key={category} className="flex flex-wrap items-center justify-between gap-2 rounded-md p-2">
-                                    <span className="break-all">{category}</span>
-                                    {isSavingsCategory(category) ? (
-                                        <span className="text-xs text-muted-foreground px-2 py-1 rounded-md border">Default</span>
-                                    ) : (
-                                        <Button variant="destructive" size="sm" onClick={() => onDeleteCategory(category)}>Delete</Button>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                <Tabs defaultValue="general" className="w-full">
+                    <TabsList className="grid w-full grid-cols-3">
+                        <TabsTrigger value="general">General</TabsTrigger>
+                        <TabsTrigger value="automation">Automation</TabsTrigger>
+                        <TabsTrigger value="data">Data</TabsTrigger>
+                    </TabsList>
 
-                    <div>
-                        <h3 className="font-semibold mb-2">Currency</h3>
-                        <Select value={currency} onValueChange={onCurrencyChange}>
-                            <SelectTrigger>
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {currencies.map((currency) => (
-                                    <SelectItem key={currency.code} value={currency.code}>{currency.label}</SelectItem>
+                    <TabsContent value="general" className="space-y-6 mt-4">
+                        <div>
+                            <h3 className="font-semibold mb-2">Currency</h3>
+                            <Select value={currency} onValueChange={onCurrencyChange}>
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {currencies.map((currency) => (
+                                        <SelectItem key={currency.code} value={currency.code}>{currency.label}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="border-t pt-4">
+                            <h3 className="font-semibold mb-2">Categories</h3>
+                            <div className="flex flex-col gap-2 sm:flex-row">
+                                <Input value={newCategory} onChange={(e) => setNewCategory(e.target.value)} placeholder="New Category" />
+                                <Button onClick={onAddNewCategory}>Add</Button>
+                            </div>
+                            <div className="space-y-2 mt-4">
+                                {categories.map((category) => (
+                                    <div key={category} className="flex flex-wrap items-center justify-between gap-2 rounded-md p-2">
+                                        <span className="break-all">{category}</span>
+                                        {isSavingsCategory(category) ? (
+                                            <span className="text-xs text-muted-foreground px-2 py-1 rounded-md border">Default</span>
+                                        ) : (
+                                            <Button variant="destructive" size="sm" onClick={() => onDeleteCategory(category)}>Delete</Button>
+                                        )}
+                                    </div>
                                 ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                            </div>
+                        </div>
 
-                    <div>
-                        <RecurringManager 
-                            recurring={recurring} 
-                            currencySymbol={currencySymbol}
-                            onDelete={onDeleteRecurring} 
-                            />
-                    </div>
+                    </TabsContent>
 
-                    <div className="border-t pt-4">
-                        <RulesManager rules={rules} categories={categories} onAddRule={onAddRule} onDeleteRule={onDeleteRule} />
-                    </div>
+                    <TabsContent value="automation" className="space-y-6 mt-4">
+                        <div className="border-t pt-4">
+                            <RulesManager rules={rules} categories={categories} onAddRule={onAddRule} onDeleteRule={onDeleteRule} />
+                        </div>
 
-                    <div>
+                        <div>
+                            <RecurringManager
+                                recurring={recurring}
+                                currencySymbol={currencySymbol}
+                                onDelete={onDeleteRecurring} />
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="data" className="space-y-6 mt-4">
                         <div>
                             <h3 className="font-semibold mb-2">Data Management</h3>
                             <p className="text-sm text-muted-foreground mb-3">Import transactions from a CSV file</p>
@@ -137,7 +148,7 @@ export function SettingsDialog({
                         </div>
 
                         <div className="border-t border-red-500/30 pt-4 mt-4">
-                            <h3 className="font-semibold mb-2 text-red-600">Danger</h3>  
+                            <h3 className="font-semibold mb-2 text-red-600">Danger</h3>
                             <p className="text-sm text-muted-foreground mb-3">This will permanently delete <b>ALL</b> your data</p>
                             <Button variant="destructive" size="sm" onClick={() => {
                                 if (confirm("Are you sure you want to wipe your data? This action cannot be undone.")) {
@@ -145,8 +156,9 @@ export function SettingsDialog({
                                 }
                             }}>Clear all data</Button>
                         </div>
-                    </div>
-                </div>
+
+                    </TabsContent>
+                </Tabs>
             </DialogContent>
         </Dialog>
     )
