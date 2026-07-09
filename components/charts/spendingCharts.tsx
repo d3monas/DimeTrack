@@ -1,20 +1,13 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts"
 import { EmptyState } from "../emptyState"
+import { categoryCustomization } from "@/lib/categoryCustomization"
 
 type SpendingChartThings = {
     totals: Record<string, number>
+    categoryCustomization: Record<string, categoryCustomization>
 }
 
-const colors = [
-    "#22c55e",
-    "#3b82f6",
-    "#f59e0b",
-    "#ef4444",
-    "#8b5cf6",
-    "#06b6d4",
-]
-
-export function SpendingChart({ totals }: SpendingChartThings) {
+export function SpendingChart({ totals, categoryCustomization }: SpendingChartThings) {
     const data = Object.entries(totals).map(([category, amount]) => ({ category, amount }))
 
     if (data.length === 0) {
@@ -33,7 +26,14 @@ export function SpendingChart({ totals }: SpendingChartThings) {
             <div className="h-72 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                        <Pie data={data} dataKey="amount" nameKey="category" outerRadius={100} label={({ payload }) => payload.category}>{data.map((_, index) => (<Cell key={index} fill={colors[index % colors.length]} />))}</Pie>
+                        <Pie data={data} dataKey="amount" nameKey="category" outerRadius={100} label={({ payload }) => payload.category}>
+                            {data.map((entry, index) => {
+                                const color = categoryCustomization?.[entry.category]?.color || "#6b7280"
+                                return (
+                                    <Cell key={`cell-${index}`} fill={color} />
+                                )
+                            })}
+                        </Pie>
                         <Tooltip />
                     </PieChart>
                 </ResponsiveContainer>
