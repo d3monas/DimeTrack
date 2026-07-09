@@ -1,4 +1,4 @@
-import { icons, type LucideIcon } from "lucide-react"
+import { ShoppingCart, Tag, type LucideIcon } from "lucide-react"
 
 export type categoryCustomization = {
     color: string
@@ -13,8 +13,12 @@ export const availableIcons = [
     "ShoppingCart"
 ]
 
+const iconMap: Record<string, LucideIcon> = {
+    ShoppingCart
+}
+
 export function getIconByName(name: string): LucideIcon {
     return (
-        (icons as Record<string, LucideIcon>)[name] || icons.Tag
+        iconMap[name] || Tag
     )
 }
