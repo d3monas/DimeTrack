@@ -27,13 +27,14 @@ import type { Rule } from "@/types/rule"
 
 // libs
 import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends } from "@/lib/calculations"
-import { saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring, saveGoals, saveRules, clearAllData } from "@/lib/localstorage"
+import { saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring, saveGoals, saveRules, saveCategoryCustomization, clearAllData } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 import { savingsCategoryForGoal, isSavingsCategory } from "@/lib/consts"
 import { processRecurring } from "@/lib/recurring"
 import { importFromCSV } from "@/lib/csv"
 import { exportToJSON, importFromJSON } from "@/lib/data"
 import { autoCategories } from "@/lib/rules"
+import { categoryCustomization } from "@/lib/categoryCustomization"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -64,6 +65,8 @@ export default function Home() {
 
   const [rules, setRules] = useState<Rule[]>([])
 
+  const [categoryCustomization, setCategoryCustomization] = useState<Record<string, categoryCustomization>>({})
+
   // load localstorage 
   useEffect(() => {
     const data = loadAllData()
@@ -74,6 +77,7 @@ export default function Home() {
     setRecurring(data.recurring)
     setGoals(data.goals)
     setRules(data.rules)
+    setCategoryCustomization(data.categoryCustomization)
     setIsLoaded(true)
   }, [])
 
@@ -136,6 +140,11 @@ export default function Home() {
     }
   }, [isLoaded, rules])
 
+  useEffect(() => {
+    if (isLoaded) {
+      saveCategoryCustomization(categoryCustomization)
+    }
+  }, [isLoaded, categoryCustomization])
 
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
@@ -469,6 +478,13 @@ export default function Home() {
     setRules(prev => prev.filter(rule => rule.id !== id))
   }
 
+  function updateCategoryCustomization(category: string, customization: categoryCustomization) {
+    setCategoryCustomization(prev => ({
+      ...prev,
+      [category]: customization
+    }))
+  }
+
   if (!isLoaded) {
     return (
       <main className="min-h-screen bg-background">
@@ -503,7 +519,9 @@ export default function Home() {
               onClearData={handleClearData} 
               rules={rules}
               onAddRule={addRule}
-              onDeleteRule={deleteRule} />
+              onDeleteRule={deleteRule}
+              categoryCustomization={categoryCustomization}
+              onUpdateCategoryCustomization={updateCategoryCustomization} />
           </div>
         </header>
 

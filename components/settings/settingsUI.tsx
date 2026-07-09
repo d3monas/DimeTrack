@@ -9,6 +9,7 @@ import type { RecurringTransaction } from "@/types/recurringTransaction"
 import { RulesManager } from "./rulesManager"
 import type { Rule } from "@/types/rule"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
+import { availableColors, availableIcons, categoryCustomization, getIconByName } from "@/lib/categoryCustomization"
 
 type SettingsDialogThings = {
     categories: string[]
@@ -28,6 +29,8 @@ type SettingsDialogThings = {
     rules: Rule[]
     onAddRule: (contains: string, category: string) => void
     onDeleteRule: (id: string) => void
+    categoryCustomization: Record<string, categoryCustomization>
+    onUpdateCategoryCustomization: (category: string, customization: categoryCustomization) => void
 }
 
 const currencies = [
@@ -44,7 +47,7 @@ const currencies = [
 export function SettingsDialog({
     categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory, currency, currencySymbol,
     onCurrencyChange, recurring, onDeleteRecurring, onImportCSV, onExportBackup, onImportBackup, onClearData,
-    rules, onAddRule, onDeleteRule
+    rules, onAddRule, onDeleteRule, categoryCustomization, onUpdateCategoryCustomization
 }: SettingsDialogThings) {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const backupInputRef = useRef<HTMLInputElement>(null)

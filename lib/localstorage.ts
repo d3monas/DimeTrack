@@ -2,6 +2,7 @@ import type { Transaction } from "@/types/transaction"
 import type { Goal } from "@/types/goal"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
 import type { Rule } from "@/types/rule"
+import { categoryCustomization } from "@/lib/categoryCustomization"
 
 const isBrowser = typeof window !== "undefined"
 
@@ -219,6 +220,33 @@ export function loadRules(): Rule[] {
     }
 }
 
+// category meta
+export function saveCategoryCustomization(customization: Record<string, categoryCustomization>) {
+    if (!isBrowser) {
+        return
+    }
+    localStorage.setItem("categoryCustomization", JSON.stringify(customization))
+}
+
+export function loadCategoryCustomization(): Record<string, categoryCustomization> {
+    if (!isBrowser) {
+        return {}
+    }
+    try {
+        const saved = localStorage.getItem("categoryCustomization")
+        if (!saved) {
+            return {}
+        }
+        const parsed = JSON.parse(saved)
+        if (typeof parsed !== "object" || parsed === null) {
+            return {}
+        }
+        return parsed
+    } catch {
+        return {}
+    }
+}
+
 export function loadAllData() {
     return {
         transactions: loadTransactions(),
@@ -228,6 +256,7 @@ export function loadAllData() {
         currency: loadCurrency(),
         recurring: loadRecurring(),
         rules: loadRules(),
+        categoryCustomization: loadCategoryCustomization(),
     }
 }
 
@@ -242,4 +271,5 @@ export function clearAllData() {
     localStorage.removeItem("currency")
     localStorage.removeItem("recurring")
     localStorage.removeItem("rules")
+    localStorage.removeItem("categoryCustomization")
 }
