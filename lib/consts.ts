@@ -15,3 +15,6 @@ export function isSavingsCategory(category: string): boolean {
 export const recurringIntervalLabels: Record<RecurringTransaction["interval"], string> = {
     daily: "Daily", weekly: "Weekly", monthly: "Monthly", yearly: "Yearly", custom: "Custom"
 }
+
+export const DEFAULT_CATEGORY_COLOR = "#6b7280"
+export const DEFAULT_CATEGORY_ICON = "Tag"

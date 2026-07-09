@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "./emptyState"
 import { categoryCustomization, getIconByName } from "@/lib/categoryCustomization"
+import { DEFAULT_CATEGORY_COLOR, DEFAULT_CATEGORY_ICON } from "@/lib/consts"
 
 type BudgetOverviewThings = {
   totals: Record<string, number>
@@ -130,7 +131,7 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   {(() => {
-                    const defaultSetting = categoryCustomization?.[category] || { color: "#6b7280", icon: "Tag" }
+                    const defaultSetting = categoryCustomization?.[category] || { color: DEFAULT_CATEGORY_COLOR, icon: DEFAULT_CATEGORY_ICON }
                     const IconComponent = getIconByName(defaultSetting.icon)
                     return (
                       <span className="h-6 w-6 rounded-md flex items-center justify-center text-white" style={{ backgroundColor: defaultSetting.color }}>
@@ -181,7 +182,7 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol
                 <div className="mt-2 h-3 rounded-full bg-muted">
                   <div
                     className={"h-full rounded-full transition-all duration-700 ease-out"}
-                    style={{ width: `${Math.min(progress, 100)}%`, backgroundColor: (categoryCustomization?.[category]?.color || "#6b7280") + "cc" }}
+                    style={{ width: `${Math.min(progress, 100)}%`, backgroundColor: (categoryCustomization?.[category]?.color || DEFAULT_CATEGORY_COLOR) + "cc" }}
                   />
                 </div>
               )}

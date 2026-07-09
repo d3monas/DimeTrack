@@ -1,10 +1,11 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts"
 import { EmptyState } from "../emptyState"
 import { categoryCustomization } from "@/lib/categoryCustomization"
+import { DEFAULT_CATEGORY_COLOR } from "@/lib/consts"
 
 type SpendingChartThings = {
     totals: Record<string, number>
-    categoryCustomization: Record<string, categoryCustomization>
+    categoryCustomization?: Record<string, categoryCustomization>
 }
 
 export function SpendingChart({ totals, categoryCustomization }: SpendingChartThings) {
@@ -28,7 +29,7 @@ export function SpendingChart({ totals, categoryCustomization }: SpendingChartTh
                     <PieChart>
                         <Pie data={data} dataKey="amount" nameKey="category" outerRadius={100} label={({ payload }) => payload.category}>
                             {data.map((entry, index) => {
-                                const color = categoryCustomization?.[entry.category]?.color || "#6b7280"
+                                const color = categoryCustomization?.[entry.category]?.color || DEFAULT_CATEGORY_COLOR
                                 return (
                                     <Cell key={`cell-${index}`} fill={color} />
                                 )
