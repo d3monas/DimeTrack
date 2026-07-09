@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "./emptyState"
+import { categoryCustomization, getIconByName } from "@/lib/categoryCustomization"
 
 type BudgetOverviewThings = {
   totals: Record<string, number>
@@ -9,6 +10,7 @@ type BudgetOverviewThings = {
   onUpdateBudget: (category: string, limit: number) => void
   currencySymbol: string
   monthlyIncome: number
+  categoryCustomization: Record<string, categoryCustomization>
 }
 
 function getBarColor(progress: number) {
@@ -47,7 +49,7 @@ function getWarning(progress: number) {
   return null
 }
 
-export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol, monthlyIncome }: BudgetOverviewThings) {
+export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol, monthlyIncome, categoryCustomization }: BudgetOverviewThings) {
   const [editingCategory, setEditingCategory] = useState<string | null>(null)
   const [editingValue, setEditingValue] = useState("")
 
@@ -126,7 +128,18 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol
           return (
             <div key={category}>
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="font-medium">{category}</span>
+                <div className="flex items-center gap-2">
+                  {(() => {
+                    const defaultSetting = categoryCustomization?.[category] || { color: "#6b7280", icon: "Tag" }
+                    const IconComponent = getIconByName(defaultSetting.icon)
+                    return (
+                      <span className="h-6 w-6 rounded-md flex items-center justify-center text-white" style={{ backgroundColor: defaultSetting.color }}>
+                        <IconComponent className="h-3 w-3" />
+                      </span>
+                    )
+                  })()}
+                  <span className="font-medium">{category}</span>
+                </div>
 
                 {isEditing ? (
                   <div className="flex flex-wrap items-center gap-2">
@@ -167,8 +180,8 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol
               {hasLimit && !isEditing && (
                 <div className="mt-2 h-3 rounded-full bg-muted">
                   <div
-                    className={`h-full rounded-full transition-all duration-700 ease-out ${getBarColor(progress)}`}
-                    style={{ width: `${Math.min(progress, 100)}%` }}
+                    className={"h-full rounded-full transition-all duration-700 ease-out"}
+                    style={{ width: `${Math.min(progress, 100)}%`, backgroundColor: (categoryCustomization?.[category]?.color || "#6b7280") + "cc" }}
                   />
                 </div>
               )}
