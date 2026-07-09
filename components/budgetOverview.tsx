@@ -14,19 +14,6 @@ type BudgetOverviewThings = {
   categoryCustomization: Record<string, categoryCustomization>
 }
 
-function getBarColor(progress: number) {
-  if (progress >= 100) {
-    return "bg-red-600"
-  }
-  if (progress >= 80) {
-    return "bg-orange-500"
-  }
-  if (progress >= 50) {
-    return "bg-yellow-500"
-  }
-  return "bg-green-600"
-}
-
 function getTextColor(progress: number) {
   if (progress >= 100) {
     return "text-red-600 font-medium"

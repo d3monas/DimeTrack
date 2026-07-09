@@ -563,7 +563,7 @@ export default function Home() {
               {/* Breakdown into categories */}
               <CategoryBreakdown totals={categoryTotals} currencySymbol={currencySymbol} />
               {/* chart */}
-              <SpendingChart totals={categoryTotals} />
+              <SpendingChart totals={categoryTotals} categoryCustomization={categoryCustomization} />
             </div>
           </TabsContent>
 
@@ -638,7 +638,13 @@ export default function Home() {
             {/* Edit goal button */}
             <GoalDialog open={goalDialogOpen} setOpen={setGoalDialogOpen} goal={editingGoal} onSave={saveGoal} />
             {/* budget */}
-            <BudgetOverview totals={categoryTotals} budgets={budgets} onUpdateBudget={updateBudget} currencySymbol={currencySymbol} monthlyIncome={income} />
+            <BudgetOverview 
+              totals={categoryTotals} 
+              budgets={budgets} 
+              onUpdateBudget={updateBudget}
+              currencySymbol={currencySymbol} 
+              monthlyIncome={income} 
+              categoryCustomization={categoryCustomization} />
           </TabsContent>
         </Tabs>
       </div>
