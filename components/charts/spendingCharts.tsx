@@ -28,7 +28,7 @@ export function SpendingChart({ totals, categoryCustomization, currencySymbol }:
             <div className="h-72 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                        <Pie data={data} dataKey="amount" nameKey="category" outerRadius={100} label={({ payload }) => payload.category}>
+                        <Pie data={data} dataKey="amount" nameKey="category" outerRadius={100}>
                             {data.map((entry, index) => {
                                 const color = categoryCustomization?.[entry.category]?.color || DEFAULT_CATEGORY_COLOR
                                 return (
@@ -36,7 +36,24 @@ export function SpendingChart({ totals, categoryCustomization, currencySymbol }:
                                 )
                             })}
                         </Pie>
-                        <Tooltip formatter={(value) => `${currencySymbol}${Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}/>
+                        <Tooltip formatter={(value) => `${currencySymbol}${Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+                            contentStyle={{
+                                backgroundColor: "hsl(var(--popover))",
+                                border: "1px solid hsl(var(--border))",
+                                borderRadius: "0.5rem",
+                                color: "hsl(var(--muted-foreground))",
+                                fontSize: "12px",
+                                padding: "8px 12px",
+                                boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)"
+                            }}
+                            labelStyle={{
+                                color: "hsl(var(--popover-foreground))",
+                                fontWeight: 600,
+                                marginBottom: "4px"
+                            }}
+                            itemStyle={{
+                                color: "hsl(var(--popover-foreground))"
+                            }} />
                     </PieChart>
                 </ResponsiveContainer>
             </div>
