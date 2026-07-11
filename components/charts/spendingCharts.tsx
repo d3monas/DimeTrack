@@ -6,9 +6,10 @@ import { DEFAULT_CATEGORY_COLOR } from "@/lib/consts"
 type SpendingChartThings = {
     totals: Record<string, number>
     categoryCustomization?: Record<string, categoryCustomization>
+    currencySymbol: string
 }
 
-export function SpendingChart({ totals, categoryCustomization }: SpendingChartThings) {
+export function SpendingChart({ totals, categoryCustomization, currencySymbol }: SpendingChartThings) {
     const data = Object.entries(totals).map(([category, amount]) => ({ category, amount }))
 
     if (data.length === 0) {
@@ -35,7 +36,7 @@ export function SpendingChart({ totals, categoryCustomization }: SpendingChartTh
                                 )
                             })}
                         </Pie>
-                        <Tooltip />
+                        <Tooltip formatter={(value) => `${currencySymbol}${Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}/>
                     </PieChart>
                 </ResponsiveContainer>
             </div>

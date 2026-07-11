@@ -563,7 +563,7 @@ export default function Home() {
               {/* Breakdown into categories */}
               <CategoryBreakdown totals={categoryTotals} currencySymbol={currencySymbol} />
               {/* chart */}
-              <SpendingChart totals={categoryTotals} categoryCustomization={categoryCustomization} />
+              <SpendingChart totals={categoryTotals} categoryCustomization={categoryCustomization} currencySymbol={currencySymbol} />
             </div>
           </TabsContent>
 
