@@ -97,10 +97,10 @@ export function TransactionList({
                         </SelectContent>
                     </Select>
                     <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={handleExport}>Export CSV</Button>
+                        <Button variant="outline" size="sm" onClick={handleExport} className="h-8">Export CSV</Button>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="sm" className="flex items-center gap-1">
+                                <Button variant="outline" size="sm" className="flex items-center gap-1 h-8">
                                     {filterLabels[filter]} <span className="text-xs">▾</span>
                                 </Button>
                             </DropdownMenuTrigger>
