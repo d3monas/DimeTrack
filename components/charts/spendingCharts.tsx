@@ -55,7 +55,7 @@ export function SpendingChart({ totals, categoryCustomization, currencySymbol }:
                             marginBottom: "4px"
                         }}
                         itemStyle={{
-                        color: "hsl(var(--popover-foreground))"
+                            color: "hsl(var(--popover-foreground))"
                         }} />
                         <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }} />
                     </PieChart>

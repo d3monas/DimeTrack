@@ -617,7 +617,8 @@ export default function Home() {
                 onDelete={deleteTransaction}
                 currencySymbol={currencySymbol}
                 filter={filterPeriod}
-                onFilterChange={setFilterPeriod} />
+                onFilterChange={setFilterPeriod} 
+                categories={categories} />
             </div>
           </TabsContent>
 
