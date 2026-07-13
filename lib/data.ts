@@ -3,6 +3,7 @@ import type { Goal } from "@/types/goal"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
 import type { Rule } from "@/types/rule"
 import type { Account } from "@/types/account"
+import type { categoryCustomization } from "./categoryCustomization"
 
 type AppBackupThings = {
     transactions: Transaction[]
@@ -13,6 +14,7 @@ type AppBackupThings = {
     recurring: RecurringTransaction[]
     rules: Rule[]
     accounts: Account[]
+    categoryCustomization: Record<string, categoryCustomization>
 }
 
 export function exportToJSON(data: AppBackupThings, filename = "dimetrack-backup.json") {

@@ -432,7 +432,9 @@ export default function Home() {
       budgets,
       currency,
       recurring,
-      rules
+      rules,
+      categoryCustomization,
+      accounts
     })
   }
 
@@ -451,6 +453,8 @@ export default function Home() {
     setCurrency(data.currency || "USD")
     setRecurring(data.recurring || [])
     setRules(data.rules || [])
+    setCategoryCustomization(data.categoryCustomization || {})
+    setAccounts(data.accounts || [])
 
     toast.success("Backup file imported successfully")
   }
