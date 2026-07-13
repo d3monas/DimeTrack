@@ -14,7 +14,7 @@ type EditTransactionDialogThings = {
     transaction: Transaction | null
     open: boolean
     onClose: () => void
-    onSave: (id: string, description: string, amount: number, type: "income" | "expense", category: string, notes?: string) => void
+    onSave: (id: string, description: string, amount: number, type: "income" | "expense" | "transfer", category: string, notes?: string) => void
     categories: string[]
     budgets: Record<string, number>
     categoryTotals: Record<string, number>
@@ -25,7 +25,7 @@ type EditTransactionDialogThings = {
 export function EditTransactionDialog({ transaction, open, onClose, onSave, categories, budgets, categoryTotals, currencySymbol, rules }: EditTransactionDialogThings) {
     const [description, setDescription] = useState("")
     const [amount, setAmount] = useState("")
-    const [type, setType] = useState<"income" | "expense">("expense")
+    const [type, setType] = useState<"income" | "expense" | "transfer">("expense")
     const [category, setCategory] = useState("")
     const [notes, setNotes] = useState("")
     const [errors, setErrors] = useState<Record<string, string>>({})
@@ -111,6 +111,7 @@ export function EditTransactionDialog({ transaction, open, onClose, onSave, cate
                             <SelectContent>
                                 <SelectItem value="expense">Expense</SelectItem>
                                 <SelectItem value="income">Income</SelectItem>
+                                <SelectItem value="transfer">Transfer</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
