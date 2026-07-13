@@ -543,7 +543,10 @@ export default function Home() {
               onAddRule={addRule}
               onDeleteRule={deleteRule}
               categoryCustomization={categoryCustomization}
-              onUpdateCategoryCustomization={updateCategoryCustomization} />
+              onUpdateCategoryCustomization={updateCategoryCustomization} 
+              accounts={accounts}
+              onAddAccount={addAccount}
+              onDeleteAccount={deleteAccount} />
           </div>
         </header>
 
