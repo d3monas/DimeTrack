@@ -11,6 +11,8 @@ import type { Rule } from "@/types/rule"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import { availableColors, availableIcons, categoryCustomization, getIconByName } from "@/lib/categoryCustomization"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import type { Account } from "@/types/account"
+import { AccountsManager } from "./accountManager"
 
 type SettingsDialogThings = {
     categories: string[]
@@ -32,6 +34,9 @@ type SettingsDialogThings = {
     onDeleteRule: (id: string) => void
     categoryCustomization: Record<string, categoryCustomization>
     onUpdateCategoryCustomization: (category: string, customization: categoryCustomization) => void
+    accounts: Account[]
+    onAddAccount: (name: string) => void
+    onDeleteAccount: (id: string) => void
 }
 
 const currencies = [
@@ -48,7 +53,8 @@ const currencies = [
 export function SettingsDialog({
     categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory, currency, currencySymbol,
     onCurrencyChange, recurring, onDeleteRecurring, onImportCSV, onExportBackup, onImportBackup, onClearData,
-    rules, onAddRule, onDeleteRule, categoryCustomization, onUpdateCategoryCustomization
+    rules, onAddRule, onDeleteRule, categoryCustomization, onUpdateCategoryCustomization, accounts, onAddAccount,
+    onDeleteAccount
 }: SettingsDialogThings) {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const backupInputRef = useRef<HTMLInputElement>(null)
@@ -136,6 +142,10 @@ export function SettingsDialog({
                                     )
                                 })}
                             </div>
+                        </div>
+
+                        <div className="border-t pt-6 mt-6">
+                            <AccountsManager accounts={accounts} onAddAccount={onAddAccount} onDeleteAccount={onDeleteAccount} />
                         </div>
 
                     </TabsContent>
