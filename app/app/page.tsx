@@ -24,10 +24,12 @@ import type { Goal } from "@/types/goal"
 import type { FilterPeriod } from "@/lib/calculations"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
 import type { Rule } from "@/types/rule"
+import type { Account } from "@/types/account"
 
 // libs
 import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends } from "@/lib/calculations"
-import { saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring, saveGoals, saveRules, saveCategoryCustomization, clearAllData } from "@/lib/localstorage"
+import { saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring, 
+  saveGoals, saveRules, saveCategoryCustomization, saveAccounts, clearAllData } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 import { savingsCategoryForGoal, isSavingsCategory } from "@/lib/consts"
 import { processRecurring } from "@/lib/recurring"
@@ -67,6 +69,8 @@ export default function Home() {
 
   const [categoryCustomization, setCategoryCustomization] = useState<Record<string, categoryCustomization>>({})
 
+  const [accounts, setAccounts] = useState<Account[]>([])
+
   // load localstorage 
   useEffect(() => {
     const data = loadAllData()
@@ -78,6 +82,7 @@ export default function Home() {
     setGoals(data.goals)
     setRules(data.rules)
     setCategoryCustomization(data.categoryCustomization)
+    setAccounts(data.accounts || [])
     setIsLoaded(true)
   }, [])
 
@@ -145,6 +150,12 @@ export default function Home() {
       saveCategoryCustomization(categoryCustomization)
     }
   }, [isLoaded, categoryCustomization])
+
+  useEffect(() => {
+    if (isLoaded) {
+      saveAccounts(accounts)
+    }
+  }, [isLoaded, accounts])
 
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
@@ -483,6 +494,17 @@ export default function Home() {
       ...prev,
       [category]: customization
     }))
+  }
+
+  function addAccount(name: string) {
+    if (!name.trim()) {
+      return
+    }
+    setAccounts(prev => [...prev, { id: crypto.randomUUID(), name: name.trim() }])
+  }
+
+  function deleteAccount(id: string) {
+    setAccounts(prev => prev.filter(account => account.id !== id))
   }
 
   if (!isLoaded) {
