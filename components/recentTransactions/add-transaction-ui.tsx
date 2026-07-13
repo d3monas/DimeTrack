@@ -232,7 +232,7 @@ export function AddTransactionDialog({
                             {isAddingCategory ? (
                                 <div className="flex gap-2">
                                     <Input 
-                                        value={newCategoryName} 
+                                        value={newCategoryName}
                                         onChange={(e) => setNewCategoryName(e.target.value)}
                                         placeholder="Category name" 
                                     />
