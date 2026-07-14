@@ -17,6 +17,7 @@ import { UpcomingTransactions } from "@/components/upcomingTransactions"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
 import { CalendarView } from "@/components/calendarView"
+import { AccountBalances } from "@/components/accountBalances"
 
 // types
 import type { Transaction, TransactionSplit } from "@/types/transaction"
@@ -613,6 +614,8 @@ export default function Home() {
             <UpcomingTransactions recurring={recurring} currencySymbol={currencySymbol} />
             {/* Trend */}
             <TrendChart data={monthlyTrends} currencySymbol={currencySymbol} />
+            {/* account balances */}
+            <AccountBalances accounts={accountBalances} currencySymbol={currencySymbol} />
 
             <div className="grid gap-4 md:grid-cols-2">
               {/* Breakdown into categories */}
