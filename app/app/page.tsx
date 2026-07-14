@@ -653,7 +653,8 @@ export default function Home() {
                 currencySymbol={currencySymbol}
                 filter={filterPeriod}
                 onFilterChange={setFilterPeriod} 
-                categories={categories} />
+                categories={categories} 
+                accounts={accounts} />
             </div>
           </TabsContent>
 

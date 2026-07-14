@@ -10,6 +10,7 @@ import { Input } from "../ui/input"
 import { exportToCSV } from "@/lib/csv"
 import { EmptyState } from "../emptyState"
 import { SelectContent, SelectItem, SelectTrigger, Select, SelectValue } from "../ui/select"
+import type { Account } from "@/types/account"
 
 const filterLabels: Record<FilterPeriod, string> = {
     today: "Today",
@@ -29,15 +30,24 @@ type Things = {
     filter: FilterPeriod
     onFilterChange: (filter: FilterPeriod) => void
     categories: string[]
+    accounts: Account[]
 }
 
 export function TransactionList({
-    transactions, onDelete, onEditClick, currencySymbol, filter, onFilterChange, categories
+    transactions, onDelete, onEditClick, currencySymbol, filter, onFilterChange, categories, accounts
 }: Things) {
     const [searchTerm, setSearchTerm] = useState("")
-
     const [typeFilter, setTypeFilter] = useState<string>("all")
     const [categoryFilter, setCategoryFilter] = useState<string>("all")
+
+    const getAccountName = (id?: string) => {
+        if (!id) {
+            return null
+        }
+        return (
+            accounts.find(account => account.id === id)?.name
+        )
+    }
 
     const searchedTransactions = transactions.filter((transaction) => {
         if (!searchTerm.trim()) {
@@ -124,39 +134,56 @@ export function TransactionList({
             ) : (
                 <>
                     <div className="space-y-4">
-                            {pageItems.map((transaction) => (
-                                <div key={transaction.id} className="flex flex-wrap gap-2 items-center justify-between border-b pb-3 last:border-0">
-                                    <div className="min-w-0">
-                                        <p className="font-medium">{transaction.description}</p>
+                            {pageItems.map((transaction) => {
+                                const fromAccount = getAccountName(transaction.accountId)
+                                const toAccount = getAccountName(transaction.transferAccountId)
+                                const isTransfer = transaction.type === "transfer"
 
-                                        {transaction.notes && (
-                                            <p className="text-xs italic text-muted-foreground/80 mt-0.5">{transaction.notes}</p>
-                                        )}
+                                return (
+                                    <div key={transaction.id} className="flex flex-wrap gap-2 items-center justify-between border-b pb-3 last:border-0">
+                                        <div className="min-w-0">
+                                            <p className="font-medium">{transaction.description}</p>
 
-                                        <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                                            <span>{new Date(transaction.date).toLocaleString()}</span>
-                                            <span>•</span>
-                                            <span>
-                                                {transaction.splits && transaction.splits.length > 0 
-                                                    ? transaction.splits.map(split => `${split.category} - ${currencySymbol}${split.amount.toFixed(2)}`).join(", ")
-                                                    : transaction.category}
+                                            {transaction.notes && (
+                                                <p className="text-xs italic text-muted-foreground/80 mt-0.5">{transaction.notes}</p>
+                                            )}
+
+                                            <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+                                                <span>{new Date(transaction.date).toLocaleString()}</span>
+                                                <span>•</span>
+                                                <span>
+                                                    {transaction.splits && transaction.splits.length > 0 
+                                                        ? transaction.splits.map(split => `${split.category} - ${currencySymbol}${split.amount.toFixed(2)}`).join(", ")
+                                                        : transaction.category}
+                                                </span>
+
+                                                {(fromAccount || toAccount) && (
+                                                    <>
+                                                        <span>•</span>
+                                                        <span className="text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
+                                                            {isTransfer
+                                                                ? `${fromAccount ?? "Unknown"} → ${toAccount ?? "Unknown"}` : fromAccount ?? "Uncategorized"
+                                                            }
+                                                        </span>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <span className={`font-medium ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}>
+                                                {transaction.type === "income" ? "+" : "-"}{currencySymbol}{transaction.amount.toFixed(2)}
                                             </span>
+                                            {!isSavingsCategory(transaction.category) ? (
+                                                <Button variant="ghost" size="sm" onClick={() => onEditClick(transaction)}>✎</Button>
+                                            ) : (
+                                                <span className="w-8" />
+                                            )}
+                                            <Button variant="ghost" size="sm" className="text-red-500" onClick={() => onDelete(transaction.id)}>✕</Button>
                                         </div>
                                     </div>
-
-                                    <div className="flex items-center gap-2">
-                                        <span className={`font-medium ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}>
-                                            {transaction.type === "income" ? "+" : "-"}{currencySymbol}{transaction.amount.toFixed(2)}
-                                        </span>
-                                        {!isSavingsCategory(transaction.category) ? (
-                                            <Button variant="ghost" size="sm" onClick={() => onEditClick(transaction)}>✎</Button>
-                                        ) : (
-                                            <span className="w-8" />
-                                        )}
-                                        <Button variant="ghost" size="sm" className="text-red-500" onClick={() => onDelete(transaction.id)}>✕</Button>
-                                    </div>
-                                </div>
-                            ))}
+                                )
+                            })}
                     </div>
                     <PaginationUI currentPage={currentPage} totalPages={totalPages} onPrev={prevPage} onNext={nextPage} />
                 </>
