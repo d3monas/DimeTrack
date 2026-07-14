@@ -518,20 +518,25 @@ export default function Home() {
 
   const accountBalances = accounts.map(account => {
     let accBalance = 0
+
     transactions.forEach(transaction => {
-      if (transaction.type === "income") {
-        accBalance += transaction.amount
+      if (transaction.accountId === account.id) {
+        if (transaction.type === "income") {
+          accBalance += transaction.amount
+        }
+        if (transaction.type === "expense") {
+          accBalance -= transaction.amount
+        }
+        if (transaction.type === "transfer") {
+          accBalance -= transaction.amount
+        }
       }
-      if (transaction.type === "expense") {
-        accBalance -= transaction.amount
-      }
-      if (transaction.type === "transfer") {
-        accBalance -= transaction.amount
-      }
+      
       if (transaction.transferAccountId === account.id) {
         accBalance += transaction.amount
       }
     })
+
     return {
       ...account,
       balance: accBalance
