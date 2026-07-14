@@ -192,6 +192,45 @@ export function AddTransactionDialog({
                         )}
                     </div>
 
+                    {transactionType === "transfer" ? (
+                        <div className="grid grid-cols-2 gap-2">
+                            <div>
+                                <Label>From Account</Label>
+                                <Select value={accountId} onValueChange={setAccountId}>
+                                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                                    <SelectContent>
+                                        {accounts.map((account) => (
+                                            <SelectItem key={account.id} value={account.id}>{account.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div>
+                                <Label>To Account</Label>
+                                <Select value={transferAccountId} onValueChange={setTransferAccountId}>
+                                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                                    <SelectContent>
+                                        {accounts.map((account) => (
+                                            <SelectItem key={account.id} value={account.id}>{account.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                    ) : (
+                        <div>
+                            <Label>Account (Optional)</Label>
+                            <Select value={accountId} onValueChange={setAccountId}>
+                                <SelectTrigger><SelectValue placeholder="Uncategorized" /></SelectTrigger>
+                                <SelectContent>
+                                    {accounts.map((account) => (
+                                        <SelectItem key={account.id} value={account.id}>{account.name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+
                     <div>
                         <Label>Notes (optional)</Label>
                         <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Add any extra details here..." className="resize-none" rows={2} />
