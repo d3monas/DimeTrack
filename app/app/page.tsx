@@ -197,7 +197,7 @@ export default function Home() {
       return
     }
 
-    if (!hasValidSplits && !category) {
+    if (!hasValidSplits && !category && transactionType !== "transfer") {
       return
     }
 

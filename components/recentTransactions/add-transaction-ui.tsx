@@ -85,7 +85,7 @@ export function AddTransactionDialog({
             } else if (parsedAmount <= 0) {
                 newErrors.amount = "Amount must be greater than 0"
             }
-            if (!category) {
+            if (!category && transactionType !== "transfer") {
                 newErrors.category = "Please select a category"
             }
         }
