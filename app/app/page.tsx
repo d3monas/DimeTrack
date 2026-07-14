@@ -515,6 +515,28 @@ export default function Home() {
     setAccounts(prev => prev.filter(account => account.id !== id))
   }
 
+  const accountBalances = accounts.map(account => {
+    let accBalance = 0
+    transactions.forEach(transaction => {
+      if (transaction.type === "income") {
+        accBalance += transaction.amount
+      }
+      if (transaction.type === "expense") {
+        accBalance -= transaction.amount
+      }
+      if (transaction.type === "transfer") {
+        accBalance -= transaction.amount
+      }
+      if (transaction.transferAccountId === account.id) {
+        accBalance += transaction.amount
+      }
+    })
+    return {
+      ...account,
+      balance: accBalance
+    }
+  })
+
   if (!isLoaded) {
     return (
       <main className="min-h-screen bg-background">
