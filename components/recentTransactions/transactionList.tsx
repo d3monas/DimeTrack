@@ -174,7 +174,7 @@ export function TransactionList({
                                             <span className={`font-medium ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}>
                                                 {transaction.type === "income" ? "+" : "-"}{currencySymbol}{transaction.amount.toFixed(2)}
                                             </span>
-                                            {!isSavingsCategory(transaction.category) ? (
+                                            {!isSavingsCategory(transaction.category) && !isTransfer ? (
                                                 <Button variant="ghost" size="sm" onClick={() => onEditClick(transaction)}>✎</Button>
                                             ) : (
                                                 <span className="w-8" />
