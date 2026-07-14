@@ -106,7 +106,7 @@ export function EditTransactionDialog({ transaction, open, onClose, onSave, cate
 
                     <div>
                         <Label>Type</Label>
-                        <Select value={type} onValueChange={(value) => setType(value as "income" | "expense")}>
+                        <Select value={type} onValueChange={(value) => setType(value as "income" | "expense" | "transfer")}>
                             <SelectTrigger><SelectValue /></SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="expense">Expense</SelectItem>
