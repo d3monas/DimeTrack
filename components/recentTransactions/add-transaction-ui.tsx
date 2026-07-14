@@ -28,10 +28,10 @@ type AddTransactionDialogThings = {
     setCategory: (value: string) => void
     notes: string
     setNotes: (value: string) => void
-    onSave: (isRecurring: boolean, 
-        interval: RecurringTransaction["interval"], 
-        customIntervalValue?: number, 
-        customIntervalUnit?: "days" | "weeks" | "months", 
+    onSave: (isRecurring: boolean,
+        interval: RecurringTransaction["interval"],
+        customIntervalValue?: number,
+        customIntervalUnit?: "days" | "weeks" | "months",
         splits?: TransactionSplit[],
         accountId?: string,
         transferAccountId?: string) => void
@@ -44,8 +44,8 @@ type AddTransactionDialogThings = {
 }
 
 export function AddTransactionDialog({
-    open, setOpen, description, setDescription, amount, setAmount, transactionType, 
-    setTransactionType, category, setCategory, onSave, categories, notes, setNotes, 
+    open, setOpen, description, setDescription, amount, setAmount, transactionType,
+    setTransactionType, category, setCategory, onSave, categories, notes, setNotes,
     onAddNewCategory, budgets, categoryTotals, currencySymbol, rules, accounts
 }: AddTransactionDialogThings) {
     const [errors, setErrors] = useState<Record<string, string>>({})
@@ -63,7 +63,7 @@ export function AddTransactionDialog({
     const currentLimit = budgets[category] ?? 0
     const currentSpent = categoryTotals[category] ?? 0
     const projectedSpent = currentSpent + (Number(amount) || 0)
-    const willExceedBudget = currentLimit > 0 && projectedSpent  > currentLimit
+    const willExceedBudget = currentLimit > 0 && projectedSpent > currentLimit
 
     function validate() {
         const newErrors: Record<string, string> = {}
@@ -110,9 +110,9 @@ export function AddTransactionDialog({
 
     function handleSave() {
         if (validate()) {
-            onSave(isRecurring, 
-                interval, 
-                interval === "custom" ? Number(customValue) : undefined, 
+            onSave(isRecurring,
+                interval,
+                interval === "custom" ? Number(customValue) : undefined,
                 interval === "custom" ? customUnit : undefined,
                 isSplit ? splits : undefined,
                 accountId,
@@ -167,7 +167,7 @@ export function AddTransactionDialog({
 
                     <div>
                         <Label>Type</Label>
-                        <Select value={transactionType} onValueChange={(value) => setTransactionType(value as "expense" | "income")}>
+                        <Select value={transactionType} onValueChange={(value) => setTransactionType(value as "expense" | "income" | "transfer")}>
                             <SelectTrigger>
                                 <SelectValue />
                             </SelectTrigger>
@@ -241,91 +241,95 @@ export function AddTransactionDialog({
                         <Label htmlFor="recurring" className="cursor-pointer">Recurring transaction</Label>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                        <Checkbox id="split" checked={isSplit} onCheckedChange={(checked) => setIsSplit(checked === true)} />
-                        <Label htmlFor="split" className="cursor-pointer">Split into multiple categories</Label>
-                    </div>
+                    {transactionType !== "transfer" && (
+                        <div className="flex items-center gap-2">
+                            <Checkbox id="split" checked={isSplit} onCheckedChange={(checked) => setIsSplit(checked === true)} />
+                            <Label htmlFor="split" className="cursor-pointer">Split into multiple categories</Label>
+                        </div>
+                    )}
 
-                    {isSplit ? (
-                        <div className="space-y-3 rounded-lg border p-3">
-                            {errors.splits && <FieldError message={errors.splits} />}
-                            {splits.map((split, i) => (
-                                <div key={i} className="flex items-end gap-2">
-                                    <div className="flex-1">
-                                        <Label>Category</Label>
-                                        <Select value={split.category} onValueChange={(value) => {
-                                            const newSplits = [...splits]
-                                            newSplits[i].category = value
-                                            setSplits(newSplits)
+                    {transactionType !== "transfer" && (
+                        isSplit ? (
+                            <div className="space-y-3 rounded-lg border p-3">
+                                {errors.splits && <FieldError message={errors.splits} />}
+                                {splits.map((split, i) => (
+                                    <div key={i} className="flex items-end gap-2">
+                                        <div className="flex-1">
+                                            <Label>Category</Label>
+                                            <Select value={split.category} onValueChange={(value) => {
+                                                const newSplits = [...splits]
+                                                newSplits[i].category = value
+                                                setSplits(newSplits)
+                                            }}>
+                                                <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                                                <SelectContent>
+                                                    {categories.map((category) => (
+                                                        <SelectItem key={category} value={category}>{category}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="w-24">
+                                            <Label>Amount</Label>
+                                            <Input type="number" min="0.01" step="0.01" value={split.amount || ""} onChange={(e) => {
+                                                const newSplits = [...splits]
+                                                newSplits[i].amount = Number(e.target.value)
+                                                setSplits(newSplits)
+                                            }} />
+                                        </div>
+                                        <Button variant="ghost" size="sm" className="text-red-500" onClick={() => {
+                                            if (splits.length > 1) {
+                                                setSplits(splits.filter((_, a) => a !== i))
+                                            }
+                                        }}>✕</Button>
+                                    </div>
+                                ))}
+                                <Button variant="outline" size="sm" onClick={() => setSplits([...splits, { amount: 0, category: "" }])}>Add split</Button>
+                            </div>
+                        ) : (
+                            <div>
+                                <Label>Category</Label>
+                                {isAddingCategory ? (
+                                    <div className="flex gap-2">
+                                        <Input
+                                            value={newCategoryName}
+                                            onChange={(e) => setNewCategoryName(e.target.value)}
+                                            placeholder="Category name"
+                                        />
+                                        <Button size="sm" type="button" onClick={() => {
+                                            if (newCategoryName.trim()) {
+                                                onAddNewCategory(newCategoryName.trim())
+                                                setCategory(newCategoryName.trim())
+                                                setNewCategoryName("")
+                                                setIsAddingCategory(false)
+                                                if (errors.category) {
+                                                    setErrors((p) => ({ ...p, category: "" }))
+                                                }
+                                            }
+                                        }}>Add</Button>
+                                        <Button size="sm" variant="ghost" onClick={() => setIsAddingCategory(false)}>Cancel</Button>
+                                    </div>
+                                ) : (
+                                    <div className="flex gap-2">
+                                        <Select value={category} disabled={categories.length === 0} onValueChange={(value) => {
+                                            setCategory(value)
+                                            if (errors.category) {
+                                                setErrors((p) => ({ ...p, category: "" }))
+                                            }
                                         }}>
-                                            <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                                            <SelectTrigger className="flex-1"><SelectValue placeholder={categories.length === 0 ? "No categories found" : "Select a category"} /></SelectTrigger>
                                             <SelectContent>
                                                 {categories.map((category) => (
                                                     <SelectItem key={category} value={category}>{category}</SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
+                                        <Button size="sm" variant="outline" onClick={() => setIsAddingCategory(true)}>+ New</Button>
                                     </div>
-                                    <div className="w-24">
-                                        <Label>Amount</Label>
-                                        <Input type="number" min="0.01" step="0.01" value={split.amount || ""} onChange={(e) => {
-                                            const newSplits = [...splits]
-                                            newSplits[i].amount = Number(e.target.value)
-                                            setSplits(newSplits)
-                                        }} />
-                                    </div>
-                                    <Button variant="ghost" size="sm" className="text-red-500" onClick={() => {
-                                        if (splits.length > 1) {
-                                            setSplits(splits.filter((_, a) => a !== i))
-                                        }
-                                    }}>✕</Button>
-                                </div>
-                            ))}
-                            <Button variant="outline" size="sm" onClick={() => setSplits([...splits, { amount: 0, category: "" }])}>Add split</Button>
-                        </div>
-                    ) : (
-                        <div>
-                            <Label>Category</Label>
-                            {isAddingCategory ? (
-                                <div className="flex gap-2">
-                                    <Input 
-                                        value={newCategoryName}
-                                        onChange={(e) => setNewCategoryName(e.target.value)}
-                                        placeholder="Category name" 
-                                    />
-                                    <Button size="sm" type="button" onClick={() => {
-                                        if (newCategoryName.trim()) {
-                                            onAddNewCategory(newCategoryName.trim())
-                                            setCategory(newCategoryName.trim())
-                                            setNewCategoryName("")
-                                            setIsAddingCategory(false)
-                                            if (errors.category) {
-                                                setErrors((p) => ({ ...p, category: "" }))
-                                            }
-                                        }
-                                    }}>Add</Button>
-                                    <Button size="sm" variant="ghost" onClick={() => setIsAddingCategory(false)}>Cancel</Button>
-                                </div>
-                            ) : (
-                                <div className="flex gap-2">
-                                    <Select value={category} disabled={categories.length === 0} onValueChange={(value) => {
-                                        setCategory(value)
-                                        if (errors.category) {
-                                            setErrors((p) => ({ ...p, category: "" }))
-                                        }
-                                    }}>
-                                        <SelectTrigger className="flex-1"><SelectValue placeholder={categories.length === 0 ? "No categories found" : "Select a category"} /></SelectTrigger>
-                                        <SelectContent>
-                                            {categories.map((category) => (
-                                                <SelectItem key={category} value={category}>{category}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <Button size="sm" variant="outline" onClick={() => setIsAddingCategory(true)}>+ New</Button>
-                                </div>
-                            )}
-                            <FieldError message={errors.category} />
-                        </div>
+                                )}
+                                <FieldError message={errors.category} />
+                            </div>
+                        )
                     )}
                     {isRecurring && (
                         <div className="space-y-3">
