@@ -28,7 +28,13 @@ type AddTransactionDialogThings = {
     setCategory: (value: string) => void
     notes: string
     setNotes: (value: string) => void
-    onSave: (isRecurring: boolean, interval: RecurringTransaction["interval"], customIntervalValue?: number, customIntervalUnit?: "days" | "weeks" | "months", splits?: TransactionSplit[]) => void
+    onSave: (isRecurring: boolean, 
+        interval: RecurringTransaction["interval"], 
+        customIntervalValue?: number, 
+        customIntervalUnit?: "days" | "weeks" | "months", 
+        splits?: TransactionSplit[],
+        accountId?: string,
+        transferAccountId?: string) => void
     onAddNewCategory: (name: string) => void
     budgets: Record<string, number>
     categoryTotals: Record<string, number>
