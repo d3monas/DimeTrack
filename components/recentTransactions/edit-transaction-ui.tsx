@@ -9,6 +9,7 @@ import { Button } from "../ui/button"
 import { Textarea } from "../ui/textarea"
 import { autoCategories } from "@/lib/rules"
 import type { Rule } from "@/types/rule"
+import type { Account } from "@/types/account"
 
 type EditTransactionDialogThings = {
     transaction: Transaction | null
@@ -20,9 +21,10 @@ type EditTransactionDialogThings = {
     categoryTotals: Record<string, number>
     currencySymbol: string
     rules: Rule[]
+    accounts: Account[]
 }
 
-export function EditTransactionDialog({ transaction, open, onClose, onSave, categories, budgets, categoryTotals, currencySymbol, rules }: EditTransactionDialogThings) {
+export function EditTransactionDialog({ transaction, open, onClose, onSave, categories, budgets, categoryTotals, currencySymbol, rules, accounts }: EditTransactionDialogThings) {
     const [description, setDescription] = useState("")
     const [amount, setAmount] = useState("")
     const [type, setType] = useState<"income" | "expense" | "transfer">("expense")

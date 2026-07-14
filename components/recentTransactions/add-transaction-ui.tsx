@@ -12,6 +12,7 @@ import { Textarea } from "../ui/textarea"
 import type { TransactionSplit } from "@/types/transaction"
 import { autoCategories } from "@/lib/rules"
 import type { Rule } from "@/types/rule"
+import type { Account } from "@/types/account"
 
 type AddTransactionDialogThings = {
     open: boolean
@@ -20,8 +21,8 @@ type AddTransactionDialogThings = {
     setDescription: (value: string) => void
     amount: string
     setAmount: (value: string) => void
-    transactionType: "income" | "expense"
-    setTransactionType: (value: "income" | "expense") => void
+    transactionType: "income" | "expense" | "transfer"
+    setTransactionType: (value: "income" | "expense" | "transfer") => void
     categories: string[]
     category: string
     setCategory: (value: string) => void
@@ -33,12 +34,13 @@ type AddTransactionDialogThings = {
     categoryTotals: Record<string, number>
     currencySymbol: string
     rules: Rule[]
+    accounts: Account[]
 }
 
 export function AddTransactionDialog({
     open, setOpen, description, setDescription, amount, setAmount, transactionType, 
     setTransactionType, category, setCategory, onSave, categories, notes, setNotes, 
-    onAddNewCategory, budgets, categoryTotals, currencySymbol, rules
+    onAddNewCategory, budgets, categoryTotals, currencySymbol, rules, accounts
 }: AddTransactionDialogThings) {
     const [errors, setErrors] = useState<Record<string, string>>({})
     const [isRecurring, setIsRecurring] = useState(false)
@@ -49,6 +51,8 @@ export function AddTransactionDialog({
     const [splits, setSplits] = useState<TransactionSplit[]>([{ amount: 0, category: "" }])
     const [isAddingCategory, setIsAddingCategory] = useState(false)
     const [newCategoryName, setNewCategoryName] = useState("")
+    const [accountId, setAccountId] = useState<string>("")
+    const [transferAccountId, setTransferAccountId] = useState<string>("")
 
     const currentLimit = budgets[category] ?? 0
     const currentSpent = categoryTotals[category] ?? 0
@@ -100,7 +104,14 @@ export function AddTransactionDialog({
 
     function handleSave() {
         if (validate()) {
-            onSave(isRecurring, interval, interval === "custom" ? Number(customValue) : undefined, interval === "custom" ? customUnit : undefined, isSplit ? splits : undefined)
+            onSave(isRecurring, 
+                interval, 
+                interval === "custom" ? Number(customValue) : undefined, 
+                interval === "custom" ? customUnit : undefined,
+                isSplit ? splits : undefined,
+                accountId,
+                transferAccountId
+            )
             setErrors({})
             resetRecurringState()
             setIsSplit(false)
@@ -157,6 +168,7 @@ export function AddTransactionDialog({
                             <SelectContent>
                                 <SelectItem value="expense">Expense</SelectItem>
                                 <SelectItem value="income">Income</SelectItem>
+                                <SelectItem value="transfer">Transfer</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

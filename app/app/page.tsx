@@ -47,7 +47,7 @@ export default function Home() {
 
   const [description, setDescription] = useState("")
   const [amount, setAmount] = useState("")
-  const [transactionType, setTransactionType] = useState<"income" | "expense">("expense")
+  const [transactionType, setTransactionType] = useState<"income" | "expense" | "transfer">("expense")
   const [category, setCategory] = useState("")
   const [newCategory, setNewCategory] = useState("")
   const [notes, setNotes] = useState("")
@@ -186,6 +186,8 @@ export default function Home() {
     customIntervalValue?: number, 
     customIntervalUnit?: "days" | "weeks" | "months",
     splits?: TransactionSplit[],
+    accountId?: string,
+    transferAccountId?: string
   ) {
     const numberCheck = Number(amount)
 
@@ -204,10 +206,12 @@ export default function Home() {
       description,
       amount: numberCheck,
       type: transactionType,
-      category: hasValidSplits ? "Split" : category,
+      category: hasValidSplits ? "Split" : (transactionType === "transfer" ? "Transfer" : category),
       date: new Date().toISOString(),
       notes: notes || undefined,
-      splits: splits
+      splits: splits,
+      accountId: accountId,
+      transferAccountId: transferAccountId,
     }
 
     setTransactions((prev) => [newTransaction, ...prev])
@@ -625,6 +629,7 @@ export default function Home() {
                 notes={notes}
                 setNotes={setNotes}
                 rules={rules}
+                accounts={accounts}
               />
             </div>
 
@@ -638,8 +643,9 @@ export default function Home() {
                 onSave={editTransaction}
                 budgets={budgets}
                 categoryTotals={categoryTotals}
-                currencySymbol={currencySymbol} 
-                rules={rules} />
+                currencySymbol={currencySymbol}
+                rules={rules} 
+                accounts={accounts} />
               <TransactionList
                 transactions={filteredTransactions}
                 onEditClick={setEditingTransaction}
