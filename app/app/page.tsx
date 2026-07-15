@@ -474,6 +474,8 @@ export default function Home() {
     setCurrency("USD")
     setRecurring([])
     setRules([])
+    setCategoryCustomization({})
+    setAccounts([])
 
     toast.success("All data has been cleared")
   }
