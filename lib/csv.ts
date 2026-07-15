@@ -1,12 +1,21 @@
 import type { Transaction, TransactionSplit } from "@/types/transaction";
+import type { Account } from "@/types/account"
 
-export function exportToCSV(transactions: Transaction[], filename="dimetrack-transactions.csv") {
-    const headers = ["Date", "Description", "Category", "Type", "Amount", "Notes"]
+export function exportToCSV(transactions: Transaction[], accounts: Account[], filename="dimetrack-transactions.csv") {
+    const headers = ["Date", "Description", "Category", "Type", "Amount", "Notes", "Account"]
     const rows = transactions.map((transaction) => {
         let categoryString = transaction.category
         if (transaction.splits && transaction.splits.length > 0) {
             const splitString = transaction.splits.map(split => `${split.category} (${split.amount.toFixed(2)})`).join(", ")
             categoryString = `Split: ${splitString}`
+        }
+
+        const fromAccount = accounts.find(account => account.id === transaction.accountId)?.name || ""
+        const toAccount = accounts.find(account => account.id === transaction.transferAccountId)?.name || ""
+
+        let accountString = fromAccount
+        if (transaction.type === "transfer" && toAccount) {
+            accountString = `${fromAccount} -> ${toAccount}`
         }
 
         return [
@@ -15,7 +24,8 @@ export function exportToCSV(transactions: Transaction[], filename="dimetrack-tra
             escapeCSVField(categoryString),
             transaction.type,
             transaction.amount.toFixed(2),
-            escapeCSVField(transaction.notes ?? "")
+            escapeCSVField(transaction.notes ?? ""),
+            escapeCSVField(accountString)
         ]
     })
 
@@ -67,7 +77,7 @@ function parseCSVLine(line: string): string[] {
     return result
 }
 
-export function importFromCSV(file: File): Promise<Transaction[]> {
+export function importFromCSV(file: File, accounts: Account[]): Promise<Transaction[]> {
     return new Promise((resolve, reject) => {
         const reader = new FileReader()
 
@@ -117,15 +127,29 @@ export function importFromCSV(file: File): Promise<Transaction[]> {
                         }
                     }
 
+                    let accountId: string | undefined
+                    let transferAccountId: string | undefined
+                    if (cleanValues[6]) {
+                        if (cleanValues[6].includes("->")) {
+                            const [fromName, toName] = cleanValues[6].split("->").map(s => s.trim())
+                            accountId = accounts.find(account => account.name === fromName)?.id
+                            transferAccountId = accounts.find(account => account.name === toName)?.id
+                        } else {
+                            accountId = accounts.find(account => account.name === cleanValues[6])?.id
+                        }
+                    }
+
                     transactions.push({
                         id: crypto.randomUUID(),
                         date: date.toISOString(),
                         description: cleanValues[1],
                         category: categoryStr,
-                        type: cleanValues[3] as "income" | "expense",
+                        type: cleanValues[3] as "income" | "expense" | "transfer",
                         amount: parseFloat(cleanValues[4]) || 0,
                         notes: notesValue,
-                        splits: splits
+                        splits: splits,
+                        accountId: accountId,
+                        transferAccountId: transferAccountId
                     });
                 }
 

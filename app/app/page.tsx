@@ -386,7 +386,7 @@ export default function Home() {
 
   async function handleImportCSV(file: File) {
     try {
-      const importedTransactions = await importFromCSV(file)
+      const importedTransactions = await importFromCSV(file, accounts)
       if (importedTransactions.length === 0) {
         toast.error("No valid transactions found in your uploaded CSV")
         return

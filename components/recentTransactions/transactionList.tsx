@@ -70,7 +70,7 @@ export function TransactionList({
     })
 
     function handleExport() {
-        exportToCSV(filteredTransactions)
+        exportToCSV(filteredTransactions, accounts)
     }
 
     const { pageItems, currentPage, totalPages, nextPage, prevPage } = pagination(filteredTransactions, transactionsPerPage, `${searchTerm}-${typeFilter}-${categoryFilter}-${filter}`)
