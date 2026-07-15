@@ -275,6 +275,23 @@ export function loadAccounts(): Account[] {
     }
 }
 
+// default account
+export function saveDefaultAccountId(id: string) {
+    if (!isBrowser) {
+        return
+    }
+    localStorage.setItem("defaultAccountId", id)
+}
+
+export function loadDefaultAccountId(): string {
+    if (!isBrowser) {
+        return ""
+    }
+    return (
+        localStorage.getItem("defaultAccountId") || ""
+    )
+}
+
 export function loadAllData() {
     return {
         transactions: loadTransactions(),
@@ -286,6 +303,7 @@ export function loadAllData() {
         rules: loadRules(),
         categoryCustomization: loadCategoryCustomization(),
         accounts: loadAccounts(),
+        defaultAccountId: loadDefaultAccountId(),
     }
 }
 
@@ -302,4 +320,5 @@ export function clearAllData() {
     localStorage.removeItem("rules")
     localStorage.removeItem("categoryCustomization")
     localStorage.removeItem("accounts")
+    localStorage.removeItem("defaultAccountId")
 }
