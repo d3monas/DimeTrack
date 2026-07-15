@@ -393,6 +393,9 @@ export default function Home() {
       }
 
       const categorizedTransactions = importedTransactions.map(transaction => {
+        if (transaction.type === "transfer") {
+          return transaction
+        }
         const matchedCategory = autoCategories(transaction.description, rules)
         return (
           matchedCategory ? {
@@ -415,7 +418,8 @@ export default function Home() {
 
       setCategories(prev => {
         const existing = new Set(prev);
-        const categoriesToAdd = Array.from(newCategories).filter(category => !existing.has(category) && !isSavingsCategory(category));
+        const ignoredCategories = ["Split", "Transfer", "Uncategorized", ""]
+        const categoriesToAdd = Array.from(newCategories).filter(category => !existing.has(category) && !isSavingsCategory(category) && !ignoredCategories.includes(category));
         return [
           ...prev,
           ...categoriesToAdd

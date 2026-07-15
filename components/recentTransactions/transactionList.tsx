@@ -150,12 +150,16 @@ export function TransactionList({
 
                                             <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
                                                 <span>{new Date(transaction.date).toLocaleString()}</span>
-                                                <span>•</span>
-                                                <span>
-                                                    {transaction.splits && transaction.splits.length > 0 
-                                                        ? transaction.splits.map(split => `${split.category} - ${currencySymbol}${split.amount.toFixed(2)}`).join(", ")
-                                                        : transaction.category}
-                                                </span>
+                                                {!isTransfer && (
+                                                    <>
+                                                        <span>•</span>
+                                                        <span>
+                                                            {transaction.splits && transaction.splits.length > 0
+                                                                ? transaction.splits.map(split => `${split.category} - ${currencySymbol}${split.amount.toFixed(2)}`).join(", ")
+                                                                : transaction.category}
+                                                        </span>
+                                                    </>
+                                                )}
 
                                                 {(fromAccount || toAccount) && (
                                                     <>
