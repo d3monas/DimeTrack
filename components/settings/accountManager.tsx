@@ -3,32 +3,44 @@ import type { Account } from "@/types/account"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { EmptyState } from "../emptyState"
+import { Label } from "../ui/label"
 
 type AccountsManagerThings = {
     accounts: Account[]
-    onAddAccount: (name: string) => void
+    onAddAccount: (name: string, startingBalance: number) => void
     onDeleteAccount: (id: string) => void
 }
 
 export function AccountsManager({ accounts, onAddAccount, onDeleteAccount }: AccountsManagerThings) {
     const [name, setName] = useState("")
+    const [startingBalance, setStartingBalance] = useState("")
 
     function handleAdd() {
         if (!name.trim()) {
             return
         }
-        onAddAccount(name.trim())
+        const balanceNum = Number(startingBalance) || 0
+        onAddAccount(name.trim(), balanceNum)
         setName("")
+        setStartingBalance("")
     }
 
     return (
         <div>
             <h3 className="font-semibold mb-2">Accounts</h3>
             <p className="text-sm text-muted-foreground mb-3">Track money in different places (e.g., Checking, Savings, Cash)</p>
-            <div className="flex flex-col gap-2 sm:flex-row mb-4">
-                <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Checking" />
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end mb-4">
+                <div className="flex-1">
+                    <Label>Account Name</Label>
+                    <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Checking" />
+                </div>
+                <div className="w-full sm:w-32">
+                    <Label>Starting balance</Label>
+                    <Input type="number" min="0" step="0.01" value={startingBalance} onChange={(e) => setStartingBalance(e.target.value)} placeholder="0.00" />
+                </div>
                 <Button onClick={handleAdd}>Add Account</Button>
             </div>
+
             <div className="space-y-2">
                 {accounts.length === 0 ? (
                     <EmptyState message="No accounts yet. Transaction will default to 'Uncategorized'" />

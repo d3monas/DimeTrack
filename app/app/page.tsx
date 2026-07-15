@@ -511,11 +511,27 @@ export default function Home() {
     }))
   }
 
-  function addAccount(name: string) {
+  function addAccount(name: string, startingBalance: number = 0) {
     if (!name.trim()) {
       return
     }
-    setAccounts(prev => [...prev, { id: crypto.randomUUID(), name: name.trim() }])
+
+    const newAccountId = crypto.randomUUID()
+    setAccounts(prev => [...prev, { id: newAccountId, name: name.trim() }])
+
+    if (startingBalance > 0) {
+      const startingTransaction: Transaction = {
+        id: crypto.randomUUID(),
+        description: `Starting balance for ${name.trim()}`,
+        amount: startingBalance,
+        type: "income",
+        category: "Starting Balance",
+        date: new Date().toISOString(),
+        accountId: newAccountId
+      }
+      setTransactions(prev => [startingTransaction, ...prev])
+      setCategories(prev => prev.includes("Starting Balance") ? prev : [...prev, "Starting Balance"])
+    }
   }
 
   function deleteAccount(id: string) {
