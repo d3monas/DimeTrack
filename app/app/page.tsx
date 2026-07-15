@@ -418,7 +418,7 @@ export default function Home() {
 
       setCategories(prev => {
         const existing = new Set(prev);
-        const ignoredCategories = ["Split", "Transfer", "Uncategorized", ""]
+        const ignoredCategories = ["Split", "Transfer", "Uncategorized", "Starting Balance", ""]
         const categoriesToAdd = Array.from(newCategories).filter(category => !existing.has(category) && !isSavingsCategory(category) && !ignoredCategories.includes(category));
         return [
           ...prev,
