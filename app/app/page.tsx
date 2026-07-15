@@ -30,7 +30,7 @@ import type { Account } from "@/types/account"
 // libs
 import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends } from "@/lib/calculations"
 import { saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring, 
-  saveGoals, saveRules, saveCategoryCustomization, saveAccounts, clearAllData } from "@/lib/localstorage"
+  saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, clearAllData } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 import { savingsCategoryForGoal, isSavingsCategory } from "@/lib/consts"
 import { processRecurring } from "@/lib/recurring"
@@ -72,6 +72,8 @@ export default function Home() {
 
   const [accounts, setAccounts] = useState<Account[]>([])
 
+  const [defaultAccountId, setDefaultAccountId] = useState<string>("")
+
   // load localstorage 
   useEffect(() => {
     const data = loadAllData()
@@ -84,6 +86,7 @@ export default function Home() {
     setRules(data.rules)
     setCategoryCustomization(data.categoryCustomization)
     setAccounts(data.accounts || [])
+    setDefaultAccountId(data.defaultAccountId || "")
     setIsLoaded(true)
   }, [])
 
@@ -157,6 +160,12 @@ export default function Home() {
       saveAccounts(accounts)
     }
   }, [isLoaded, accounts])
+
+  useEffect(() => {
+    if (isLoaded) {
+      saveDefaultAccountId(defaultAccountId)
+    }
+  }, [isLoaded, defaultAccountId])
 
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
@@ -535,6 +544,9 @@ export default function Home() {
 
   function deleteAccount(id: string) {
     setAccounts(prev => prev.filter(account => account.id !== id))
+    if (defaultAccountId === id) {
+      setDefaultAccountId("")
+    }
   }
 
   const accountBalances = accounts.map(account => {
@@ -603,7 +615,9 @@ export default function Home() {
               onUpdateCategoryCustomization={updateCategoryCustomization} 
               accounts={accounts}
               onAddAccount={addAccount}
-              onDeleteAccount={deleteAccount} />
+              onDeleteAccount={deleteAccount} 
+              defaultAccountId={defaultAccountId}
+              onSetDefaultAccountId={setDefaultAccountId} />
           </div>
         </header>
 
@@ -681,6 +695,7 @@ export default function Home() {
                 setNotes={setNotes}
                 rules={rules}
                 accounts={accounts}
+                defaultAccountId={defaultAccountId}
               />
             </div>
 
