@@ -530,7 +530,6 @@ export default function Home() {
         accountId: newAccountId
       }
       setTransactions(prev => [startingTransaction, ...prev])
-      setCategories(prev => prev.includes("Starting Balance") ? prev : [...prev, "Starting Balance"])
     }
   }
 
