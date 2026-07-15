@@ -116,12 +116,14 @@ export function AddTransactionDialog({
                 interval === "custom" ? customUnit : undefined,
                 isSplit ? splits : undefined,
                 accountId,
-                transferAccountId
+                transactionType === "transfer" ? transferAccountId : undefined
             )
             setErrors({})
             resetRecurringState()
             setIsSplit(false)
             setSplits([{ amount: 0, category: "" }])
+            setAccountId("")
+            setTransferAccountId("")
         }
     }
 
@@ -130,6 +132,8 @@ export function AddTransactionDialog({
         if (!value) {
             setErrors({})
             resetRecurringState()
+            setAccountId("")
+            setTransferAccountId("")
         }
     }
 
