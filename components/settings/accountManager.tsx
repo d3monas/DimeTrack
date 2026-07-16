@@ -6,6 +6,7 @@ import { EmptyState } from "../emptyState"
 import { Label } from "../ui/label"
 import { availableColors, availableIcons, getIconByName } from "@/lib/categoryCustomization"
 import { PopoverTrigger, Popover, PopoverContent } from "../ui/popover"
+import { DEFAULT_ACCOUNT_ICON, DEFAULT_CATEGORY_COLOR } from "@/lib/consts"
 
 type AccountsManagerThings = {
     accounts: Account[]
@@ -51,8 +52,8 @@ export function AccountsManager({ accounts, onAddAccount, onDeleteAccount, defau
                     <EmptyState message="No accounts yet. Transaction will default to 'Uncategorized'" />
                 ) : (
                     accounts.map((account) => {
-                        const accColor = account.color || "#6b7280"
-                        const accIcon = account.icon || "Wallet"
+                        const accColor = account.color || DEFAULT_CATEGORY_COLOR
+                        const accIcon = account.icon || DEFAULT_ACCOUNT_ICON
                         const Icon = getIconByName(accIcon)
 
                         return (

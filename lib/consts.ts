@@ -18,3 +18,4 @@ export const recurringIntervalLabels: Record<RecurringTransaction["interval"], s
 
 export const DEFAULT_CATEGORY_COLOR = "#6b7280"
 export const DEFAULT_CATEGORY_ICON = "Tag"
+export const DEFAULT_ACCOUNT_ICON = "Wallet"
