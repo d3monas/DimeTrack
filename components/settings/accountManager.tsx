@@ -4,7 +4,6 @@ import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { EmptyState } from "../emptyState"
 import { Label } from "../ui/label"
-import { Check } from "lucide-react"
 
 type AccountsManagerThings = {
     accounts: Account[]
@@ -53,7 +52,7 @@ export function AccountsManager({ accounts, onAddAccount, onDeleteAccount, defau
                             <div className="flex items-center gap-2">
                                 <span className="break-all text-sm">{account.name}</span>
                                 {defaultAccountId === account.id && (
-                                    <span className="text-xs text-primary flex items-center gap-1 font-medium"><Check className="h-3 w-3" />Default</span>
+                                    <span className="text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground">Default</span>
                                 )}
                             </div>
                             <div className="flex gap-2">
