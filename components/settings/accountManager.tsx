@@ -7,6 +7,7 @@ import { Label } from "../ui/label"
 import { availableColors, availableIcons, getIconByName } from "@/lib/categoryCustomization"
 import { PopoverTrigger, Popover, PopoverContent } from "../ui/popover"
 import { DEFAULT_ACCOUNT_ICON, DEFAULT_CATEGORY_COLOR } from "@/lib/consts"
+import { Pencil, Check, X } from "lucide-react"
 
 type AccountsManagerThings = {
     accounts: Account[]
@@ -21,6 +22,9 @@ export function AccountsManager({ accounts, onAddAccount, onDeleteAccount, defau
     const [name, setName] = useState("")
     const [startingBalance, setStartingBalance] = useState("")
 
+    const [editingId, setEditingId] = useState<string | null>(null)
+    const [editName, setEditName] = useState("")
+
     function handleAdd() {
         if (!name.trim()) {
             return
@@ -29,6 +33,14 @@ export function AccountsManager({ accounts, onAddAccount, onDeleteAccount, defau
         onAddAccount(name.trim(), balanceNum)
         setName("")
         setStartingBalance("")
+    }
+
+    function handleSaveEdit() {
+        if (editingId && editName.trim()) {
+            onUpdateAccount(editingId, { name: editName.trim() })
+        }
+        setEditingId(null)
+        setEditName("")
     }
 
     return (
@@ -55,6 +67,7 @@ export function AccountsManager({ accounts, onAddAccount, onDeleteAccount, defau
                         const accColor = account.color || DEFAULT_CATEGORY_COLOR
                         const accIcon = account.icon || DEFAULT_ACCOUNT_ICON
                         const Icon = getIconByName(accIcon)
+                        const isEditing = editingId === account.id
 
                         return (
                             <div key={account.id} className="flex flex-wrap items-center justify-between gap-2 rounded-md p-2 border">
@@ -77,25 +90,50 @@ export function AccountsManager({ accounts, onAddAccount, onDeleteAccount, defau
                                                 {availableIcons.map(iconName => {
                                                     const I = getIconByName(iconName)
                                                     return (
-                                                        <button key={iconName} 
-                                                        className={`h-8 w-8 rounded-md flex items-center justify-center hover:bg-muted ${accIcon === iconName ? 'bg-muted ring-1 ring-ring' : ''}`}
-                                                        onClick={() => onUpdateAccount(account.id, { icon: iconName })}><I className="h-4 w-4" /></button>
+                                                        <button key={iconName}
+                                                            className={`h-8 w-8 rounded-md flex items-center justify-center hover:bg-muted ${accIcon === iconName ? 'bg-muted ring-1 ring-ring' : ''}`}
+                                                            onClick={() => onUpdateAccount(account.id, { icon: iconName })}><I className="h-4 w-4" /></button>
                                                     )
                                                 })}
                                             </div>
                                         </PopoverContent>
                                     </Popover>
-                                    <span className="break-all text-sm">{account.name}</span>
-                                    {defaultAccountId === account.id && (
-                                        <span className="text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground">Default</span>
+
+                                    {isEditing ? (
+                                        <div className="flex items-center gap-1">
+                                            <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="h-8 w-40 text-sm" autoFocus
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter") {
+                                                        handleSaveEdit()
+                                                    }
+                                                    if (e.key === "Escape") {
+                                                        setEditingId(null)
+                                                    }
+                                                }} />
+                                            <Button size="icon" variant="ghost" className="h-8 w-8" onClick={handleSaveEdit}><Check className="h-4 w-4 text-green-600" /></Button>
+                                            <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => { setEditingId(null); setEditName("") }}><X className="h-4 w-4 text-red-500" /></Button>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-2">
+                                            <span className="break-all text-sm">{account.name}</span>
+                                            {defaultAccountId === account.id && (
+                                                <span className="text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground">Default</span>
+                                            )}
+                                        </div>
                                     )}
                                 </div>
-                                <div className="flex gap-2">
-                                    {defaultAccountId !== account.id && (
-                                        <Button variant="outline" size="sm" onClick={() => onSetDefaultAccount(account.id)}>Set Default</Button>
-                                    )}
-                                    <Button variant="destructive" size="sm" onClick={() => onDeleteAccount(account.id)}>Delete</Button>
-                                </div>
+
+                                {!isEditing && (
+                                    <div className="flex gap-2">
+                                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => { setEditingId(account.id); setEditName(account.name) }}>
+                                            <Pencil className="h-4 w-4" />
+                                        </Button>
+                                        {defaultAccountId !== account.id && (
+                                            <Button variant="outline" size="sm" onClick={() => onSetDefaultAccount(account.id)}>Set Default</Button>
+                                        )}
+                                        <Button variant="destructive" size="sm" onClick={() => onDeleteAccount(account.id)}>Delete</Button>
+                                    </div>
+                                )}
                             </div>
                         )
                     })
