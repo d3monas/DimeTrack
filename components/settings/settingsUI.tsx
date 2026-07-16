@@ -35,7 +35,7 @@ type SettingsDialogThings = {
     categoryCustomization: Record<string, categoryCustomization>
     onUpdateCategoryCustomization: (category: string, customization: categoryCustomization) => void
     accounts: Account[]
-    onAddAccount: (name: string) => void
+    onAddAccount: (name: string, startingBalance: number) => void
     onDeleteAccount: (id: string) => void
     defaultAccountId: string
     onSetDefaultAccount: (id: string) => void

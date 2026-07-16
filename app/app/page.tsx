@@ -617,7 +617,7 @@ export default function Home() {
               onAddAccount={addAccount}
               onDeleteAccount={deleteAccount} 
               defaultAccountId={defaultAccountId}
-              onSetDefaultAccountId={setDefaultAccountId} />
+              onSetDefaultAccount={setDefaultAccountId} />
           </div>
         </header>
 

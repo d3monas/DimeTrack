@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Label } from "../ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog"
 import { Input } from "../ui/input"
@@ -41,12 +41,13 @@ type AddTransactionDialogThings = {
     currencySymbol: string
     rules: Rule[]
     accounts: Account[]
+    defaultAccountId: string
 }
 
 export function AddTransactionDialog({
     open, setOpen, description, setDescription, amount, setAmount, transactionType,
     setTransactionType, category, setCategory, onSave, categories, notes, setNotes,
-    onAddNewCategory, budgets, categoryTotals, currencySymbol, rules, accounts
+    onAddNewCategory, budgets, categoryTotals, currencySymbol, rules, accounts, defaultAccountId
 }: AddTransactionDialogThings) {
     const [errors, setErrors] = useState<Record<string, string>>({})
     const [isRecurring, setIsRecurring] = useState(false)
@@ -59,6 +60,12 @@ export function AddTransactionDialog({
     const [newCategoryName, setNewCategoryName] = useState("")
     const [accountId, setAccountId] = useState<string>("")
     const [transferAccountId, setTransferAccountId] = useState<string>("")
+
+    useEffect(() => {
+        if (open && !accountId && defaultAccountId) {
+            setAccountId(defaultAccountId)
+        }
+    }, [open, defaultAccountId, accountId])
 
     const currentLimit = budgets[category] ?? 0
     const currentSpent = categoryTotals[category] ?? 0

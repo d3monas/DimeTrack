@@ -4,14 +4,17 @@ import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { EmptyState } from "../emptyState"
 import { Label } from "../ui/label"
+import { Check } from "lucide-react"
 
 type AccountsManagerThings = {
     accounts: Account[]
     onAddAccount: (name: string, startingBalance: number) => void
     onDeleteAccount: (id: string) => void
+    defaultAccountId: string
+    onSetDefaultAccount: (id: string) => void
 }
 
-export function AccountsManager({ accounts, onAddAccount, onDeleteAccount }: AccountsManagerThings) {
+export function AccountsManager({ accounts, onAddAccount, onDeleteAccount, defaultAccountId, onSetDefaultAccount }: AccountsManagerThings) {
     const [name, setName] = useState("")
     const [startingBalance, setStartingBalance] = useState("")
 
@@ -47,8 +50,18 @@ export function AccountsManager({ accounts, onAddAccount, onDeleteAccount }: Acc
                 ) : (
                     accounts.map((account) => (
                         <div key={account.id} className="flex flex-wrap items-center justify-between gap-2 rounded-md p-2 border">
-                            <span className="break-all text-sm">{account.name}</span>
-                            <Button variant="destructive" size="sm" onClick={() => onDeleteAccount(account.id)}>Delete</Button>
+                            <div className="flex items-center gap-2">
+                                <span className="break-all text-sm">{account.name}</span>
+                                {defaultAccountId === account.id && (
+                                    <span className="text-xs text-primary flex items-center gap-1 font-medium"><Check className="h-3 w-3" />Default</span>
+                                )}
+                            </div>
+                            <div className="flex gap-2">
+                                {defaultAccountId !== account.id && (
+                                    <Button variant="outline" size="sm" onClick={() => onSetDefaultAccount(account.id)}>Set Default</Button>
+                                )}
+                                <Button variant="destructive" size="sm" onClick={() => onDeleteAccount(account.id)}>Delete</Button>
+                            </div>
                         </div>
                     ))
                 )}
