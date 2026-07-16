@@ -11,9 +11,10 @@ type AccountsManagerThings = {
     onDeleteAccount: (id: string) => void
     defaultAccountId: string
     onSetDefaultAccount: (id: string) => void
+    onUpdateAccount: (id: string, data: Partial<Omit<Account, 'id'>>) => void
 }
 
-export function AccountsManager({ accounts, onAddAccount, onDeleteAccount, defaultAccountId, onSetDefaultAccount }: AccountsManagerThings) {
+export function AccountsManager({ accounts, onAddAccount, onDeleteAccount, defaultAccountId, onSetDefaultAccount, onUpdateAccount }: AccountsManagerThings) {
     const [name, setName] = useState("")
     const [startingBalance, setStartingBalance] = useState("")
 

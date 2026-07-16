@@ -39,6 +39,7 @@ type SettingsDialogThings = {
     onDeleteAccount: (id: string) => void
     defaultAccountId: string
     onSetDefaultAccount: (id: string) => void
+    onUpdateAccount: (id: string, data: Partial<Omit<Account, 'id'>>) => void
 }
 
 const currencies = [
@@ -56,7 +57,7 @@ export function SettingsDialog({
     categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory, currency, currencySymbol,
     onCurrencyChange, recurring, onDeleteRecurring, onImportCSV, onExportBackup, onImportBackup, onClearData,
     rules, onAddRule, onDeleteRule, categoryCustomization, onUpdateCategoryCustomization, accounts, onAddAccount,
-    onDeleteAccount, defaultAccountId, onSetDefaultAccount
+    onDeleteAccount, defaultAccountId, onSetDefaultAccount, onUpdateAccount
 }: SettingsDialogThings) {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const backupInputRef = useRef<HTMLInputElement>(null)
@@ -148,7 +149,7 @@ export function SettingsDialog({
 
                         <div className="border-t pt-6 mt-6">
                             <AccountsManager accounts={accounts} onAddAccount={onAddAccount} onDeleteAccount={onDeleteAccount} 
-                                defaultAccountId={defaultAccountId} onSetDefaultAccount={onSetDefaultAccount} />
+                                defaultAccountId={defaultAccountId} onSetDefaultAccount={onSetDefaultAccount} onUpdateAccount={onUpdateAccount} />
                         </div>
 
                     </TabsContent>

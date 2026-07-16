@@ -549,6 +549,10 @@ export default function Home() {
     }
   }
 
+  function updateAccount(id: string, data: Partial<Omit<Account, 'id'>>) {
+    setAccounts(prev => prev.map(account => account.id === id ? { ...account, ...data} : account))
+  }
+
   const accountBalances = accounts.map(account => {
     let accBalance = 0
 
@@ -617,7 +621,8 @@ export default function Home() {
               onAddAccount={addAccount}
               onDeleteAccount={deleteAccount} 
               defaultAccountId={defaultAccountId}
-              onSetDefaultAccount={setDefaultAccountId} />
+              onSetDefaultAccount={setDefaultAccountId}
+              onUpdateAccount={updateAccount} />
           </div>
         </header>
 
