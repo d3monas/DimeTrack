@@ -176,8 +176,8 @@ export function TransactionList({
                                         </div>
 
                                         <div className="flex items-center gap-2">
-                                            <span className={`font-medium ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}>
-                                                {transaction.type === "income" ? "+" : "-"}{currencySymbol}{transaction.amount.toFixed(2)}
+                                            <span className={`font-medium ${transaction.type === "income" ? "text-green-600" : transaction.type === "expense" ? "text-red-600" : "text-muted-foreground"}`}>
+                                                {transaction.type === "income" ? "+" : transaction.type === "expense" ? "-" : ""}{currencySymbol}{transaction.amount.toFixed(2)}
                                             </span>
                                             {!isSavingsCategory(transaction.category) && !isTransfer ? (
                                                 <Button variant="ghost" size="sm" onClick={() => onEditClick(transaction)}>✎</Button>
