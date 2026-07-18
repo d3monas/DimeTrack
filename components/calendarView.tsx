@@ -97,11 +97,11 @@ export function CalendarView({ transactions, recurring, currencySymbol }: Calend
                     <p className="text-xs text-muted-foreground">Starting balance: {currencySymbol}{startingBalance.toFixed(2)}</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" size="icon" onClick={() => setCurrentDate(new Date(year, month - 1, 1))}>
+                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setCurrentDate(new Date(year, month - 1, 1))}>
                         <ChevronLeft className="h-4 w-4" />
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>Today</Button>
-                    <Button variant="outline" size="icon" onClick={() => setCurrentDate(new Date(year, month + 1, 1))}>
+                    <Button variant="outline" size="sm" className="h-8" onClick={() => setCurrentDate(new Date())}>Today</Button>
+                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setCurrentDate(new Date(year, month + 1, 1))}>
                         <ChevronRight className="h-4 w-4" />
                     </Button>
                 </div>
@@ -117,6 +117,7 @@ export function CalendarView({ transactions, recurring, currencySymbol }: Calend
                         row: "flex w-full mt-2",
                         cell: "p-0 relative flex-1 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md",
                         day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                        nav: "hidden",
                     } as any}
                     components={{
                         Day: (props: any) => {
