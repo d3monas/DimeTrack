@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
 import { CalendarView } from "@/components/calendarView"
 import { AccountBalances } from "@/components/accountBalances"
+import { SmartStats } from "@/components/smartStats"
 
 // types
 import type { Transaction, TransactionSplit } from "@/types/transaction"
@@ -657,6 +658,8 @@ export default function Home() {
           <TabsContent value="overview" className="space-y-6 mt-4">
             {/* upcoming recurring transactions */}
             <UpcomingTransactions recurring={recurring} currencySymbol={currencySymbol} />
+            {/* smart stats */}
+            <SmartStats monthlyExpenses={expenses} currencySymbol={currencySymbol} />
             {/* Trend */}
             <TrendChart data={monthlyTrends} currencySymbol={currencySymbol} />
             {/* account balances */}
