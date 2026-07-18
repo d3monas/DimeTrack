@@ -9,8 +9,8 @@ type UpcomingTransactionsThings = {
 
 export function UpcomingTransactions({ recurring, currencySymbol }: UpcomingTransactionsThings) {
     const now = new Date()
-    const sevenDaysFromNow = new Date(now)
     now.setHours(0, 0, 0, 0)
+    const sevenDaysFromNow = new Date(now)
     sevenDaysFromNow.setDate(now.getDate() + 7)
 
     const upcoming = recurring.map((recurring) => {
