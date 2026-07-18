@@ -49,7 +49,8 @@ export function TransactionList({
         )
     }
 
-    const searchedTransactions = transactions.filter((transaction) => {
+    const visibleTransactions = transactions.filter(transaction => transaction.category !== "Starting Balance")
+    const searchedTransactions = visibleTransactions.filter((transaction) => {
         if (!searchTerm.trim()) {
             return true
         }
