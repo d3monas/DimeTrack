@@ -4,10 +4,9 @@ import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { EmptyState } from "../emptyState"
 import { Label } from "../ui/label"
-import { availableColors, availableIcons, getIconByName } from "@/lib/categoryCustomization"
-import { PopoverTrigger, Popover, PopoverContent } from "../ui/popover"
 import { DEFAULT_ACCOUNT_ICON, DEFAULT_CATEGORY_COLOR } from "@/lib/consts"
 import { Pencil, Check, X } from "lucide-react"
+import { ColorIconPicker } from "./colorIconPicker"
 
 type AccountsManagerThings = {
     accounts: Account[]
@@ -66,39 +65,13 @@ export function AccountsManager({ accounts, onAddAccount, onDeleteAccount, defau
                     accounts.map((account) => {
                         const accColor = account.color || DEFAULT_CATEGORY_COLOR
                         const accIcon = account.icon || DEFAULT_ACCOUNT_ICON
-                        const Icon = getIconByName(accIcon)
                         const isEditing = editingId === account.id
 
                         return (
                             <div key={account.id} className="flex flex-wrap items-center justify-between gap-2 rounded-md p-2 border">
                                 <div className="flex items-center gap-2">
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <button className="h-8 w-8 rounded-md flex items-center justify-center text-white focus:outline-none focus:ring-2 focus:ring-ring" style={{ backgroundColor: accColor }}>
-                                                <Icon className="h-4 w-4" />
-                                            </button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-64">
-                                            <div className="grid grid-cols-8 gap-2 mb-4">
-                                                {availableColors.map(color => (
-                                                    <button key={color} className="h-5 w-5 rounded-full border-2 hover:scale-110 transition-transform"
-                                                        style={{ backgroundColor: color, borderColor: accColor === color ? "white" : "transparent" }}
-                                                        onClick={() => onUpdateAccount(account.id, { color })} />
-                                                ))}
-                                            </div>
-                                            <div className="grid grid-cols-6 gap-2">
-                                                {availableIcons.map(iconName => {
-                                                    const I = getIconByName(iconName)
-                                                    return (
-                                                        <button key={iconName}
-                                                            className={`h-8 w-8 rounded-md flex items-center justify-center hover:bg-muted ${accIcon === iconName ? 'bg-muted ring-1 ring-ring' : ''}`}
-                                                            onClick={() => onUpdateAccount(account.id, { icon: iconName })}><I className="h-4 w-4" /></button>
-                                                    )
-                                                })}
-                                            </div>
-                                        </PopoverContent>
-                                    </Popover>
-
+                                    <ColorIconPicker color={accColor} icon={accIcon}
+                                        onChange={(data) => onUpdateAccount(account.id, data)} />
                                     {isEditing ? (
                                         <div className="flex items-center gap-1">
                                             <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="h-8 w-40 text-sm" autoFocus

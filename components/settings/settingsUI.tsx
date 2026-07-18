@@ -3,16 +3,16 @@ import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import { Dispatch, SetStateAction, useRef } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import { isSavingsCategory } from "@/lib/consts"
+import { DEFAULT_CATEGORY_COLOR, DEFAULT_CATEGORY_ICON, isSavingsCategory } from "@/lib/consts"
 import { RecurringManager } from "./recurringManager"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
 import { RulesManager } from "./rulesManager"
 import type { Rule } from "@/types/rule"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
-import { availableColors, availableIcons, categoryCustomization, getIconByName } from "@/lib/categoryCustomization"
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import { categoryCustomization } from "@/lib/categoryCustomization"
 import type { Account } from "@/types/account"
 import { AccountsManager } from "./accountManager"
+import { ColorIconPicker } from "./colorIconPicker"
 
 type SettingsDialogThings = {
     categories: string[]
@@ -103,37 +103,13 @@ export function SettingsDialog({
                             </div>
                             <div className="space-y-2">
                                 {categories.map((category) => {
-                                    const defaultSetting = categoryCustomization[category] || { color: "#6b7280", icon: "Tag" }
-                                    const Icon = getIconByName(defaultSetting.icon)
+                                    const defaultSetting = categoryCustomization[category] || { color: DEFAULT_CATEGORY_COLOR, icon: DEFAULT_CATEGORY_ICON }
 
                                     return (
                                         <div key={category} className="flex flex-wrap items-center justify-between gap-2 rounded-md p-2 border">
                                             <div className="flex items-center gap-2">
-                                                <Popover>
-                                                    <PopoverTrigger asChild>
-                                                        <button className="h-8 w-8 rounded-md flex items-center justify-center text-white focus:outline-none focus:ring-2 focus:ring-ring"
-                                                            style={{ backgroundColor: defaultSetting.color }}><Icon className="h-4 w-4" /></button>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent className="w-64">
-                                                        <div className="grid grid-cols-8 gap-2 mb-4">
-                                                            {availableColors.map(color => (
-                                                                <button key={color} className="h-5 w-5 rounded-full border-2 hover:scale-110 transition-transform"
-                                                                    style={{ backgroundColor: color, borderColor: defaultSetting.color === color ? "white" : "transparent" }}
-                                                                    onClick={() => onUpdateCategoryCustomization(category, { ...defaultSetting, color })} />
-                                                            ))}
-                                                        </div>
-                                                        <div className="grid grid-cols-6 gap-2">
-                                                            {availableIcons.map(iconName => {
-                                                                const I = getIconByName(iconName)
-                                                                return (
-                                                                    <button key={iconName}
-                                                                        className={`h-8 w-8 rounded-md flex items-center justify-center hover:bg-muted ${defaultSetting.icon === iconName ? 'bg-muted ring-1 ring-ring' : ''}`}
-                                                                        onClick={() => onUpdateCategoryCustomization(category, { ...defaultSetting, icon: iconName })}><I className="h-4 w-4" /></button>
-                                                                )
-                                                            })}
-                                                        </div>
-                                                    </PopoverContent>
-                                                </Popover>
+                                                <ColorIconPicker color={defaultSetting.color} icon={defaultSetting.icon}
+                                                    onChange={(data) => onUpdateCategoryCustomization(category, { ...defaultSetting, ...data })} />
                                                 <span className="break-all text-sm">{category}</span>
                                             </div>
                                             {isSavingsCategory(category) ? (
@@ -148,7 +124,7 @@ export function SettingsDialog({
                         </div>
 
                         <div className="border-t pt-6 mt-6">
-                            <AccountsManager accounts={accounts} onAddAccount={onAddAccount} onDeleteAccount={onDeleteAccount} 
+                            <AccountsManager accounts={accounts} onAddAccount={onAddAccount} onDeleteAccount={onDeleteAccount}
                                 defaultAccountId={defaultAccountId} onSetDefaultAccount={onSetDefaultAccount} onUpdateAccount={onUpdateAccount} />
                         </div>
 
