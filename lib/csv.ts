@@ -6,7 +6,7 @@ export function exportToCSV(transactions: Transaction[], accounts: Account[], fi
     const rows = transactions.map((transaction) => {
         let categoryString = transaction.category
         if (transaction.splits && transaction.splits.length > 0) {
-            const splitString = transaction.splits.map(split => `${split.category} (${split.amount.toFixed(2)})`).join(", ")
+            const splitString = transaction.splits.map(split => `${split.category.replace(/[,()]/g, "")} (${split.amount.toFixed(2)})`).join(" | ")
             categoryString = `Split: ${splitString}`
         }
 
@@ -116,13 +116,21 @@ export function importFromCSV(file: File, accounts: Account[]): Promise<Transact
                     let splits: TransactionSplit[] | undefined = undefined
                     if (categoryStr.startsWith("Split: ")) {
                         const splitContent = categoryStr.substring(7)
-                        const matches = [...splitContent.matchAll(/([^()]+?)\s*\(([\d.]+)\)/g)]
-
-                        if (matches.length > 0) {
-                            splits = matches.map(match => ({
-                                category: match[1].replace(/,/g, "").trim(),
+                        const parts = splitContent.split(" | ")
+                        const parsedSplits = parts.map(part => {
+                            const match = part.match(/^(.+?)\s*\(([\d.]+)\)$/)
+                            if (!match) {
+                                return null
+                            }
+                            return {
+                                category: match[1].trim(),
                                 amount: parseFloat(match[2])
-                            }))
+                            }
+                        })
+                        .filter((split): split is TransactionSplit => split !== null)
+
+                        if (parsedSplits.length > 0) {
+                            splits = parsedSplits
                             categoryStr = "Split"
                         }
                     }
