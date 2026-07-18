@@ -45,7 +45,6 @@ export function GoalsSelection({ goals, transactions, currencySymbol, budgets ,o
                 onContribute={(amount) => onContribute(currentGoal.id, amount)}
                 currencySymbol={currencySymbol}
                 transactions={transactions}
-                budgets={budgets}
             />
             <div className="mt-3 flex items-center justify-between">
                 <PaginationUI currentPage={currentIndex} totalPages={goals.length} onPrev={() => setIndex((i) => i - 1)} onNext={() => setIndex((i) => i + 1)} />
