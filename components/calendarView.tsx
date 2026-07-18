@@ -115,7 +115,7 @@ export function CalendarView({ transactions, recurring, currencySymbol }: Calend
                         head_row: "flex w-full",
                         head_cell: "text-muted-foreground rounded-md w-full font-normal text-[0.8rem] flex-1",
                         row: "flex w-full mt-2",
-                        cell: "h-20 p-0 relative flex-1 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md",
+                        cell: "p-0 relative flex-1 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md",
                         day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
                     } as any}
                     components={{
@@ -131,11 +131,19 @@ export function CalendarView({ transactions, recurring, currencySymbol }: Calend
                             const isNegative = balance < 0
 
                             return (
-                                <td {...props} className="h-24 w-full p-1 flex flex-col justify-between rounded-md text-left hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
-                                    
+                                <td {...props} className="h-14 sm:h-24 w-full p-0.5 sm:p-1 flex flex-col justify-between rounded-md text-left hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
                                     <div className="w-full">
-                                        <span className="text-xs block mb-1">{day}</span>
-                                        <div className="space-y-0.5">
+                                        <span className="text-[10px] sm:text-xs block mb-1">{day}</span>
+
+                                        {events.length > 0 && (
+                                            <div className="flex flex-wrap justify-center gap-0.5 sm:hidden">
+                                                {events.slice(0, 4).map((event) => (
+                                                    <span key={event.id} className={cn("h-1.5 w-1.5 rounded-full shrink-0",
+                                                        event.type === "income" ? "bg-green-500" : "bg-red-500")} />
+                                                    ))}
+                                            </div>
+                                        )}
+                                        <div className="hidden sm:block space-y-0.5">
                                             {events.slice(0, 2).map((event) => (
                                                 <div key={event.id} className="flex items-center gap-1">
                                                     <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", event.type === "income" ? "bg-green-500" : "bg-red-500")} />
@@ -146,7 +154,7 @@ export function CalendarView({ transactions, recurring, currencySymbol }: Calend
                                         </div>
                                     </div>
 
-                                    <div className={cn("text-[10px] font-bold text-right", isNegative ? "text-red-600" : "text-muted-foreground")}>
+                                    <div className={cn("hidden sm:block text-[10px] font-bold text-right", isNegative ? "text-red-600" : "text-muted-foreground")}>
                                         {balance !== undefined ? `${currencySymbol}${balance.toFixed(0)}` : ''}
                                     </div>
                                 </td>
