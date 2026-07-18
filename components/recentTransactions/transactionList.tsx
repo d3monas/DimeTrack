@@ -11,6 +11,7 @@ import { exportToCSV } from "@/lib/csv"
 import { EmptyState } from "../emptyState"
 import { SelectContent, SelectItem, SelectTrigger, Select, SelectValue } from "../ui/select"
 import type { Account } from "@/types/account"
+import { STARTING_BALANCE_CATEGORY } from "@/lib/consts"
 
 const filterLabels: Record<FilterPeriod, string> = {
     today: "Today",
@@ -49,7 +50,7 @@ export function TransactionList({
         )
     }
 
-    const visibleTransactions = transactions.filter(transaction => transaction.category !== "Starting Balance")
+    const visibleTransactions = transactions.filter(transaction => transaction.category !== STARTING_BALANCE_CATEGORY)
     const searchedTransactions = visibleTransactions.filter((transaction) => {
         if (!searchTerm.trim()) {
             return true
@@ -63,7 +64,7 @@ export function TransactionList({
     })
 
     const filteredTransactions = searchedTransactions.filter((transaction) => {
-        const matchesType = typeFilter === "all" || transaction.type == typeFilter
+        const matchesType = typeFilter === "all" || transaction.type === typeFilter
         const matchesCategory = categoryFilter === "all" || transaction.category === categoryFilter
         return (
             matchesType && matchesCategory

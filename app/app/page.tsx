@@ -33,7 +33,7 @@ import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMont
 import { saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring, 
   saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, clearAllData } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
-import { savingsCategoryForGoal, isSavingsCategory } from "@/lib/consts"
+import { savingsCategoryForGoal, isSavingsCategory, STARTING_BALANCE_CATEGORY } from "@/lib/consts"
 import { processRecurring } from "@/lib/recurring"
 import { importFromCSV } from "@/lib/csv"
 import { exportToJSON, importFromJSON } from "@/lib/data"
@@ -428,7 +428,7 @@ export default function Home() {
 
       setCategories(prev => {
         const existing = new Set(prev);
-        const ignoredCategories = ["Split", "Transfer", "Uncategorized", "Starting Balance", ""]
+        const ignoredCategories = ["Split", "Transfer", "Uncategorized", STARTING_BALANCE_CATEGORY, ""]
         const categoriesToAdd = Array.from(newCategories).filter(category => !existing.has(category) && !isSavingsCategory(category) && !ignoredCategories.includes(category));
         return [
           ...prev,
@@ -535,7 +535,7 @@ export default function Home() {
         description: `Starting balance for ${name.trim()}`,
         amount: startingBalance,
         type: "income",
-        category: "Starting Balance",
+        category: STARTING_BALANCE_CATEGORY,
         date: new Date().toISOString(),
         accountId: newAccountId
       }
@@ -739,7 +739,6 @@ export default function Home() {
               goals={goals}
               transactions={transactions}
               currencySymbol={currencySymbol}
-              budgets={budgets}
               onCreateGoal={() => { setEditingGoal(null); setGoalDialogOpen(true) }}
               onEditGoal={(goal) => { setEditingGoal(goal); setGoalDialogOpen(true) }}
               onDeleteGoal={deleteGoal}
