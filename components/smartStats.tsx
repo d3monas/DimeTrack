@@ -30,7 +30,7 @@ export function SmartStats({ monthlyExpenses, currencySymbol }: SmartStatsThings
     const dayOfMonth = now.getDate()
     const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
 
-    const dailyAverage = dayOfMonth > 0 ? monthlyExpenses / dayOfMonth : 0
+    const dailyAverage = monthlyExpenses / dayOfMonth
     const projectedSpending = dailyAverage * daysInMonth
 
     const lastDayDate = new Date(now.getFullYear(), now.getMonth() + 1, 0)
