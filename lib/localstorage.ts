@@ -312,6 +312,7 @@ export function clearAllData() {
         return
     }
     localStorage.removeItem("transactions")
+    localStorage.removeItem("goal")
     localStorage.removeItem("goals")
     localStorage.removeItem("categories")
     localStorage.removeItem("budgets")
