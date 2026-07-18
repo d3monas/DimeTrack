@@ -33,13 +33,18 @@ export function SmartStats({ monthlyExpenses, currencySymbol }: SmartStatsThings
     const dailyAverage = dayOfMonth > 0 ? monthlyExpenses / dayOfMonth : 0
     const projectedSpending = dailyAverage * daysInMonth
 
+    const lastDayDate = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+    const monthName = lastDayDate.toLocaleDateString("default", { month: "long" })
+    const lastDay = lastDayDate.getDate()
+    const endOfMonthLabel = `${monthName} ${lastDay}`
+
     return (
         <div className="mt-6 grid gap-4 md:grid-cols-2 sm:gap-6">
             <StatCard icon={CalendarDays} label="Daily Average (This Month)" value={`${currencySymbol}${dailyAverage.toFixed(2)}`} 
             subText={`Based on ${dayOfMonth} days passed this month`} />
 
             <StatCard icon={TrendingUp} label="Projected End of Month Spending" value={`${currencySymbol}${projectedSpending.toFixed(2)}`}
-            subText={`At this pace, you will spend this much by day ${daysInMonth}`} />
+            subText={`At this pace, you will spend this much by ${endOfMonthLabel}`} />
         </div>
     )
 }
