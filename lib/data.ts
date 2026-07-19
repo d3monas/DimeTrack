@@ -15,6 +15,7 @@ type AppBackupThings = {
     rules: Rule[]
     accounts: Account[]
     categoryCustomization: Record<string, categoryCustomization>
+    defaultAccountId?: string
 }
 
 export function exportToJSON(data: AppBackupThings, filename = "dimetrack-backup.json") {

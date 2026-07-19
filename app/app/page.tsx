@@ -477,7 +477,8 @@ export default function Home() {
       recurring,
       rules,
       categoryCustomization,
-      accounts
+      accounts,
+      defaultAccountId
     })
   }
 
@@ -498,6 +499,7 @@ export default function Home() {
     setRules(data.rules || [])
     setCategoryCustomization(data.categoryCustomization || {})
     setAccounts(data.accounts || [])
+    setDefaultAccountId(data.defaultAccountId || "")
 
     toast.success("Backup file imported successfully")
   }
