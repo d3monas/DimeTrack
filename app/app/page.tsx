@@ -19,6 +19,7 @@ import { toast } from "sonner"
 import { CalendarView } from "@/components/calendarView"
 import { AccountBalances } from "@/components/accountBalances"
 import { SmartStats } from "@/components/smartStats"
+import { NetWorth } from "@/components/netWorth"
 
 // types
 import type { Transaction, TransactionSplit } from "@/types/transaction"

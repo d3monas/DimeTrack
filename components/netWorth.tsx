@@ -6,7 +6,7 @@ type NetWorthThings = {
   currencySymbol: string
 }
 
-export function NetWorthSnapshot({ currentBalance, previousBalance, currencySymbol }: NetWorthThings) {
+export function NetWorth({ currentBalance, previousBalance, currencySymbol }: NetWorthThings) {
   const difference = currentBalance - previousBalance
   const isUp = difference > 0
 
