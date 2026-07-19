@@ -182,7 +182,7 @@ export default function Home() {
       return false
     }
     return (
-      date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()
+      date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear() && transaction.category !== STARTING_BALANCE_CATEGORY
     )
   })
   const income = calculateIncome(thisMonthTransactions)

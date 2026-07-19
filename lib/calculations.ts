@@ -1,4 +1,5 @@
 import type { Transaction } from "../types/transaction"
+import { STARTING_BALANCE_CATEGORY } from "@/lib/consts"
 
 export function calculateIncome(transactions: Transaction[]) {
     return transactions
@@ -64,7 +65,7 @@ export function getMonthlyTrends(transactions: Transaction[]): MonthlyTrend[] {
         const monthTransactions = transactions.filter(transaction => {
             const date = new Date(transaction.date)
             return (
-                date.getMonth() === targetDate.getMonth() && date.getFullYear() === targetDate.getFullYear()
+                date.getMonth() === targetDate.getMonth() && date.getFullYear() === targetDate.getFullYear() && transaction.category !== STARTING_BALANCE_CATEGORY
             )
         })
 
