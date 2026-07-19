@@ -647,7 +647,7 @@ export default function Home() {
 
 
         <Tabs defaultValue="overview" className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-4 max-w-md">
+          <TabsList className="grid w-full grid-cols-4 max-w-md sm:text-sm">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="calendar">Calendar</TabsTrigger>
             <TabsTrigger value="transactions">Transactions</TabsTrigger>
