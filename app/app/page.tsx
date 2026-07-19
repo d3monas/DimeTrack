@@ -666,13 +666,8 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Current balance card */}
-        <div className="grid gap-4 md:grid-cols-3 sm:gap-6">
-          <div className="rounded-2xl border p-4 sm:p-6">
-            <p className="text-sm text-muted-foreground">Current Balance <span className="text-xs">(All Time)</span></p>
-            <h2 className="mt-2 text-2xl font-bold sm:text-3xl">{currencySymbol}{balance.toFixed(2)}</h2>
-          </div>
-
+        {/* income & expense cards */}
+        <div className="grid gap-4 md:grid-cols-2 sm:gap-6">
           <div className="rounded-2xl border p-4 sm:p-6">
             <p className="text-sm text-muted-foreground">Income since - {firstOfMonthLabel}</p>
             <h2 className="mt-2 text-2xl font-bold text-green-600 sm:text-3xl">{currencySymbol}{income.toFixed(2)}</h2>
