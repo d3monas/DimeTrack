@@ -194,6 +194,10 @@ export default function Home() {
   const firstOfMonthLabel = firstOfMonth.toLocaleDateString(undefined, { month: "long", day: "numeric" })
   const monthlyTrends = getMonthlyTrends(transactions)
 
+  const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+  const prevTransactions = transactions.filter(transaction => new Date(transaction.date) < startOfThisMonth)
+  const prevBalance = calculateIncome(prevTransactions) - calculateExpenses(prevTransactions)
+
   function addTransaction(
     isRecurring: boolean,
     interval: RecurringTransaction["interval"],
