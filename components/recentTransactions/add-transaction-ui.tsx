@@ -102,6 +102,17 @@ export function AddTransactionDialog({
                 newErrors.customValue = "Enter a valid number"
             }
         }
+        if (transactionType === "transfer") {
+            if (!accountId) {
+                newErrors.accountId = "Please select a 'From' account"
+            }
+            if (!transferAccountId) {
+                newErrors.transferAccountId = "Please select a 'To' account"
+            }
+            if (accountId && transferAccountId && accountId === transferAccountId) {
+                newErrors.transferAccountId = "Cannot transfer to the same account"
+            }
+        }
         setErrors(newErrors)
         return (
             Object.keys(newErrors).length === 0
@@ -207,7 +218,12 @@ export function AddTransactionDialog({
                         <div className="grid grid-cols-2 gap-2">
                             <div>
                                 <Label>From Account</Label>
-                                <Select value={accountId} onValueChange={setAccountId}>
+                                <Select value={accountId} onValueChange={(value) => {
+                                    setAccountId(value)
+                                    if (errors.accountId) {
+                                        setErrors((p) => ({...p, accountId: ""}))
+                                    }
+                                }}>
                                     <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
                                     <SelectContent>
                                         {accounts.map((account) => (
@@ -215,10 +231,16 @@ export function AddTransactionDialog({
                                         ))}
                                     </SelectContent>
                                 </Select>
+                                <FieldError message={errors.accountId} />
                             </div>
                             <div>
                                 <Label>To Account</Label>
-                                <Select value={transferAccountId} onValueChange={setTransferAccountId}>
+                                <Select value={transferAccountId} onValueChange={(value) => {
+                                    setTransferAccountId(value)
+                                    if (errors.transferAccountId) {
+                                        setErrors((p) => ({...p, transferAccountId: ""}))
+                                    }
+                                }}>
                                     <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
                                     <SelectContent>
                                         {accounts.map((account) => (
@@ -226,6 +248,7 @@ export function AddTransactionDialog({
                                         ))}
                                     </SelectContent>
                                 </Select>
+                                <FieldError message={errors.transferAccountId} />
                             </div>
                         </div>
                     ) : (
