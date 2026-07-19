@@ -572,6 +572,14 @@ export default function Home() {
     if (defaultAccountId === id) {
       setDefaultAccountId("")
     }
+
+    setTransactions(prev =>
+      prev.map(transaction => ({
+        ...transaction,
+        accountId: transaction.accountId === id ? undefined : transaction.accountId,
+        transferAccountId: transaction.transferAccountId === id ? undefined : transaction.transferAccountId,
+      }))
+    )
   }
 
   function updateAccount(id: string, data: Partial<Omit<Account, 'id'>>) {
