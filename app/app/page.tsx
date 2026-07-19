@@ -30,8 +30,10 @@ import type { Account } from "@/types/account"
 
 // libs
 import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends } from "@/lib/calculations"
-import { saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring, 
-  saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, clearAllData } from "@/lib/localstorage"
+import {
+  saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring,
+  saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, clearAllData
+} from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 import { savingsCategoryForGoal, isSavingsCategory, STARTING_BALANCE_CATEGORY } from "@/lib/consts"
 import { processRecurring } from "@/lib/recurring"
@@ -97,19 +99,19 @@ export default function Home() {
     if (isLoaded) {
       saveTransactions(transactions)
     }
-  }, [isLoaded,transactions])
+  }, [isLoaded, transactions])
 
   useEffect(() => {
     if (isLoaded) {
       saveCategories(categories)
     }
-  }, [isLoaded,categories])
+  }, [isLoaded, categories])
 
   useEffect(() => {
     if (isLoaded) {
       saveBudgets(budgets)
     }
-  }, [isLoaded,budgets])
+  }, [isLoaded, budgets])
 
   useEffect(() => {
     if (!isLoaded) {
@@ -172,7 +174,7 @@ export default function Home() {
   const lifetimeExpenses = calculateExpenses(transactions)
   const balance = lifetimeIncome - lifetimeExpenses
   const currencySymbol = { USD: "$", EUR: "€", GBP: "£", JPY: "¥", CAD: "CA$", AUD: "A$", CHF: "Fr", INR: "₹" }[currency] ?? "$"
-  
+
   const now = new Date()
   const thisMonthTransactions = transactions.filter((transaction) => {
     const date = new Date(transaction.date)
@@ -188,13 +190,13 @@ export default function Home() {
   const filteredTransactions = filterTransactionsByPeriod(transactions, filterPeriod)
   const categoryTotals = getCategoryTotals(filteredTransactions)
   const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-  const firstOfMonthLabel = firstOfMonth.toLocaleDateString(undefined, {month: "long", day: "numeric"})
+  const firstOfMonthLabel = firstOfMonth.toLocaleDateString(undefined, { month: "long", day: "numeric" })
   const monthlyTrends = getMonthlyTrends(transactions)
 
   function addTransaction(
-    isRecurring: boolean, 
-    interval: RecurringTransaction["interval"], 
-    customIntervalValue?: number, 
+    isRecurring: boolean,
+    interval: RecurringTransaction["interval"],
+    customIntervalValue?: number,
     customIntervalUnit?: "days" | "weeks" | "months",
     splits?: TransactionSplit[],
     accountId?: string,
@@ -257,21 +259,21 @@ export default function Home() {
     if (transaction && isSavingsCategory(transaction.category)) {
       setGoals((prev) =>
         prev.map((goal) =>
-          savingsCategoryForGoal(goal.name) === transaction.category ? {...goal, currentAmount: Math.max(0, goal.currentAmount - transaction.amount)}: goal
+          savingsCategoryForGoal(goal.name) === transaction.category ? { ...goal, currentAmount: Math.max(0, goal.currentAmount - transaction.amount) } : goal
         )
       )
     }
     setTransactions((prev) => prev.filter((transaction) => transaction.id !== id))
   }
 
-  function editTransaction(id: string, description: string, amount: number, type : "income" | "expense" | "transfer", category: string, notes?: string) {
-    setTransactions((prev) => 
+  function editTransaction(id: string, description: string, amount: number, type: "income" | "expense" | "transfer", category: string, notes?: string) {
+    setTransactions((prev) =>
       prev.map((transaction) =>
-      transaction.id === id ? { ...transaction, description, amount, category, type, notes: notes || undefined }: transaction
-    ))
+        transaction.id === id ? { ...transaction, description, amount, category, type, notes: notes || undefined } : transaction
+      ))
   }
 
-  function saveGoal(id: string| null, name: string, currentAmount: number, targetAmount: number, targetDate?: string) {
+  function saveGoal(id: string | null, name: string, currentAmount: number, targetAmount: number, targetDate?: string) {
     if (id) {
       const existingGoal = goals.find((goal) => goal.id === id)
       if (existingGoal && existingGoal.name !== name) {
@@ -283,17 +285,17 @@ export default function Home() {
           if (!(oldCategory in prev)) {
             return prev
           }
-          const updated = {...prev}
+          const updated = { ...prev }
           updated[renamedCategory] = updated[oldCategory]
           delete updated[oldCategory]
           return updated
         })
         setTransactions((prev) =>
-          prev.map((transaction) => (transaction.category === oldCategory ? { ...transaction, category: renamedCategory }: transaction))
+          prev.map((transaction) => (transaction.category === oldCategory ? { ...transaction, category: renamedCategory } : transaction))
         )
       }
-      setGoals((prev) => 
-        prev.map((goal) => (goal.id === id ? { ...goal, name, currentAmount, targetAmount, targetDate }: goal))
+      setGoals((prev) =>
+        prev.map((goal) => (goal.id === id ? { ...goal, name, currentAmount, targetAmount, targetDate } : goal))
       )
     } else {
       const newGoal: Goal = {
@@ -338,15 +340,37 @@ export default function Home() {
       return updated
     })
 
-    setTransactions(prev =>
-      prev.map(transaction =>
-        transaction.category === categoryToDelete ? { ...transaction, category: "Uncategorized" } : transaction
-      )
+    setCategoryCustomization((prev) => {
+      if (!(categoryToDelete in prev)) {
+        return prev
+      }
+      const updated = { ...prev }
+      delete updated[categoryToDelete]
+      return updated
+    })
+
+    setRules((prev) => prev.filter((rule) => rule.category !== categoryToDelete))
+
+    setTransactions((prev) =>
+      prev.map((transaction) => {
+        if (transaction.category === categoryToDelete) {
+          return { ...transaction, category: "Uncategorized" }
+        }
+        if (transaction.splits && transaction.splits.some((split) => split.category === categoryToDelete)) {
+          return {
+            ...transaction,
+            splits: transaction.splits.map((split) =>
+              split.category === categoryToDelete ? { ...split, category: "Uncategorized" } : split
+            ),
+          }
+        }
+        return transaction
+      })
     )
   }
 
   function updateBudget(category: string, limit: number) {
-    setBudgets((prev) => ({...prev, [category]: limit}))
+    setBudgets((prev) => ({ ...prev, [category]: limit }))
   }
 
   function contributeToGoal(goalId: string, amount: number) {
@@ -377,7 +401,7 @@ export default function Home() {
       date: new Date().toISOString(),
     }
     setTransactions((prev) => [savingsTransaction, ...prev])
-    }
+  }
 
   useEffect(() => {
     if (!isLoaded || recurring.length === 0) {
@@ -464,7 +488,7 @@ export default function Home() {
       toast.error("Failed to import backup file. Make sure it's a valid backup file and try again")
       return
     }
-      
+
     setTransactions(data.transactions || [])
     setGoals(data.goals || [])
     setCategories(data.categories || [])
@@ -551,7 +575,7 @@ export default function Home() {
   }
 
   function updateAccount(id: string, data: Partial<Omit<Account, 'id'>>) {
-    setAccounts(prev => prev.map(account => account.id === id ? { ...account, ...data} : account))
+    setAccounts(prev => prev.map(account => account.id === id ? { ...account, ...data } : account))
   }
 
   const accountBalances = accounts.map(account => {
@@ -569,7 +593,7 @@ export default function Home() {
           accBalance -= transaction.amount
         }
       }
-      
+
       if (transaction.transferAccountId === account.id) {
         accBalance += transaction.amount
       }
@@ -612,15 +636,15 @@ export default function Home() {
               onImportCSV={handleImportCSV}
               onExportBackup={handleExportBackup}
               onImportBackup={handleImportBackup}
-              onClearData={handleClearData} 
+              onClearData={handleClearData}
               rules={rules}
               onAddRule={addRule}
               onDeleteRule={deleteRule}
               categoryCustomization={categoryCustomization}
-              onUpdateCategoryCustomization={updateCategoryCustomization} 
+              onUpdateCategoryCustomization={updateCategoryCustomization}
               accounts={accounts}
               onAddAccount={addAccount}
-              onDeleteAccount={deleteAccount} 
+              onDeleteAccount={deleteAccount}
               defaultAccountId={defaultAccountId}
               onSetDefaultAccount={setDefaultAccountId}
               onUpdateAccount={updateAccount} />
@@ -718,7 +742,7 @@ export default function Home() {
                 budgets={budgets}
                 categoryTotals={categoryTotals}
                 currencySymbol={currencySymbol}
-                rules={rules} 
+                rules={rules}
                 accounts={accounts} />
               <TransactionList
                 transactions={filteredTransactions}
@@ -726,8 +750,8 @@ export default function Home() {
                 onDelete={deleteTransaction}
                 currencySymbol={currencySymbol}
                 filter={filterPeriod}
-                onFilterChange={setFilterPeriod} 
-                categories={categories} 
+                onFilterChange={setFilterPeriod}
+                categories={categories}
                 accounts={accounts} />
             </div>
           </TabsContent>
@@ -748,12 +772,12 @@ export default function Home() {
             {/* Edit goal button */}
             <GoalDialog open={goalDialogOpen} setOpen={setGoalDialogOpen} goal={editingGoal} onSave={saveGoal} />
             {/* budget */}
-            <BudgetOverview 
-              totals={categoryTotals} 
-              budgets={budgets} 
+            <BudgetOverview
+              totals={categoryTotals}
+              budgets={budgets}
               onUpdateBudget={updateBudget}
-              currencySymbol={currencySymbol} 
-              monthlyIncome={income} 
+              currencySymbol={currencySymbol}
+              monthlyIncome={income}
               categoryCustomization={categoryCustomization} />
           </TabsContent>
         </Tabs>
