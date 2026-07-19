@@ -695,6 +695,8 @@ export default function Home() {
 
           {/* Overview tab */}
           <TabsContent value="overview" className="space-y-6 mt-4">
+            {/* networth */}
+            <NetWorth currentBalance={balance} previousBalance={prevBalance} currencySymbol={currencySymbol} />
             {/* upcoming recurring transactions */}
             <UpcomingTransactions recurring={recurring} currencySymbol={currencySymbol} />
             {/* smart stats */}
