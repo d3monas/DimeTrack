@@ -35,7 +35,7 @@ export function EditTransactionDialog({ transaction, open, onClose, onSave, cate
     const currentLimit = budgets[category] ?? 0
     const currentSpent = (categoryTotals[category] ?? 0) - (transaction?.amount ?? 0)
     const projectedSpent = currentSpent + (Number(amount) || 0)
-    const willExceedBudget = currentLimit > 0 && projectedSpent > currentLimit
+    const willExceedBudget = type === "expense" && currentLimit > 0 && projectedSpent > currentLimit
 
     useEffect(() => {
         if (open && transaction) {
