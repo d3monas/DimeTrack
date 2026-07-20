@@ -51,6 +51,8 @@ Built with:
 - shadcn/ui
 - Recharts
 - lucid-react
+- react-colorful
+- colord
 
 Check it out here: https://dime-track.vercel.app/
 
