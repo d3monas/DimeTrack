@@ -118,11 +118,11 @@ export function SettingsDialog({
                             </div>
 
                             <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-                                <HexColorPicker color={accentColor} onChange={onAccentChange} style={{ width: '100%', maxWidth: '180px', height: '120px' }} />
+                                <HexColorPicker color={accentColor || "#000000"} onChange={onAccentChange} style={{ width: '100%', maxWidth: '180px', height: '120px' }} />
                                 <div className="flex flex-col gap-2 w-full sm:w-auto">
                                     <div className="flex items-center gap-2">
-                                        <label className="relative h-9 w-9 rounded-md border overflow-hidden cursor-pointer shrink-0" style={{ backgroundColor: accentColor }}>
-                                            <input type="color" value={accentColor} onChange={(e) => onAccentChange(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer" />
+                                        <label className="relative h-9 w-9 rounded-md border overflow-hidden cursor-pointer shrink-0" style={{ backgroundColor: accentColor || "#000" }}>
+                                            <input type="color" value={accentColor || "#000000"} onChange={(e) => onAccentChange(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer" />
                                         </label>
                                         <Input type="text" value={accentColor} onChange={(e) => {
                                             let val = e.target.value
@@ -134,6 +134,7 @@ export function SettingsDialog({
                                         className="w-28 font-mono text-sm"
                                         maxLength={7} />
                                     </div>
+                                    <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={() => onAccentChange("")}>Reset to Default</Button>
                                     <p className="text-xs text-muted-foreground">Click the box or type a Hex code</p>
                                 </div>
                             </div>

@@ -23,7 +23,6 @@ export const DEFAULT_ACCOUNT_ICON = "Wallet"
 export const STARTING_BALANCE_CATEGORY = "Starting Balance"
 
 export const ACCENT_COLORS = [
-    {name: "Slate", hex: "#18181b"},
     {name: "Emerald", hex: "#10b981"},
     {name: "Ocean", hex: "#0ea5e9"},
     {name: "Royal", hex: "#8b5cf6"},

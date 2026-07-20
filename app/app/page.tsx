@@ -79,7 +79,7 @@ export default function Home() {
 
   const [defaultAccountId, setDefaultAccountId] = useState<string>("")
 
-  const [accentColor, setAccentColor] = useState<string>(ACCENT_COLORS[0].hex)
+  const [accentColor, setAccentColor] = useState<string>("")
 
   // load localstorage 
   useEffect(() => {
@@ -94,7 +94,7 @@ export default function Home() {
     setCategoryCustomization(data.categoryCustomization)
     setAccounts(data.accounts || [])
     setDefaultAccountId(data.defaultAccountId || "")
-    setAccentColor(data.accentColor || ACCENT_COLORS[0].hex)
+    setAccentColor(data.accentColor || "")
     setIsLoaded(true)
   }, [])
 
@@ -176,19 +176,23 @@ export default function Home() {
   }, [isLoaded, defaultAccountId])
 
   useEffect(() => {
-    if (isLoaded && accentColor) {
-      const c = colord(accentColor)
-
-      if (!c.isValid()) {
-        return
+    if (isLoaded) {
+      if (accentColor) {
+        const c = colord(accentColor)
+        
+        if (!c.isValid()) {
+          return
+        }
+        document.documentElement.style.setProperty("--primary", accentColor)
+        
+        const foreground = c.brightness() > 0.5 ? "#000000" : "#ffffff"
+        document.documentElement.style.setProperty("--primary-foreground", foreground)
+        saveAccentColor(accentColor)
+      } else {
+        document.documentElement.style.removeProperty("--primary")
+        document.documentElement.style.removeProperty("--primary-foreground")
+        saveAccentColor("")
       }
-
-      document.documentElement.style.setProperty("--primary", accentColor)
-
-      const foreground = c.brightness() > 0.5 ? "#000000" : "#ffffff"
-      document.documentElement.style.setProperty("--primary-foreground", foreground)
-
-      saveAccentColor(accentColor)
     }
   }, [isLoaded, accentColor])
 
@@ -527,7 +531,7 @@ export default function Home() {
     setCategoryCustomization(data.categoryCustomization || {})
     setAccounts(data.accounts || [])
     setDefaultAccountId(data.defaultAccountId || "")
-    setAccentColor(data.accentColor || ACCENT_COLORS[0].hex)
+    setAccentColor(data.accentColor || "")
 
     toast.success("Backup file imported successfully")
   }
