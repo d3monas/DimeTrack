@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog"
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
@@ -66,6 +67,19 @@ export function SettingsDialog({
     const fileInputRef = useRef<HTMLInputElement>(null)
     const backupInputRef = useRef<HTMLInputElement>(null)
 
+    const [localColor, setLocalColor] = useState(accentColor || "#000000")
+
+    useEffect(() => {
+        setLocalColor(accentColor || "#000000")
+    }, [accentColor])
+
+    const handleColorChange = (newColor: string) => {
+        setLocalColor(newColor)
+    }
+    const handleCommitColor = () => {
+        onAccentChange(localColor)
+    }
+
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -118,20 +132,26 @@ export function SettingsDialog({
                             </div>
 
                             <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-                                <HexColorPicker color={accentColor || "#000000"} onChange={onAccentChange} style={{ width: '100%', maxWidth: '180px', height: '120px' }} />
-                                <div className="flex flex-col gap-2 w-full sm:w-auto">
+                                <div className="w-full sm:w-auto" onMouseUp={handleCommitColor} onTouchEnd={handleCommitColor}>
+                                    <HexColorPicker color={accentColor || "#000000"} onChange={onAccentChange} style={{ width: '100%', maxWidth: '200px', height: '150px' }} />
+                                </div>
+                                <div className="flex flex-col gap-3 w-full sm:w-auto">
                                     <div className="flex items-center gap-2">
-                                        <label className="relative h-9 w-9 rounded-md border overflow-hidden cursor-pointer shrink-0" style={{ backgroundColor: accentColor || "#000" }}>
-                                            <input type="color" value={accentColor || "#000000"} onChange={(e) => onAccentChange(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer" />
-                                        </label>
-                                        <Input type="text" value={accentColor} onChange={(e) => {
+                                        <label className="h-10 w-10 rounded-md border shrink-0" style={{ backgroundColor: localColor }} />
+                                        <Input type="text" value={localColor} onChange={(e) => {
                                             let val = e.target.value
                                             if (!val.startsWith("#")) {
                                                 val = "#" + val
                                             }
-                                            onAccentChange(val)
+                                            handleColorChange(val)
                                         }}
-                                        className="w-28 font-mono text-sm"
+                                        onBlur={handleCommitColor}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                handleCommitColor()
+                                            }
+                                        }}
+                                        className="w-32 font-mono text-sm"
                                         maxLength={7} />
                                     </div>
                                     <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={() => onAccentChange("")}>Reset to Default</Button>
