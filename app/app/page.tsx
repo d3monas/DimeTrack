@@ -179,11 +179,13 @@ export default function Home() {
     if (isLoaded && accentColor) {
       const c = colord(accentColor)
 
-      const hsl = c.toHsl()
-      const hslString = `${Math.round(hsl.h)} ${Math.round(hsl.s)}% ${Math.round(hsl.l)}%`
-      document.documentElement.style.setProperty("--primary", hslString)
+      if (!c.isValid()) {
+        return
+      }
 
-      const foreground = c.brightness() > 0.5 ? "0 0% 0%" : "0 0% 100%"
+      document.documentElement.style.setProperty("--primary", accentColor)
+
+      const foreground = c.brightness() > 0.5 ? "#000000" : "#ffffff"
       document.documentElement.style.setProperty("--primary-foreground", foreground)
 
       saveAccentColor(accentColor)

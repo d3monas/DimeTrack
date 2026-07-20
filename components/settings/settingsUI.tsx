@@ -13,6 +13,8 @@ import { categoryCustomization } from "@/lib/categoryCustomization"
 import type { Account } from "@/types/account"
 import { AccountsManager } from "./accountManager"
 import { ColorIconPicker } from "./colorIconPicker"
+import { ACCENT_COLORS } from "@/lib/consts"
+import { HexColorPicker } from "react-colorful"
 
 type SettingsDialogThings = {
     categories: string[]
@@ -40,6 +42,8 @@ type SettingsDialogThings = {
     defaultAccountId: string
     onSetDefaultAccount: (id: string) => void
     onUpdateAccount: (id: string, data: Partial<Omit<Account, 'id'>>) => void
+    accentColor: string
+    onAccentChange: (color: string) => void
 }
 
 const currencies = [
@@ -57,7 +61,7 @@ export function SettingsDialog({
     categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory, currency, currencySymbol,
     onCurrencyChange, recurring, onDeleteRecurring, onImportCSV, onExportBackup, onImportBackup, onClearData,
     rules, onAddRule, onDeleteRule, categoryCustomization, onUpdateCategoryCustomization, accounts, onAddAccount,
-    onDeleteAccount, defaultAccountId, onSetDefaultAccount, onUpdateAccount
+    onDeleteAccount, defaultAccountId, onSetDefaultAccount, onUpdateAccount, accentColor, onAccentChange
 }: SettingsDialogThings) {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const backupInputRef = useRef<HTMLInputElement>(null)
@@ -93,6 +97,46 @@ export function SettingsDialog({
                                     ))}
                                 </SelectContent>
                             </Select>
+                        </div>
+
+                        <div className="border-t pt-6 mt-6">
+                            <h3 className="font-semibold mb-2">Accent Color</h3>
+                            <p className="text-sm text-muted-foreground mb-3">Choose the primary color theme for the whole application</p>
+
+                            <div className="flex flex-wrap gap-3 mb-4">
+                                {ACCENT_COLORS.map((color) => (
+                                    <button key={color.name}
+                                        className="h-8 w-8 rounded-full border-2 transition-transform hover:scale-110"
+                                        style={{
+                                            backgroundColor: color.hex,
+                                            borderColor: accentColor.toLowerCase() === color.hex.toLowerCase() ? "hsl(var(--foreground))" : "transparent"
+                                        }}
+                                        onClick={() => onAccentChange(color.hex)}
+                                        title={color.name}
+                                    />
+                                ))}
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+                                <HexColorPicker color={accentColor} onChange={onAccentChange} style={{ width: '100%', maxWidth: '180px', height: '120px' }} />
+                                <div className="flex flex-col gap-2 w-full sm:w-auto">
+                                    <div className="flex items-center gap-2">
+                                        <label className="relative h-9 w-9 rounded-md border overflow-hidden cursor-pointer shrink-0" style={{ backgroundColor: accentColor }}>
+                                            <input type="color" value={accentColor} onChange={(e) => onAccentChange(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer" />
+                                        </label>
+                                        <Input type="text" value={accentColor} onChange={(e) => {
+                                            let val = e.target.value
+                                            if (!val.startsWith("#")) {
+                                                val = "#" + val
+                                            }
+                                            onAccentChange(val)
+                                        }}
+                                        className="w-28 font-mono text-sm"
+                                        maxLength={7} />
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">Click the box or type a Hex code</p>
+                                </div>
+                            </div>
                         </div>
 
                         <div className="border-t pt-6 mt-6">
