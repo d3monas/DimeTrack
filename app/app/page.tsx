@@ -183,14 +183,22 @@ export default function Home() {
         if (!c.isValid()) {
           return
         }
+
         document.documentElement.style.setProperty("--primary", accentColor)
-        
-        const foreground = c.brightness() > 0.5 ? "#000000" : "#ffffff"
+
+        const foreground = c.isDark() ? "#ffffff" : "#000000"
         document.documentElement.style.setProperty("--primary-foreground", foreground)
+        document.documentElement.style.setProperty("--ring", accentColor)
+
+        document.documentElement.style.setProperty("--accent", accentColor)
+        document.documentElement.style.setProperty("--accent-foreground", foreground)
         saveAccentColor(accentColor)
       } else {
         document.documentElement.style.removeProperty("--primary")
         document.documentElement.style.removeProperty("--primary-foreground")
+        document.documentElement.style.removeProperty("--ring")
+        document.documentElement.style.removeProperty("--accent")
+        document.documentElement.style.removeProperty("--accent-foreground")
         saveAccentColor("")
       }
     }
