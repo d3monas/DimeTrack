@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono, Inter } from "next/font/google"
-import { Analytics } from "@vercel/analytics/react"
+import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Metadata } from "next"
 import { Toaster } from "@/components/ui/sonner"
 
@@ -51,6 +52,7 @@ export default function RootLayout({
           <Footer />
         </ThemeProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )
