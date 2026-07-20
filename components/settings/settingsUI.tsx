@@ -92,8 +92,9 @@ export function SettingsDialog({
                 </DialogHeader>
 
                 <Tabs defaultValue="general" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3">
+                    <TabsList className="grid w-full grid-cols-4">
                         <TabsTrigger value="general">General</TabsTrigger>
+                        <TabsTrigger value="appearance">Appearance</TabsTrigger>
                         <TabsTrigger value="automation">Automation</TabsTrigger>
                         <TabsTrigger value="data">Data</TabsTrigger>
                     </TabsList>
@@ -111,53 +112,6 @@ export function SettingsDialog({
                                     ))}
                                 </SelectContent>
                             </Select>
-                        </div>
-
-                        <div className="border-t pt-6 mt-6">
-                            <h3 className="font-semibold mb-2">Accent Color</h3>
-                            <p className="text-sm text-muted-foreground mb-3">Choose the primary color theme for the whole application</p>
-
-                            <div className="flex flex-wrap gap-3 mb-4">
-                                {ACCENT_COLORS.map((color) => (
-                                    <button key={color.name}
-                                        className="h-8 w-8 rounded-full border-2 transition-transform hover:scale-110"
-                                        style={{
-                                            backgroundColor: color.hex,
-                                            borderColor: accentColor.toLowerCase() === color.hex.toLowerCase() ? "hsl(var(--foreground))" : "transparent"
-                                        }}
-                                        onClick={() => onAccentChange(color.hex)}
-                                        title={color.name}
-                                    />
-                                ))}
-                            </div>
-
-                            <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-                                <div className="w-full sm:w-auto" onMouseUp={handleCommitColor} onTouchEnd={handleCommitColor}>
-                                    <HexColorPicker color={accentColor || "#000000"} onChange={onAccentChange} style={{ width: '100%', maxWidth: '200px', height: '150px' }} />
-                                </div>
-                                <div className="flex flex-col gap-3 w-full sm:w-auto">
-                                    <div className="flex items-center gap-2">
-                                        <label className="h-10 w-10 rounded-md border shrink-0" style={{ backgroundColor: localColor }} />
-                                        <Input type="text" value={localColor} onChange={(e) => {
-                                            let val = e.target.value
-                                            if (!val.startsWith("#")) {
-                                                val = "#" + val
-                                            }
-                                            handleColorChange(val)
-                                        }}
-                                        onBlur={handleCommitColor}
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter") {
-                                                handleCommitColor()
-                                            }
-                                        }}
-                                        className="w-32 font-mono text-sm"
-                                        maxLength={7} />
-                                    </div>
-                                    <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={() => onAccentChange("")}>Reset to Default</Button>
-                                    <p className="text-xs text-muted-foreground">Click the box or type a Hex code</p>
-                                </div>
-                            </div>
                         </div>
 
                         <div className="border-t pt-6 mt-6">
@@ -192,7 +146,53 @@ export function SettingsDialog({
                             <AccountsManager accounts={accounts} onAddAccount={onAddAccount} onDeleteAccount={onDeleteAccount}
                                 defaultAccountId={defaultAccountId} onSetDefaultAccount={onSetDefaultAccount} onUpdateAccount={onUpdateAccount} />
                         </div>
+                    </TabsContent>
 
+                    <TabsContent value="appearance" className="mt-6">
+                        <h3 className="font-semibold mb-2">Accent Color</h3>
+                        <p className="text-sm text-muted-foreground mb-3">Choose the primary color theme for the whole application</p>
+
+                        <div className="flex flex-wrap gap-3 mb-6">
+                            {ACCENT_COLORS.map((color) => (
+                                <button key={color.name}
+                                    className="h-10 w-10 rounded-full border-2 transition-transform hover:scale-110"
+                                    style={{
+                                        backgroundColor: color.hex,
+                                        borderColor: accentColor.toLowerCase() === color.hex.toLowerCase() ? "hsl(var(--foreground))" : "transparent"
+                                    }}
+                                    onClick={() => onAccentChange(color.hex)}
+                                    title={color.name}
+                                />
+                            ))}
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row sm:items-start gap-6">
+                            <div className="sm:w-37 shrink-0" onMouseUp={handleCommitColor} onTouchEnd={handleCommitColor}>
+                                <HexColorPicker color={localColor} onChange={handleColorChange} style={{ width: '100%', height: '150px' }} />
+                            </div>
+                            <div className="flex flex-col gap-3 w-full sm:w-auto">
+                                <div className="flex items-center gap-2">
+                                    <label className="h-10 w-10 rounded-md border shrink-0" style={{ backgroundColor: localColor }} />
+                                    <Input type="text" value={localColor} onChange={(e) => {
+                                        let val = e.target.value
+                                        if (!val.startsWith("#")) {
+                                            val = "#" + val
+                                        }
+                                        handleColorChange(val)
+                                    }}
+                                        onBlur={handleCommitColor}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                handleCommitColor()
+                                            }
+                                        }}
+                                        className="w-32 font-mono text-sm"
+                                        maxLength={7} />
+                                </div>
+                                <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={() => onAccentChange("")}>Reset to Default</Button>
+                                <p className="text-xs text-muted-foreground">Click a preset, drag the picker, or type a Hex code</p>
+                            </div>
+                        </div>
                     </TabsContent>
 
                     <TabsContent value="automation" className="mt-6">
