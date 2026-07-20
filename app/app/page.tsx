@@ -33,15 +33,16 @@ import type { Account } from "@/types/account"
 import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends } from "@/lib/calculations"
 import {
   saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring,
-  saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, clearAllData
+  saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, saveAccentColor, clearAllData
 } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
-import { savingsCategoryForGoal, isSavingsCategory, STARTING_BALANCE_CATEGORY } from "@/lib/consts"
+import { savingsCategoryForGoal, isSavingsCategory, STARTING_BALANCE_CATEGORY, ACCENT_COLORS } from "@/lib/consts"
 import { processRecurring } from "@/lib/recurring"
 import { importFromCSV } from "@/lib/csv"
 import { exportToJSON, importFromJSON } from "@/lib/data"
 import { autoCategories } from "@/lib/rules"
 import { categoryCustomization } from "@/lib/categoryCustomization"
+import { colord } from "colord"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -78,6 +79,8 @@ export default function Home() {
 
   const [defaultAccountId, setDefaultAccountId] = useState<string>("")
 
+  const [accentColor, setAccentColor] = useState<string>(ACCENT_COLORS[0].hex)
+
   // load localstorage 
   useEffect(() => {
     const data = loadAllData()
@@ -91,6 +94,7 @@ export default function Home() {
     setCategoryCustomization(data.categoryCustomization)
     setAccounts(data.accounts || [])
     setDefaultAccountId(data.defaultAccountId || "")
+    setAccentColor(data.accentColor || ACCENT_COLORS[0].hex)
     setIsLoaded(true)
   }, [])
 
@@ -170,6 +174,21 @@ export default function Home() {
       saveDefaultAccountId(defaultAccountId)
     }
   }, [isLoaded, defaultAccountId])
+
+  useEffect(() => {
+    if (isLoaded && accentColor) {
+      const c = colord(accentColor)
+
+      const hsl = c.toHsl()
+      const hslString = `${Math.round(hsl.h)} ${Math.round(hsl.s)}% ${Math.round(hsl.l)}%`
+      document.documentElement.style.setProperty("--primary", hslString)
+
+      const foreground = c.brightness() > 0.5 ? "0 0% 0%" : "0 0% 100%"
+      document.documentElement.style.setProperty("--primary-foreground", foreground)
+
+      saveAccentColor(accentColor)
+    }
+  }, [isLoaded, accentColor])
 
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
@@ -483,7 +502,8 @@ export default function Home() {
       rules,
       categoryCustomization,
       accounts,
-      defaultAccountId
+      defaultAccountId,
+      accentColor
     })
   }
 
@@ -505,6 +525,7 @@ export default function Home() {
     setCategoryCustomization(data.categoryCustomization || {})
     setAccounts(data.accounts || [])
     setDefaultAccountId(data.defaultAccountId || "")
+    setAccentColor(data.accentColor || ACCENT_COLORS[0].hex)
 
     toast.success("Backup file imported successfully")
   }
@@ -662,7 +683,9 @@ export default function Home() {
               onDeleteAccount={deleteAccount}
               defaultAccountId={defaultAccountId}
               onSetDefaultAccount={setDefaultAccountId}
-              onUpdateAccount={updateAccount} />
+              onUpdateAccount={updateAccount} 
+              accentColor={accentColor}
+              onAccentChange={setAccentColor} />
           </div>
         </header>
 
