@@ -292,6 +292,23 @@ export function loadDefaultAccountId(): string {
     )
 }
 
+// accent color
+export function saveAccentColor(color: string) {
+    if (!isBrowser) {
+        return
+    }
+    localStorage.setItem("accentColor", color)
+}
+
+export function loadAccentColor(): string {
+    if (!isBrowser) {
+        return ""
+    }
+    return (
+        localStorage.getItem("accentColor") || ""
+    )
+}
+
 export function loadAllData() {
     return {
         transactions: loadTransactions(),
@@ -304,6 +321,7 @@ export function loadAllData() {
         categoryCustomization: loadCategoryCustomization(),
         accounts: loadAccounts(),
         defaultAccountId: loadDefaultAccountId(),
+        accentColor: loadAccentColor(),
     }
 }
 
@@ -322,4 +340,5 @@ export function clearAllData() {
     localStorage.removeItem("categoryCustomization")
     localStorage.removeItem("accounts")
     localStorage.removeItem("defaultAccountId")
+    localStorage.removeItem("accentColor")
 }
