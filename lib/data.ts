@@ -16,6 +16,7 @@ type AppBackupThings = {
     accounts: Account[]
     categoryCustomization: Record<string, categoryCustomization>
     defaultAccountId?: string
+    accentColor?: string
 }
 
 export function exportToJSON(data: AppBackupThings, filename = "dimetrack-backup.json") {
