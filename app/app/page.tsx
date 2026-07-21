@@ -578,6 +578,9 @@ export default function Home() {
     setRules([])
     setCategoryCustomization({})
     setAccounts([])
+    setDefaultAccountId("")
+    setAccentColor("")
+    setOnboaringComplete(false)
 
     toast.success("All data has been cleared")
   }
