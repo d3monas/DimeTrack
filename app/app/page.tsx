@@ -85,6 +85,7 @@ export default function Home() {
 
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState("overview")
+  const [onBoardingComplete, setOnboaringComplete] = useState(true)
 
   // load localstorage 
   useEffect(() => {
@@ -100,6 +101,7 @@ export default function Home() {
     setAccounts(data.accounts || [])
     setDefaultAccountId(data.defaultAccountId || "")
     setAccentColor(data.accentColor || "")
+    setOnboaringComplete(data.onboardingComplete || false)
     setIsLoaded(true)
   }, [])
 
@@ -208,6 +210,15 @@ export default function Home() {
       }
     }
   }, [isLoaded, accentColor])
+
+  const hasBudgets = Object.values(budgets).some(value => value > 0)
+  const allStepsDone = accounts.length > 0 && categories.length > 0 && hasBudgets && goals.length > 0 && transactions.length > 0
+
+  useEffect(() => {
+    if (isLoaded && allStepsDone && !onBoardingComplete) {
+      setOnboaringComplete(true)
+    }
+  }, [isLoaded, allStepsDone, onBoardingComplete])
 
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
@@ -677,6 +688,19 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
+            {!onBoardingComplete && (
+              <Onboarding 
+                hasAccounts={accounts.length > 0}
+                hasCategories={categories.length > 0}
+                hasBudgets={hasBudgets}
+                hasGoals={goals.length > 0}
+                hasTransactions={transactions.length > 0}
+                onOpenSettings={() => setSettingsOpen(true)}
+                onCreateGoal={() => { setActiveTab("budgets"); setEditingGoal(null); setGoalDialogOpen(true) }}
+                onAddTransaction={() => { setActiveTab("transactions"); setOpen(true) }}
+                onComplete={() => setOnboaringComplete(true)} 
+                />
+              )}
             <Button variant="outline" onClick={() => setSettingsOpen(true)}>Settings</Button>
             <SettingsDialog
               categories={categories}
@@ -707,7 +731,8 @@ export default function Home() {
               accentColor={accentColor}
               onAccentChange={setAccentColor} 
               open={settingsOpen} 
-              onOpenChange={setSettingsOpen} />
+              onOpenChange={setSettingsOpen} 
+            />
           </div>
         </header>
 
@@ -735,33 +760,23 @@ export default function Home() {
 
           {/* Overview tab */}
           <TabsContent value="overview" className="space-y-6 mt-4">
-            {transactions.length === 0 ? (
-              <Onboarding hasAccounts={accounts.length > 0} hasCategories={categories.length > 0} hasGoals={goals.length > 0} hasTransactions={transactions.length > 0}
-                onOpenSettings={() => setSettingsOpen(true)} 
-                onCreateGoal={() => { setActiveTab("budgets"); setEditingGoal(null); setGoalDialogOpen(true) }} 
-                onAddTransaction={() => { setActiveTab("transactions"); setOpen(true) }}
-              />
-            ) : (
-              <>
-                {/* networth */}
-                <NetWorth currentBalance={balance} previousBalance={prevBalance} currencySymbol={currencySymbol} />
-                {/* upcoming recurring transactions */}
-                <UpcomingTransactions recurring={recurring} currencySymbol={currencySymbol} />
-                {/* smart stats */}
-                <SmartStats monthlyExpenses={expenses} currencySymbol={currencySymbol} />
-                {/* Trend */}
-                <TrendChart data={monthlyTrends} currencySymbol={currencySymbol} />
-                {/* account balances */}
-                <AccountBalances accounts={accountBalances} currencySymbol={currencySymbol} />
+            {/* networth */}
+            <NetWorth currentBalance={balance} previousBalance={prevBalance} currencySymbol={currencySymbol} />
+            {/* upcoming recurring transactions */}
+            <UpcomingTransactions recurring={recurring} currencySymbol={currencySymbol} />
+            {/* smart stats */}
+            <SmartStats monthlyExpenses={expenses} currencySymbol={currencySymbol} />
+            {/* Trend */}
+            <TrendChart data={monthlyTrends} currencySymbol={currencySymbol} />
+            {/* account balances */}
+            <AccountBalances accounts={accountBalances} currencySymbol={currencySymbol} />
 
-                <div className="grid gap-4 md:grid-cols-2">
-                  {/* Breakdown into categories */}
-                  <CategoryBreakdown totals={categoryTotals} currencySymbol={currencySymbol} />
-                  {/* chart */}
-                  <SpendingChart totals={categoryTotals} categoryCustomization={categoryCustomization} currencySymbol={currencySymbol} />
-                </div>
-              </>
-            )}
+            <div className="grid gap-4 md:grid-cols-2">
+              {/* Breakdown into categories */}
+              <CategoryBreakdown totals={categoryTotals} currencySymbol={currencySymbol} />
+              {/* chart */}
+              <SpendingChart totals={categoryTotals} categoryCustomization={categoryCustomization} currencySymbol={currencySymbol} />
+            </div>
           </TabsContent>
 
           {/* Calendar */}

@@ -1,7 +1,8 @@
 import { useState } from "react"
 import { cn } from "@/lib/utils"
-import { CheckCircle2, Circle } from "lucide-react"
+import { CheckCircle2, Circle, Sparkles } from "lucide-react"
 import { Button } from "./ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
 
 type OnboardingThings = {
   hasAccounts: boolean
@@ -36,36 +37,20 @@ export function Onboarding({ hasAccounts, hasCategories, hasBudgets, hasGoals, h
   }
 
   return (
-    <div className="mt-6 rounded-2xl border p-6 space-y-6 bg-muted/20">
-      <div>
-        <h2 className="text-xl font-bold">Welcome to Dimetrack! 👋</h2>
-        <p className="text-sm text-muted-foreground mt-1">Complete these steps to get started</p>
-      </div>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="gap-2">
+          <Sparkles className="h-4 w-4 text-primary" />
+          Get Started
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Welcome to DimeTrack! 👋</DialogTitle>
+        </DialogHeader>
 
-      <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
-        <div className="h-full bg-primary transition-all duration-500" style={{ width: `${progress}%` }} />
-      </div>
-
-      <div className="space-y-3">
-        {steps.map(step => (
-          <div key={step.id} className={cn("flex items-center justify-between gap-4 p-3 rounded-md border", step.done ? "bg-background opacity-60" : "bg-background")}>
-            <div className="flex items-center gap-3">
-              {step.done ? (
-                <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
-              ) : (
-                <Circle className="h-5 w-5 text-muted-foreground shrink-0" />
-              )}
-              <div>
-                <p className={cn("font-medium text-sm", step.done && "line-through")}>{step.label}</p>
-                <p className="text-xs text-muted-foreground">{step.description}</p>
-              </div>
-            </div>
-            {!step.done && (
-              <Button variant="outline" size="sm" onClick={step.action}>{step.actionLabel}</Button>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
+        <p className="text-sm text-muted-foreground -mt-2">Complete these steps to setup your dashboard</p>
+      </DialogContent>
+    </Dialog>
   )
 }
