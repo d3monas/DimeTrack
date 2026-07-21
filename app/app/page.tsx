@@ -35,10 +35,10 @@ import type { Account } from "@/types/account"
 import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends } from "@/lib/calculations"
 import {
   saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring,
-  saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, saveAccentColor, clearAllData
+  saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, saveAccentColor, saveOnboardingComplete, clearAllData
 } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
-import { savingsCategoryForGoal, isSavingsCategory, STARTING_BALANCE_CATEGORY, ACCENT_COLORS } from "@/lib/consts"
+import { savingsCategoryForGoal, isSavingsCategory, STARTING_BALANCE_CATEGORY } from "@/lib/consts"
 import { processRecurring } from "@/lib/recurring"
 import { importFromCSV } from "@/lib/csv"
 import { exportToJSON, importFromJSON } from "@/lib/data"
@@ -219,6 +219,12 @@ export default function Home() {
       setOnboaringComplete(true)
     }
   }, [isLoaded, allStepsDone, onBoardingComplete])
+
+  useEffect(() => {
+    if (isLoaded) {
+      saveOnboardingComplete(onBoardingComplete)
+    }
+  }, [isLoaded, onBoardingComplete])
 
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
