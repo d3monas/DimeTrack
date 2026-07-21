@@ -15,4 +15,7 @@ export function onBoarding({ hasAccounts, hasCategories, hasGoals, hasTransactio
         { id: 3, label: "Set a savings goal", description: "What are you saving for?", done: hasGoals, action: onCreateGoal, actionLabel: "Add Goal" },
         { id: 4, label: "Add your first transaction", description: "Log an income or expense", done: hasTransactions, action: onAddTransaction, actionLabel: "Add Transaction" },
     ]
+
+    const completedCount = steps.filter(step => step.done).length
+    const progress = (completedCount / steps.length) * 100
 }
