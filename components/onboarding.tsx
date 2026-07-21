@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { CheckCircle2, Circle } from "lucide-react"
 import { Button } from "./ui/button"
@@ -5,19 +6,24 @@ import { Button } from "./ui/button"
 type OnboardingThings = {
   hasAccounts: boolean
   hasCategories: boolean
+  hasBudgets: boolean
   hasGoals: boolean
   hasTransactions: boolean
   onOpenSettings: () => void
   onCreateGoal: () => void
   onAddTransaction: () => void
+  onComplete: () => void
 }
 
-export function Onboarding({ hasAccounts, hasCategories, hasGoals, hasTransactions, onOpenSettings, onCreateGoal, onAddTransaction }: OnboardingThings) {
+export function Onboarding({ hasAccounts, hasCategories, hasBudgets, hasGoals, hasTransactions, onOpenSettings, onCreateGoal, onAddTransaction, onComplete }: OnboardingThings) {
+  const [open, setOpen] = useState(false)
+
   const steps = [
-    { id: 1, label: "Create your first account", description: "e.g., Checking or Savings", done: hasAccounts, action: onOpenSettings, actionLabel: "Open Settings" },
-    { id: 2, label: "Create a category", description: "e.g., Food or Rent", done: hasCategories, action: onOpenSettings, actionLabel: "Open Settings" },
-    { id: 3, label: "Set a savings goal", description: "What are you saving for?", done: hasGoals, action: onCreateGoal, actionLabel: "Add Goal" },
-    { id: 4, label: "Add your first transaction", description: "Log an income or expense", done: hasTransactions, action: onAddTransaction, actionLabel: "Add Transaction" },
+    { id: 1, label: "Create your first account", description: "e.g., Checking or Savings", done: hasAccounts, action: () => { onOpenSettings(); setOpen(false) }, actionLabel: "Open Settings" },
+    { id: 2, label: "Create a category", description: "e.g., Food or Rent", done: hasCategories, action: () => { onOpenSettings(); setOpen(false) }, actionLabel: "Open Settings" },
+    { id: 3, label: "Set a budget limit", description: "Assign a limit to a category", done: hasBudgets, action: () => { onOpenSettings(); setOpen(false) }, actionLabel: "Open Settings" },
+    { id: 3, label: "Set a savings goal", description: "What are you saving for?", done: hasGoals, action: () => { onCreateGoal(); setOpen(false) }, actionLabel: "Add Goal" },
+    { id: 4, label: "Add your first transaction", description: "Log an income or expense", done: hasTransactions, action: () => { onAddTransaction(); setOpen(false) }, actionLabel: "Add Transaction" },
   ]
 
   const completedCount = steps.filter(step => step.done).length
