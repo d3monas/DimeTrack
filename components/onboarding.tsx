@@ -1,4 +1,4 @@
-type OnBoardingThings = {
+type OnboardingThings = {
     hasAccounts: boolean
     hasCategories: boolean
     hasGoals: boolean
@@ -8,7 +8,7 @@ type OnBoardingThings = {
     onAddTransaction: () => void
 }
 
-export function onBoarding({ hasAccounts, hasCategories, hasGoals, hasTransactions, onOpenSettings, onCreateGoal, onAddTransaction }: OnBoardingThings) {
+export function onBoarding({ hasAccounts, hasCategories, hasGoals, hasTransactions, onOpenSettings, onCreateGoal, onAddTransaction }: OnboardingThings) {
     const steps = [
         { id: 1, label: "Create your first account", description: "e.g., Checking or Savings", done: hasAccounts, action: onOpenSettings, actionLabel: "Open Settings" },
         { id: 2, label: "Create a category", description: "e.g., Food or Rent", done: hasCategories, action: onOpenSettings, actionLabel: "Open Settings" },
@@ -18,4 +18,6 @@ export function onBoarding({ hasAccounts, hasCategories, hasGoals, hasTransactio
 
     const completedCount = steps.filter(step => step.done).length
     const progress = (completedCount / steps.length) * 100
+
+
 }

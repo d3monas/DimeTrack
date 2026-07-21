@@ -45,6 +45,8 @@ type SettingsDialogThings = {
     onUpdateAccount: (id: string, data: Partial<Omit<Account, 'id'>>) => void
     accentColor: string
     onAccentChange: (color: string) => void
+    open: boolean
+    onOpenChange: (open: boolean) => void
 }
 
 const currencies = [
@@ -62,7 +64,7 @@ export function SettingsDialog({
     categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory, currency, currencySymbol,
     onCurrencyChange, recurring, onDeleteRecurring, onImportCSV, onExportBackup, onImportBackup, onClearData,
     rules, onAddRule, onDeleteRule, categoryCustomization, onUpdateCategoryCustomization, accounts, onAddAccount,
-    onDeleteAccount, defaultAccountId, onSetDefaultAccount, onUpdateAccount, accentColor, onAccentChange
+    onDeleteAccount, defaultAccountId, onSetDefaultAccount, onUpdateAccount, accentColor, onAccentChange, open, onOpenChange
 }: SettingsDialogThings) {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const backupInputRef = useRef<HTMLInputElement>(null)
@@ -81,10 +83,8 @@ export function SettingsDialog({
     }
 
     return (
-        <Dialog>
-            <DialogTrigger asChild>
-                <Button variant="outline">Settings</Button>
-            </DialogTrigger>
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <Button variant="outline">Settings</Button>
 
             <DialogContent className="max-h-[85vh] overflow-y-auto">
                 <DialogHeader>
