@@ -40,7 +40,7 @@ export function Onboarding({ hasAccounts, hasCategories, hasBudgets, hasGoals, h
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2">
+        <Button variant="outline" className="gap-2 border-foreground/50 hover:bg-foreground/10">
           <Sparkles className="h-4 w-4 text-primary" />
           Get Started
         </Button>
