@@ -20,6 +20,8 @@ import { CalendarView } from "@/components/calendarView"
 import { AccountBalances } from "@/components/accountBalances"
 import { SmartStats } from "@/components/smartStats"
 import { NetWorth } from "@/components/netWorth"
+import { Onboarding } from "@/components/onboarding"
+import { Button } from "@/components/ui/button"
 
 // types
 import type { Transaction, TransactionSplit } from "@/types/transaction"
@@ -80,6 +82,8 @@ export default function Home() {
   const [defaultAccountId, setDefaultAccountId] = useState<string>("")
 
   const [accentColor, setAccentColor] = useState<string>("")
+
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
   // load localstorage 
   useEffect(() => {
@@ -672,6 +676,7 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
+            <Button variant="outline" onClick={() => setSettingsOpen(true)}>Settings</Button>
             <SettingsDialog
               categories={categories}
               newCategory={newCategory}
@@ -699,7 +704,9 @@ export default function Home() {
               onSetDefaultAccount={setDefaultAccountId}
               onUpdateAccount={updateAccount} 
               accentColor={accentColor}
-              onAccentChange={setAccentColor} />
+              onAccentChange={setAccentColor} 
+              open={open} 
+              onOpenChange={setSettingsOpen} />
           </div>
         </header>
 
@@ -727,23 +734,31 @@ export default function Home() {
 
           {/* Overview tab */}
           <TabsContent value="overview" className="space-y-6 mt-4">
-            {/* networth */}
-            <NetWorth currentBalance={balance} previousBalance={prevBalance} currencySymbol={currencySymbol} />
-            {/* upcoming recurring transactions */}
-            <UpcomingTransactions recurring={recurring} currencySymbol={currencySymbol} />
-            {/* smart stats */}
-            <SmartStats monthlyExpenses={expenses} currencySymbol={currencySymbol} />
-            {/* Trend */}
-            <TrendChart data={monthlyTrends} currencySymbol={currencySymbol} />
-            {/* account balances */}
-            <AccountBalances accounts={accountBalances} currencySymbol={currencySymbol} />
+            {transactions.length === 0 ? (
+              <Onboarding hasAccounts={accounts.length > 0} hasCategories={categories.length > 0} hasGoals={goals.length > 0} hasTransactions={transactions.length > 0}
+                onOpenSettings={() => setSettingsOpen(true)} onCreateGoal={() => { setEditingGoal(null); setGoalDialogOpen(true) }} onAddTransaction={() => setOpen(true)}
+              />
+            ) : (
+              <>
+                {/* networth */}
+                <NetWorth currentBalance={balance} previousBalance={prevBalance} currencySymbol={currencySymbol} />
+                {/* upcoming recurring transactions */}
+                <UpcomingTransactions recurring={recurring} currencySymbol={currencySymbol} />
+                {/* smart stats */}
+                <SmartStats monthlyExpenses={expenses} currencySymbol={currencySymbol} />
+                {/* Trend */}
+                <TrendChart data={monthlyTrends} currencySymbol={currencySymbol} />
+                {/* account balances */}
+                <AccountBalances accounts={accountBalances} currencySymbol={currencySymbol} />
 
-            <div className="grid gap-4 md:grid-cols-2">
-              {/* Breakdown into categories */}
-              <CategoryBreakdown totals={categoryTotals} currencySymbol={currencySymbol} />
-              {/* chart */}
-              <SpendingChart totals={categoryTotals} categoryCustomization={categoryCustomization} currencySymbol={currencySymbol} />
-            </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {/* Breakdown into categories */}
+                  <CategoryBreakdown totals={categoryTotals} currencySymbol={currencySymbol} />
+                  {/* chart */}
+                  <SpendingChart totals={categoryTotals} categoryCustomization={categoryCustomization} currencySymbol={currencySymbol} />
+                </div>
+              </>
+            )}
           </TabsContent>
 
           {/* Calendar */}
