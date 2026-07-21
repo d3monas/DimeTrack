@@ -28,6 +28,12 @@ export function Onboarding({ hasAccounts, hasCategories, hasBudgets, hasGoals, h
 
   const completedCount = steps.filter(step => step.done).length
   const progress = (completedCount / steps.length) * 100
+  const allDone = completedCount === steps.length
+
+  const handleComplete = () => {
+    onComplete()
+    setOpen(false)
+  }
 
   return (
     <div className="mt-6 rounded-2xl border p-6 space-y-6 bg-muted/20">
