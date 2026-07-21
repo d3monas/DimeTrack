@@ -84,6 +84,7 @@ export default function Home() {
   const [accentColor, setAccentColor] = useState<string>("")
 
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState("overview")
 
   // load localstorage 
   useEffect(() => {
@@ -724,7 +725,7 @@ export default function Home() {
         </div>
 
 
-        <Tabs defaultValue="overview" className="w-full mt-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-6">
           <TabsList className="grid w-full grid-cols-4 max-w-md sm:text-sm">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="calendar">Calendar</TabsTrigger>
@@ -736,7 +737,9 @@ export default function Home() {
           <TabsContent value="overview" className="space-y-6 mt-4">
             {transactions.length === 0 ? (
               <Onboarding hasAccounts={accounts.length > 0} hasCategories={categories.length > 0} hasGoals={goals.length > 0} hasTransactions={transactions.length > 0}
-                onOpenSettings={() => setSettingsOpen(true)} onCreateGoal={() => { setEditingGoal(null); setGoalDialogOpen(true) }} onAddTransaction={() => setOpen(true)}
+                onOpenSettings={() => setSettingsOpen(true)} 
+                onCreateGoal={() => { setActiveTab("budgets"); setEditingGoal(null); setGoalDialogOpen(true) }} 
+                onAddTransaction={() => { setActiveTab("transactions"); setOpen(true) }}
               />
             ) : (
               <>
