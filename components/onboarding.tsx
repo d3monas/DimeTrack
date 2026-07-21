@@ -77,11 +77,8 @@ export function Onboarding({ hasAccounts, hasCategories, hasBudgets, hasGoals, h
           ))}
         </div>
 
-        <div className="flex justify-between items-center pt-4 border-t">
-          <Button variant="ghost" size="sm" onClick={handleComplete}>Skip</Button>
-          {allDone && (
-            <Button size="sm" onClick={handleComplete}>Finish Setup</Button>
-          )}
+        <div className="pt-4 border-t">
+          <Button size="sm" className="w-full" onClick={handleComplete}>Skip</Button>
         </div>
       </DialogContent>
     </Dialog>
