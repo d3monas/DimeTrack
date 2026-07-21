@@ -69,6 +69,9 @@ export function Onboarding({ hasAccounts, hasCategories, hasBudgets, hasGoals, h
                   <p className="text-xs text-muted-foreground">{step.description}</p>
                 </div>
               </div>
+              {!step.done && (
+                <Button variant="outline" size="sm" onClick={step.action} className="shrink-0">{step.actionLabel}</Button>
+              )}
             </div>
           ))}
         </div>
