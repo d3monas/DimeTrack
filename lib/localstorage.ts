@@ -4,6 +4,7 @@ import type { RecurringTransaction } from "@/types/recurringTransaction"
 import type { Rule } from "@/types/rule"
 import { categoryCustomization } from "@/lib/categoryCustomization"
 import type { Account } from "@/types/account"
+import { Onboarding } from "@/components/onboarding"
 
 const isBrowser = typeof window !== "undefined"
 
@@ -309,6 +310,23 @@ export function loadAccentColor(): string {
     )
 }
 
+// onboarding
+export function saveOnboardingComplete(isComplete: boolean) {
+    if (!isBrowser) {
+        return
+    }
+    localStorage.setItem("onboardingComplete", JSON.stringify(isComplete))
+}
+
+export function loadOnboardingComplete(): boolean {
+    if (!isBrowser) {
+        return false
+    }
+    return (
+        JSON.parse(localStorage.getItem("onboardingComplete") || "false")
+    )
+}
+
 export function loadAllData() {
     return {
         transactions: loadTransactions(),
@@ -322,6 +340,7 @@ export function loadAllData() {
         accounts: loadAccounts(),
         defaultAccountId: loadDefaultAccountId(),
         accentColor: loadAccentColor(),
+        onboardingComplete: loadOnboardingComplete(),
     }
 }
 
@@ -341,4 +360,5 @@ export function clearAllData() {
     localStorage.removeItem("accounts")
     localStorage.removeItem("defaultAccountId")
     localStorage.removeItem("accentColor")
+    localStorage.removeItem("onboardingComplete")
 }
