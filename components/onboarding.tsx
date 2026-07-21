@@ -24,8 +24,8 @@ export function Onboarding({ hasAccounts, hasCategories, hasBudgets, hasGoals, h
     { id: 1, label: "Create your first account", description: "e.g., Checking or Savings", done: hasAccounts, action: () => { onOpenSettings(); setOpen(false) }, actionLabel: "Open Settings" },
     { id: 2, label: "Create a category", description: "e.g., Food or Rent", done: hasCategories, action: () => { onOpenSettings(); setOpen(false) }, actionLabel: "Open Settings" },
     { id: 3, label: "Set a budget limit", description: "Assign a limit to a category", done: hasBudgets, action: () => { onOpenBudgets(); setOpen(false) }, actionLabel: "Go to Budgets" },
-    { id: 5, label: "Set a savings goal", description: "What are you saving for?", done: hasGoals, action: () => { onCreateGoal(); setOpen(false) }, actionLabel: "Add Goal" },
-    { id: 6, label: "Add your first transaction", description: "Log an income or expense", done: hasTransactions, action: () => { onAddTransaction(); setOpen(false) }, actionLabel: "Add Transaction" },
+    { id: 4, label: "Set a savings goal", description: "What are you saving for?", done: hasGoals, action: () => { onCreateGoal(); setOpen(false) }, actionLabel: "Add Goal" },
+    { id: 5, label: "Add your first transaction", description: "Log an income or expense", done: hasTransactions, action: () => { onAddTransaction(); setOpen(false) }, actionLabel: "Add Transaction" },
   ]
 
   const completedCount = steps.filter(step => step.done).length
