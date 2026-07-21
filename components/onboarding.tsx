@@ -52,7 +52,7 @@ export function Onboarding({ hasAccounts, hasCategories, hasBudgets, hasGoals, h
         <p className="text-sm text-muted-foreground -mt-2">Complete these steps to setup your dashboard</p>
 
         <div className="w-full h-2 rounded-full bg-muted overflow-hidden my-2">
-          <div className="h-full bg-primary transition-all duration-500" style={{ width: `${progress}` }} />
+          <div className="h-full bg-primary transition-all duration-500" style={{ width: `${progress}%` }} />
         </div>
 
         <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
