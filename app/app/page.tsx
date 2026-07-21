@@ -85,7 +85,7 @@ export default function Home() {
 
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState("overview")
-  const [onBoardingComplete, setOnboaringComplete] = useState(true)
+  const [onboardingComplete, setOnboardingComplete] = useState(false)
 
   // load localstorage 
   useEffect(() => {
@@ -101,7 +101,7 @@ export default function Home() {
     setAccounts(data.accounts || [])
     setDefaultAccountId(data.defaultAccountId || "")
     setAccentColor(data.accentColor || "")
-    setOnboaringComplete(data.onboardingComplete || false)
+    setOnboardingComplete(data.onboardingComplete || false)
     setIsLoaded(true)
   }, [])
 
@@ -215,16 +215,16 @@ export default function Home() {
   const allStepsDone = accounts.length > 0 && categories.length > 0 && hasBudgets && goals.length > 0 && transactions.length > 0
 
   useEffect(() => {
-    if (isLoaded && allStepsDone && !onBoardingComplete) {
-      setOnboaringComplete(true)
+    if (isLoaded && allStepsDone && !onboardingComplete) {
+      setOnboardingComplete(true)
     }
-  }, [isLoaded, allStepsDone, onBoardingComplete])
+  }, [isLoaded, allStepsDone, onboardingComplete])
 
   useEffect(() => {
     if (isLoaded) {
-      saveOnboardingComplete(onBoardingComplete)
+      saveOnboardingComplete(onboardingComplete)
     }
-  }, [isLoaded, onBoardingComplete])
+  }, [isLoaded, onboardingComplete])
 
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
@@ -539,7 +539,8 @@ export default function Home() {
       categoryCustomization,
       accounts,
       defaultAccountId,
-      accentColor
+      accentColor,
+      onboardingComplete
     })
   }
 
@@ -562,6 +563,7 @@ export default function Home() {
     setAccounts(data.accounts || [])
     setDefaultAccountId(data.defaultAccountId || "")
     setAccentColor(data.accentColor || "")
+    setOnboardingComplete(data.onboardingComplete || false)
 
     toast.success("Backup file imported successfully")
   }
@@ -580,7 +582,7 @@ export default function Home() {
     setAccounts([])
     setDefaultAccountId("")
     setAccentColor("")
-    setOnboaringComplete(false)
+    setOnboardingComplete(false)
 
     toast.success("All data has been cleared")
   }
@@ -697,7 +699,7 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            {!onBoardingComplete && (
+            {!onboardingComplete && (
               <Onboarding 
                 hasAccounts={accounts.length > 0}
                 hasCategories={categories.length > 0}
@@ -707,7 +709,7 @@ export default function Home() {
                 onOpenSettings={() => setSettingsOpen(true)}
                 onCreateGoal={() => { setActiveTab("budgets"); setEditingGoal(null); setGoalDialogOpen(true) }}
                 onAddTransaction={() => { setActiveTab("transactions"); setOpen(true) }}
-                onComplete={() => setOnboaringComplete(true)} 
+                onComplete={() => setOnboardingComplete(true)} 
                 />
               )}
             <Button variant="outline" onClick={() => setSettingsOpen(true)}>Settings</Button>
