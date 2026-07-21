@@ -705,7 +705,7 @@ export default function Home() {
               onUpdateAccount={updateAccount} 
               accentColor={accentColor}
               onAccentChange={setAccentColor} 
-              open={open} 
+              open={settingsOpen} 
               onOpenChange={setSettingsOpen} />
           </div>
         </header>

@@ -84,8 +84,6 @@ export function SettingsDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <Button variant="outline">Settings</Button>
-
             <DialogContent className="max-h-[85vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Settings</DialogTitle>
