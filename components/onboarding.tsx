@@ -13,16 +13,17 @@ type OnboardingThings = {
   onOpenSettings: () => void
   onCreateGoal: () => void
   onAddTransaction: () => void
+  onOpenBudgets: () => void
   onComplete: () => void
 }
 
-export function Onboarding({ hasAccounts, hasCategories, hasBudgets, hasGoals, hasTransactions, onOpenSettings, onCreateGoal, onAddTransaction, onComplete }: OnboardingThings) {
+export function Onboarding({ hasAccounts, hasCategories, hasBudgets, hasGoals, hasTransactions, onOpenSettings, onCreateGoal, onAddTransaction, onOpenBudgets, onComplete }: OnboardingThings) {
   const [open, setOpen] = useState(false)
 
   const steps = [
     { id: 1, label: "Create your first account", description: "e.g., Checking or Savings", done: hasAccounts, action: () => { onOpenSettings(); setOpen(false) }, actionLabel: "Open Settings" },
     { id: 2, label: "Create a category", description: "e.g., Food or Rent", done: hasCategories, action: () => { onOpenSettings(); setOpen(false) }, actionLabel: "Open Settings" },
-    { id: 3, label: "Set a budget limit", description: "Assign a limit to a category", done: hasBudgets, action: () => { onOpenSettings(); setOpen(false) }, actionLabel: "Open Settings" },
+    { id: 3, label: "Set a budget limit", description: "Assign a limit to a category", done: hasBudgets, action: () => { onOpenBudgets(); setOpen(false) }, actionLabel: "Go to Budgets" },
     { id: 5, label: "Set a savings goal", description: "What are you saving for?", done: hasGoals, action: () => { onCreateGoal(); setOpen(false) }, actionLabel: "Add Goal" },
     { id: 6, label: "Add your first transaction", description: "Log an income or expense", done: hasTransactions, action: () => { onAddTransaction(); setOpen(false) }, actionLabel: "Add Transaction" },
   ]

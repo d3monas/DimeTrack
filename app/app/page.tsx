@@ -707,6 +707,7 @@ export default function Home() {
                 hasGoals={goals.length > 0}
                 hasTransactions={transactions.length > 0}
                 onOpenSettings={() => setSettingsOpen(true)}
+                onOpenBudgets={() => setActiveTab("budgets")}
                 onCreateGoal={() => { setActiveTab("budgets"); setEditingGoal(null); setGoalDialogOpen(true) }}
                 onAddTransaction={() => { setActiveTab("transactions"); setOpen(true) }}
                 onComplete={() => setOnboardingComplete(true)} 
