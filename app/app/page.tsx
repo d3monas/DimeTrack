@@ -22,6 +22,7 @@ import { SmartStats } from "@/components/smartStats"
 import { NetWorth } from "@/components/netWorth"
 import { Onboarding } from "@/components/onboarding"
 import { Button } from "@/components/ui/button"
+import { NetWorthHistoryChart } from "@/components/charts/netWorthHistoryChart"
 
 // types
 import type { Transaction, TransactionSplit } from "@/types/transaction"
@@ -45,6 +46,7 @@ import { exportToJSON, importFromJSON } from "@/lib/data"
 import { autoCategories } from "@/lib/rules"
 import { categoryCustomization } from "@/lib/categoryCustomization"
 import { colord } from "colord"
+import { getNetWorthHistory } from "@/lib/calculations"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -252,6 +254,8 @@ export default function Home() {
   const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1)
   const prevTransactions = transactions.filter(transaction => new Date(transaction.date) < startOfThisMonth)
   const prevBalance = calculateIncome(prevTransactions) - calculateExpenses(prevTransactions)
+
+  const netWorthHistory = getNetWorthHistory(transactions)
 
   function addTransaction(
     isRecurring: boolean,
@@ -774,6 +778,8 @@ export default function Home() {
           <TabsContent value="overview" className="space-y-6 mt-4">
             {/* networth */}
             <NetWorth currentBalance={balance} previousBalance={prevBalance} currencySymbol={currencySymbol} />
+            {/* networth history */}
+            <NetWorthHistoryChart data={netWorthHistory} currencySymbol={currencySymbol} />
             {/* upcoming recurring transactions */}
             <UpcomingTransactions recurring={recurring} currencySymbol={currencySymbol} />
             {/* smart stats */}
