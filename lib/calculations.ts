@@ -77,3 +77,39 @@ export function getMonthlyTrends(transactions: Transaction[]): MonthlyTrend[] {
     }
     return trends
 }
+
+export type NetWorthHistoryPoint = {
+    month: string
+    balance: number
+}
+
+export function getNetWorthHistory(transactions: Transaction[], months = 6): NetWorthHistoryPoint[] {
+    const now = new Date()
+    const history: NetWorthHistoryPoint[] = []
+
+    const startRangeDate = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1)
+    const prevTransactions = transactions.filter(transaction => new Date(transaction.date) < startRangeDate)
+    let runningBalance = calculateIncome(prevTransactions) - calculateExpenses(prevTransactions)
+
+    for (let i = months; i >= 0; i--) {
+        const targetDate = new Date(now.getFullYear(), now.getMonth() - i, 1)
+        const monthName = targetDate.toLocaleDateString("default", { month: "short" })
+
+        const monthTransactions = transactions.filter(transaction => {
+            const d = new Date(transaction.date)
+            return (
+                d.getMonth() === targetDate.getMonth() && d.getFullYear() === targetDate.getFullYear()
+            )
+        })
+
+        const monthIncome = calculateIncome(monthTransactions)
+        const monthExpenses = calculateExpenses(monthTransactions)
+        runningBalance += (monthIncome - monthExpenses)
+
+        history.push({
+            month: monthName,
+            balance: runningBalance
+        })
+    }
+    return history
+}
