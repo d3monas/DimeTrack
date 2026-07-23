@@ -1,6 +1,7 @@
 import { XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, CartesianGrid, LineChart, Line } from "recharts"
 import { EmptyState } from "../emptyState"
 import { chartTooltipStyle } from "@/lib/chartStyles"
+import { TRENDCHART_EXPENSES_COLOR, TRENDCHART_INCOME_COLOR } from "@/lib/consts"
 
 type TrendChartThings = {
     data: { month: string, income: number, expenses: number }[]
@@ -52,8 +53,8 @@ export function TrendChart({ data, currencySymbol }: TrendChartThings) {
                             {...chartTooltipStyle} />
                         <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }} />
 
-                        <Line type="monotone" dataKey="income" name="Income" stroke="#22c55e" strokeWidth={2} dot={false} activeDot={{ r: 6 }} />
-                        <Line type="monotone" dataKey="expenses" name="Expenses" stroke="#ef4444" strokeWidth={2} dot={false} activeDot={{ r: 6 }} />
+                        <Line type="monotone" dataKey="income" name="Income" stroke={TRENDCHART_INCOME_COLOR} strokeWidth={2} dot={false} activeDot={{ r: 6 }} />
+                        <Line type="monotone" dataKey="expenses" name="Expenses" stroke={TRENDCHART_EXPENSES_COLOR} strokeWidth={2} dot={false} activeDot={{ r: 6 }} />
                     </LineChart>
                 </ResponsiveContainer>
             </div>

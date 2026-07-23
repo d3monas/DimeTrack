@@ -31,3 +31,6 @@ export const ACCENT_COLORS = [
 ]
 
 export const NETWORTH_CHART_COLOR = "#10b981"
+
+export const TRENDCHART_INCOME_COLOR = "#22c55e"
+export const TRENDCHART_EXPENSES_COLOR = "#ef4444"
