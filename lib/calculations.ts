@@ -91,7 +91,7 @@ export function getNetWorthHistory(transactions: Transaction[], months = 6): Net
     const prevTransactions = transactions.filter(transaction => new Date(transaction.date) < startRangeDate)
     let runningBalance = calculateIncome(prevTransactions) - calculateExpenses(prevTransactions)
 
-    for (let i = months; i >= 0; i--) {
+    for (let i = months - 1; i >= 0; i--) {
         const targetDate = new Date(now.getFullYear(), now.getMonth() - i, 1)
         const monthName = targetDate.toLocaleDateString("default", { month: "short" })
 
