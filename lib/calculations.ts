@@ -1,5 +1,6 @@
 import type { Transaction } from "../types/transaction"
 import { STARTING_BALANCE_CATEGORY } from "@/lib/consts"
+import { getCategoryTotals } from "./categories"
 
 export function calculateIncome(transactions: Transaction[]) {
     return transactions
@@ -112,4 +113,59 @@ export function getNetWorthHistory(transactions: Transaction[], months = 6): Net
         })
     }
     return history
+}
+
+export type MonthlyReportData = {
+    income: number
+    expenses: number
+    savings: number
+    savingsRate: number
+    topCategory: {name: string; amount: number} | null
+    largestPurchase: {description: string; amount: number} | null
+    dailyAverage: number
+    prevExpenses: number
+    expenseDiff: number
+}
+
+export function getMonthlyReportData(transactions: Transaction[]): MonthlyReportData {
+    const now = new Date()
+    const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const startOfPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+
+    const thisMonth = transactions.filter(transaction => {
+        const date = new Date(transaction.date)
+        return (
+            date >= startOfThisMonth && date < now && transaction.category !== STARTING_BALANCE_CATEGORY
+        )
+    })
+
+    const prevMonth = transactions.filter(transaction => {
+        const date = new Date(transaction.date)
+        return (
+            date >= startOfPrevMonth && date < startOfThisMonth && transaction.category !== STARTING_BALANCE_CATEGORY
+        )
+    })
+
+    const income = calculateIncome(thisMonth)
+    const expenses = calculateExpenses(thisMonth)
+    const savings = income - expenses
+    const savingsRate = income > 0 ? (savings / income) * 100 : 0
+
+    const categoryTotals = getCategoryTotals(thisMonth)
+    const topCategoryEntry = Object.entries(categoryTotals).sort(([,a], [,b]) => b - a)[0]
+    const topCategory = topCategoryEntry ? { name: topCategoryEntry[0], amount: topCategoryEntry[1]} : null
+
+    const expensesOnly = thisMonth.filter(transaction => transaction.type === "expense")
+    const largest = expensesOnly.sort((a, b) => b.amount - a.amount)[0]
+    const largestPurchase = largest ? { description: largest.description, amount: largest.amount} : null
+
+    const dayOfMonth = now.getDate()
+    const dailyAverage = dayOfMonth > 0 ? expenses / dayOfMonth : 0
+
+    const prevExpenses = calculateExpenses(prevMonth)
+    const expenseDiff = expenses - prevExpenses
+
+    return {
+        income, expenses, savings, savingsRate, topCategory, largestPurchase, dailyAverage, prevExpenses, expenseDiff
+    }
 }
