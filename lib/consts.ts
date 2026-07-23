@@ -29,3 +29,5 @@ export const ACCENT_COLORS = [
     {name: "Sunset", hex: "#f97316"},
     {name: "Rose", hex: "#f43f5e"},
 ]
+
+export const NETWORTH_CHART_COLOR = "#10b981"

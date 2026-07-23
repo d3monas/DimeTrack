@@ -2,6 +2,7 @@ import { NetWorthHistoryPoint } from "@/lib/calculations"
 import { EmptyState } from "../emptyState"
 import { ResponsiveContainer, AreaChart, XAxis, YAxis, Tooltip, Area } from "recharts"
 import { chartTooltipStyle } from "@/lib/chartStyles"
+import { NETWORTH_CHART_COLOR } from "@/lib/consts"
 
 type NetWorthHistoryChartThings = {
   data: NetWorthHistoryPoint[]
@@ -29,8 +30,8 @@ export function NetWorthHistoryChart({ data, currencySymbol }: NetWorthHistoryCh
           <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                <stop offset="5%" stopColor={NETWORTH_CHART_COLOR} stopOpacity={0.8} />
+                <stop offset="95%" stopColor={NETWORTH_CHART_COLOR} stopOpacity={0} />
               </linearGradient>
             </defs>
             <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={12} fill="hsl(var(--muted-foreground))" />
@@ -40,7 +41,7 @@ export function NetWorthHistoryChart({ data, currencySymbol }: NetWorthHistoryCh
             <Tooltip formatter={(value) => `${currencySymbol}${Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
             {...chartTooltipStyle} 
             />
-            <Area type="monotone" dataKey="balance" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorBalance)" />
+            <Area type="monotone" dataKey="balance" stroke={NETWORTH_CHART_COLOR} strokeWidth={2} fillOpacity={1} fill="url(#colorBalance)" />
           </AreaChart>
         </ResponsiveContainer>
       </div>
