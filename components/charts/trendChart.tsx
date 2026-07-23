@@ -1,29 +1,10 @@
-"use client"
-
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, CartesianGrid } from "recharts"
+import { XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, CartesianGrid, LineChart, Line } from "recharts"
 import { EmptyState } from "../emptyState"
-import type { MonthlyTrend } from "@/lib/calculations"
 import { chartTooltipStyle } from "@/lib/chartStyles"
 
 type TrendChartThings = {
-    data: MonthlyTrend[]
+    data: { month: string, income: number, expenses: number }[]
     currencySymbol: string
-}
-
-function formatYAxis(value: number, currencySymbol: string) {
-    if (value >= 1000000) {
-        return (
-            `${currencySymbol}${(value / 1000000).toFixed(1)}M`
-        )
-    }
-    if (value >= 1000) {
-        return (
-            `${currencySymbol}${(value / 1000).toFixed(0)}k`
-        )
-    }
-    return (
-        `${currencySymbol}${value}`
-    )
 }
 
 export function TrendChart({ data, currencySymbol }: TrendChartThings) {
@@ -38,27 +19,42 @@ export function TrendChart({ data, currencySymbol }: TrendChartThings) {
         )
     }
 
+    const formatYAxis = (value: number) => {
+        if (value >= 1000000) {
+            return (
+                `${currencySymbol}${(value / 1000000).toFixed(1)}M`
+            )
+        }
+        if (value >= 1000) {
+            return (
+                `${currencySymbol}${(value / 1000).toFixed(0)}k`
+            )
+        }
+        return (
+            `${currencySymbol}${value}`
+        )
+    }
+
     return (
         <div className="mt-6 rounded-2xl border p-4 sm:p-6">
             <h2 className="mb-4 text-xl font-semibold">Income vs Expenses (Last 6 Months)</h2>
 
             <div className="h-72 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                    <LineChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                         <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={12} fill="hsl(var(--muted-foreground))" />
-                        <YAxis tickFormatter={(value) => formatYAxis(Number(value), currencySymbol)} tickLine={false} axisLine={false} fontSize={12} width={70} fill="hsl(var(--muted-foreground))" />
-                        <Tooltip formatter={(value) => `${currencySymbol}${Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
-                            cursor={{
-                                fill: "hsl(var(--muted))",
-                                opacity: 0.4
-                            }}
-                            {...chartTooltipStyle}
-                        />
+                        <YAxis tickFormatter={(formatYAxis)} tickLine={false} axisLine={false} fontSize={12} width={70} fill="hsl(var(--muted-foreground))" />
+                        <Tooltip formatter={(value, name) => [
+                            `${currencySymbol}${Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                            name === "income" ? "Income" : "Expenses"
+                        ]}
+                            {...chartTooltipStyle} />
                         <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }} />
-                        <Bar dataKey="income" name="Income" fill="#22c55e" radius={[4, 4, 0, 0]} maxBarSize={40} />
-                        <Bar dataKey="expenses" name="Expenses" fill="#ef4444" radius={[4, 4, 0, 0]} maxBarSize={40} />
-                    </BarChart>
+
+                        <Line type="monotone" dataKey="income" name="Income" stroke="#22c55e" strokeWidth={2} dot={false} activeDot={{ r: 6 }} />
+                        <Line type="monotone" dataKey="expenses" name="Expenses" stroke="#ef4444" strokeWidth={2} dot={false} activeDot={{ r: 6 }} />
+                    </LineChart>
                 </ResponsiveContainer>
             </div>
         </div>
