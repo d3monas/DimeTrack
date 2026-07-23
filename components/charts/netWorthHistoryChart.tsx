@@ -30,7 +30,7 @@ export function NetWorthHistoryChart({ data, currencySymbol }: NetWorthHistoryCh
             <defs>
               <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="hsl(var(--privary))" stopOpacity={0} />
+                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
               </linearGradient>
             </defs>
             <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={12} fill="hsl(var(--muted-foreground))" />
