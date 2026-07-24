@@ -182,11 +182,11 @@ export function TransactionList({
                                                 {transaction.type === "income" ? "+" : transaction.type === "expense" ? "-" : ""}{currencySymbol}{transaction.amount.toFixed(2)}
                                             </span>
                                             {!isSavingsCategory(transaction.category) && !isTransfer ? (
-                                                <Button variant="ghost" size="sm" onClick={() => onEditClick(transaction)}>✎</Button>
+                                                <Button variant="ghost" size="sm" onClick={() => onEditClick(transaction)} aria-label="Edit transaction">✎</Button>
                                             ) : (
                                                 <span className="w-8" />
                                             )}
-                                            <Button variant="ghost" size="sm" className="text-red-500" onClick={() => onDelete(transaction.id)}>✕</Button>
+                                            <Button variant="ghost" size="sm" className="text-red-500" onClick={() => onDelete(transaction.id)} aria-label="Delete transaction">✕</Button>
                                         </div>
                                     </div>
                                 )
