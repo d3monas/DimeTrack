@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Wallet, Target, PieChart, RefreshCw, ShieldCheck, Download, CalendarDays, TrendingUp } from "lucide-react"
+import { Wallet, RefreshCw, ShieldCheck, Download, CalendarDays, TrendingUp } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-provider"
 import { useState, useEffect } from "react"
 import { useTheme } from "next-themes"

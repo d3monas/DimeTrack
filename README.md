@@ -4,14 +4,23 @@ A simple, open-source money tracker and savings planner.
 
 ## Features
 
-- Track income & expenses, with ability to edit & delete
-- Search and filter transactions by description, amount, category
-- Ability to export your transactions to CSV
-- Set savings goals and contribute towards them directly, with full contribution history
-- Create custom categories & set budget limits, with warnings as you approach them
-- Multi-currency support
-- View account balance at a glance
-- Spending breakdown by category & a pie chart
+- Track Checking, Savings, and Cash separately. Move money with transfers that don't inflate your income or expenses.
+- Search and filter transactions by description, amount, category or transaction type.
+- Export your transactions to CSV or create full JSON backups to transfer your data to any device.
+- Set multiple savings goals a time and contribute towards them directly, with full contribution history. Set savings goals with target dates and the app will calculate how much you need to save and contribute per month to hit your goal.
+- Create custom categories & set budget limits, with warnings as you approach them.
+- Split a single purchase across multiple categories.
+- See how your wealth grows with charts and generate monthly spending reports.
+- Project upcoming bills and predict your spending before it happens with cash flow calendar.
+- Multi-currency support.
+- Schedule recurring transactions for bills, subscriptions, salaries, and more.
+- Set rules (e.g. "If description contains Uber, set category to Transport")
+- Personalize the app with a built-in color picker. Choose from presets or use a custom Hex code.
+- View balances for every account and your total net worth at a glance.
+- Visualize spending with interactive charts, category breakdowns, net worth tracking, and monthly reports.
+- Create custom spending categories with custom icons and colors.
+- Mobile friendly UI.
+& many more...
 
 ## Screenshots
 
