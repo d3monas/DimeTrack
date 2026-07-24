@@ -1,4 +1,4 @@
-# DimeTrack
+<img width="384" height="766" alt="image" src="https://github.com/user-attachments/assets/5c50b210-0f10-4546-b8af-65ac92948cfe" /># DimeTrack
 
 A simple, open-source money tracker and savings planner.
 
@@ -24,12 +24,18 @@ A simple, open-source money tracker and savings planner.
 
 ## Screenshots
 
-At the top of the page you can see your current balance, income & expenses this month.
-<img width="1034" height="120" alt="Screenshot 2026-06-18 144125" src="https://github.com/user-attachments/assets/f3ca9eeb-bb62-4cd5-9d2f-46132a740c66" />
+<img width="1005" height="1885" alt="dark-dashboard" src="https://github.com/user-attachments/assets/494589d8-d36c-4be4-8f0f-c3af62144cae" />
 
-These are the settings, here you can manage your categories (delete & create them), select your preferred currency and manage recurring transactions.
+These are the settings, here you can 
 <br>
-<img width="375" height="381" alt="image" src="https://github.com/user-attachments/assets/7fc7008e-0026-43d7-8e7e-6e69a500469c" />
+<img width="384" height="766" alt="image" src="https://github.com/user-attachments/assets/f7dea837-0c54-4c51-890a-67b60a9d3281" />
+<img width="384" height="426" alt="image" src="https://github.com/user-attachments/assets/9ea3dffa-e15b-4594-931f-cc0911566744" />
+<img width="384" height="574" alt="image" src="https://github.com/user-attachments/assets/550648be-d4bd-4e54-a018-dc11600676dd" />
+<img width="384" height="484" alt="image" src="https://github.com/user-attachments/assets/e824aed0-18cf-435d-997d-01981ea28a8b" />
+
+
+
+
 
 How to add a transaction?
 <br>
@@ -47,11 +53,6 @@ Here you can see your recent transactions, search them by description, amount or
 
 You can see your spending by category, a piechart & budget overview. In budget overview you can edit or set a budget limit. When nearing your budget limit, the color will change.
 <img width="1020" height="818" alt="image" src="https://github.com/user-attachments/assets/ef079d2c-c6c3-4ab5-83b5-f1a629afaa3f" />
-
-## How it works
-
-DimeTrack helps you to understand where your money is going and contribute to your savings goals. It runs entirely in your browser - no accounts, no servers & no subscriptions.
-All your data is stored locally in your local storage and never leaves your device. 
 
 Built with:
 - Next.js
