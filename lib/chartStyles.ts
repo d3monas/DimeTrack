@@ -1,7 +1,6 @@
 export const chartTooltipStyle = {
     wrapperStyle: { zIndex: 1000 },
-    allowEscapeViewBox: { x: true, y: true },
-    offset: 40,
+    offset: 20,
     contentStyle: {
         backgroundColor: "hsl(var(--popover))",
         border: "1px solid hsl(var(--border))",
@@ -9,6 +8,7 @@ export const chartTooltipStyle = {
         color: "hsl(var(--muted-foreground))",
         fontSize: "12px",
         padding: "8px 12px",
+        maxWidth: "150px",
         boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)"
     },
     labelStyle: {
