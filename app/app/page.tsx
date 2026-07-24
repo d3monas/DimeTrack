@@ -721,6 +721,7 @@ export default function Home() {
                 onComplete={() => setOnboardingComplete(true)} 
                 />
               )}
+              <MonthlyReport data={monthlyReportData} currencySymbol={currencySymbol} />
             <Button variant="outline" onClick={() => setSettingsOpen(true)}>Settings</Button>
             <SettingsDialog
               categories={categories}
@@ -784,8 +785,6 @@ export default function Home() {
             <NetWorth currentBalance={balance} previousBalance={prevBalance} currencySymbol={currencySymbol} />
             {/* networth history */}
             <NetWorthHistoryChart data={netWorthHistory} currencySymbol={currencySymbol} />
-            {/* monthly report button */}
-            <MonthlyReport data={monthlyReportData} currencySymbol={currencySymbol} />
             {/* upcoming recurring transactions */}
             <UpcomingTransactions recurring={recurring} currencySymbol={currencySymbol} />
             {/* smart stats */}
