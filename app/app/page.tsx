@@ -23,6 +23,7 @@ import { NetWorth } from "@/components/netWorth"
 import { Onboarding } from "@/components/onboarding"
 import { Button } from "@/components/ui/button"
 import { NetWorthHistoryChart } from "@/components/charts/netWorthHistoryChart"
+import { MonthlyReport } from "@/components/monthlyReport"
 
 // types
 import type { Transaction, TransactionSplit } from "@/types/transaction"
@@ -47,6 +48,7 @@ import { autoCategories } from "@/lib/rules"
 import { categoryCustomization } from "@/lib/categoryCustomization"
 import { colord } from "colord"
 import { getNetWorthHistory } from "@/lib/calculations"
+import { getMonthlyReportData } from "@/lib/calculations"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -256,6 +258,8 @@ export default function Home() {
   const prevBalance = calculateIncome(prevTransactions) - calculateExpenses(prevTransactions)
 
   const netWorthHistory = getNetWorthHistory(transactions)
+
+  const monthlyReportData = getMonthlyReportData(transactions)
 
   function addTransaction(
     isRecurring: boolean,
@@ -780,6 +784,8 @@ export default function Home() {
             <NetWorth currentBalance={balance} previousBalance={prevBalance} currencySymbol={currencySymbol} />
             {/* networth history */}
             <NetWorthHistoryChart data={netWorthHistory} currencySymbol={currencySymbol} />
+            {/* monthly report button */}
+            <MonthlyReport data={monthlyReportData} currencySymbol={currencySymbol} />
             {/* upcoming recurring transactions */}
             <UpcomingTransactions recurring={recurring} currencySymbol={currencySymbol} />
             {/* smart stats */}
