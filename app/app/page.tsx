@@ -49,6 +49,7 @@ import { categoryCustomization } from "@/lib/categoryCustomization"
 import { colord } from "colord"
 import { getNetWorthHistory } from "@/lib/calculations"
 import { getMonthlyReportData } from "@/lib/calculations"
+import { Settings } from "lucide-react"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -721,8 +722,11 @@ export default function Home() {
                 onComplete={() => setOnboardingComplete(true)} 
                 />
               )}
-              <MonthlyReport data={monthlyReportData} currencySymbol={currencySymbol} />
-            <Button variant="outline" onClick={() => setSettingsOpen(true)}>Settings</Button>
+            <MonthlyReport data={monthlyReportData} currencySymbol={currencySymbol} />
+            <Button variant="outline" onClick={() => setSettingsOpen(true)} className="gap-2">
+              <Settings className="w-4 h-4" />
+              <span className="hidden sm:inline">Settings</span>
+            </Button>
             <SettingsDialog
               categories={categories}
               newCategory={newCategory}
