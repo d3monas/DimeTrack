@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Wallet, Target, PieChart, RefreshCw, ShieldCheck, Download } from "lucide-react"
+import { Wallet, Target, PieChart, RefreshCw, ShieldCheck, Download, CalendarDays, TrendingUp } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-provider"
 import { useState, useEffect } from "react"
 import { useTheme } from "next-themes"
@@ -11,18 +11,18 @@ import { useTheme } from "next-themes"
 const features = [
     {
         icon: Wallet,
-        title: "Track income & expenses",
-        description: "Add, edit and search transactions with categories and budgets."
+        title: "Multi-Account & Transfers",
+        description: "Track Checking, Savings, and Cash separately. Move money with transfers that don't inflate your income or expenses."
     },
     {
-        icon: Target,
-        title: "Savings goals",
-        description: "Set a goal, contribute towards it and see your progress with contribution history."
+        icon: CalendarDays,
+        title: "Cash Flow Calendar",
+        description: "Project upcoming bills and predict your spending before it happens."
     },
     {
-        icon: PieChart,
-        title: "Spending insights",
-        description: "See where your money goes with category breakdowns and a visual spending chart."
+        icon: TrendingUp,
+        title: "Net Worth & Reports",
+        description: "See how your wealth grows with charts and generate monthly spending reports."
     },
     {
         icon: RefreshCw,
@@ -31,13 +31,13 @@ const features = [
     },
     {
         icon: ShieldCheck,  
-        title: "Private and secure",
-        description: "DimeTrack doesn't use accounts, servers or cloud. Everything stays in your browsers local storage."
+        title: "100% Private & Offline",
+        description: "No accounts, servers or cloud. Your financial data never leaves your browser's local storage."
     },
     {
         icon: Download,
         title: "Exportable data",
-        description: "Export your transactions to CSV at any time."
+        description: "Export your transactions to CSV or create full JSON backups to transfer your data to any device."
     }
 ]
 
