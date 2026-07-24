@@ -76,15 +76,15 @@ export function MonthlyReport({ data, currencySymbol }: MonthlyReportThings) {
 
             {data.topCategory && (
               <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground flex items-center gap-2"><Tag className="w-4 h-4" />Top Category</span>
-                <span className="font-medium text-right">{data.topCategory.name} ({currencySymbol}{data.topCategory.amount.toFixed(2)})</span>
+                <span className="text-muted-foreground flex items-center gap-2 shrink-0"><Tag className="w-4 h-4" />Top Category</span>
+                <span className="font-medium text-right wrap-break-word">{data.topCategory.name} ({currencySymbol}{data.topCategory.amount.toFixed(2)})</span>
               </div>
             )}
 
             {data.largestPurchase && (
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground flex items-center gap-2"><ShoppingBag className="w-4 h-4" />Largest Purchase</span>
-                <span className="font-medium text-right truncate max-w-37.5">{data.largestPurchase.description} ({currencySymbol}{data.largestPurchase.amount.toFixed(2)})</span>
+              <div className="flex justify-between items-center text-sm gap-2">
+                <span className="text-muted-foreground flex items-center gap-2 shrink-0"><ShoppingBag className="w-4 h-4" />Largest Purchase</span>
+                <span className="font-medium text-right wrap-break-word">{data.largestPurchase.description} ({currencySymbol}{data.largestPurchase.amount.toFixed(2)})</span>
               </div>
             )}
           </div>
