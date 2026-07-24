@@ -31,6 +31,29 @@ A complete overview of your finances
 
 <img width="1005" height="1885" alt="dark-dashboard" src="https://github.com/user-attachments/assets/494589d8-d36c-4be4-8f0f-c3af62144cae" />
 
+### Accounts
+Manage multiple accounts, see balances of each & all accounts instantly
+<br>
+<img width="1104" height="98" alt="image" src="https://github.com/user-attachments/assets/56742eaf-0e51-4b31-85fe-6fb2997c4502" />
+
+### Transactions
+Create, split, add recurring transactions in seconds
+<br>
+<img width="384" height="532" alt="image" src="https://github.com/user-attachments/assets/b035ca1c-8076-4b9a-878c-50c325a20e98" />
+<br>
+
+### Goals
+Create multiple goals, set target dates and get contribution suggestions
+<img width="1104" height="269" alt="image" src="https://github.com/user-attachments/assets/b4ead810-c25f-475f-938d-ecf487257616" /><br>
+<img width="384" height="246" alt="image" src="https://github.com/user-attachments/assets/be75c1b8-8202-432f-8c30-b6c3503bbc4b" /><br>
+
+### Analytics
+Track your networth growth & where your money goes
+<img width="1104" height="382" alt="image" src="https://github.com/user-attachments/assets/fdce3f9c-8a60-4960-8feb-29c1b2943187" /><br>
+<img width="1104" height="382" alt="image" src="https://github.com/user-attachments/assets/97ff748f-17dd-4a13-b422-c6d2499539d4" /><br>
+<img width="544" height="382" alt="image" src="https://github.com/user-attachments/assets/1d76c65c-08e9-43c1-ad2f-0cd1daff5fe1" /><br>
+
+
 ### Settings
 Create accounts, categories, rules, update currency, customize & more
 <br>
@@ -38,23 +61,6 @@ Create accounts, categories, rules, update currency, customize & more
 <img width="384" height="426" alt="image" src="https://github.com/user-attachments/assets/9ea3dffa-e15b-4594-931f-cc0911566744" /><br>
 <img width="384" height="574" alt="image" src="https://github.com/user-attachments/assets/550648be-d4bd-4e54-a018-dc11600676dd" /><br>
 <img width="384" height="484" alt="image" src="https://github.com/user-attachments/assets/e824aed0-18cf-435d-997d-01981ea28a8b" /><br>
-
-How to add a transaction?
-<br>
-<img width="370" height="384" alt="image" src="https://github.com/user-attachments/assets/ce7148d6-f69f-4bf2-9739-c5a211e7ed38" />
-<br>
-Well, press the "Add transaction" button. Then this dialog will appear. Here, type the name of the transaction (food, subscription, salary). Then select transaction type: either expense or income.
-Select a category that you want to assign the transaction to and enter the amount of the transaction. Lastly, if your transaction is recurring (it's a subscription for example), then you select the recurring transaction button and
-choose when does your transaction repeat. It can be daily, weekly, monthly, yearly.
-
-Goals. When the user first launches the app, he will only see the "Create goal" button, after the goal is created, users can edit their goals & contribute to them. All contributions to goals can be seen in the contribution history.
-<img width="1003" height="249" alt="image" src="https://github.com/user-attachments/assets/3daeb1e9-2f91-4250-99dd-ee3cf7e45343" />
-
-Here you can see your recent transactions, search them by description, amount or category. Download a CSV file with all your transaction data or filter them by "Today", "This week", "This month", This year" or "All time"
-<img width="1010" height="349" alt="image" src="https://github.com/user-attachments/assets/c6a2e904-25a6-48a8-a790-88e381408571" />
-
-You can see your spending by category, a piechart & budget overview. In budget overview you can edit or set a budget limit. When nearing your budget limit, the color will change.
-<img width="1020" height="818" alt="image" src="https://github.com/user-attachments/assets/ef079d2c-c6c3-4ab5-83b5-f1a629afaa3f" />
 
 Built with:
 - Next.js
