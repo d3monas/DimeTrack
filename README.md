@@ -1,6 +1,8 @@
-<img width="384" height="766" alt="image" src="https://github.com/user-attachments/assets/5c50b210-0f10-4546-b8af-65ac92948cfe" /># DimeTrack
+# DimeTrack
 
 A simple, open-source money tracker and savings planner.
+
+**Check it out -> ** https://dime-track.vercel.app/ 
 
 ## Features
 
@@ -24,9 +26,23 @@ A simple, open-source money tracker and savings planner.
 
 ## Screenshots
 
+A complete overview of your finances
+<br>
 <img width="1005" height="1885" alt="dark-dashboard" src="https://github.com/user-attachments/assets/494589d8-d36c-4be4-8f0f-c3af62144cae" />
 
-These are the settings, here you can 
+
+
+
+
+
+
+
+
+
+
+
+
+Create accounts, categories, rules, update currency, customize & more
 <br>
 <img width="384" height="766" alt="image" src="https://github.com/user-attachments/assets/f7dea837-0c54-4c51-890a-67b60a9d3281" />
 <img width="384" height="426" alt="image" src="https://github.com/user-attachments/assets/9ea3dffa-e15b-4594-931f-cc0911566744" />
@@ -63,8 +79,6 @@ Built with:
 - lucid-react
 - react-colorful
 - colord
-
-Check it out here: https://dime-track.vercel.app/
 
 ## Running locally
 
