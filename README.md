@@ -31,6 +31,7 @@ A complete overview of your finances
 
 <img width="1005" height="1885" alt="dark-dashboard" src="https://github.com/user-attachments/assets/494589d8-d36c-4be4-8f0f-c3af62144cae" />
 
+### Settings
 Create accounts, categories, rules, update currency, customize & more
 <br>
 <img width="384" height="766" alt="image" src="https://github.com/user-attachments/assets/f7dea837-0c54-4c51-890a-67b60a9d3281" /><br>
