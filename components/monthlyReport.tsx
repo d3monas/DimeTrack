@@ -19,9 +19,9 @@ export function MonthlyReport({ data, currencySymbol }: MonthlyReportThings) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2 w-full sm:w-auto">
+        <Button variant="outline" className="gap-2 sm:w-auto">
           <FileBarChart className="h-4 w-4" />
-          View Monthly Report
+          <span className="hidden sm:inline">View Monthly Report</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-md">
