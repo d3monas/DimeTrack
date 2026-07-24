@@ -49,7 +49,7 @@ export default function LandingPage() {
         setMounted(true)
     }, [])
 
-    const screenshotSrc = mounted && resolvedTheme === "dark" ? "/dashboard-dark.png" : "/dashboard-light.png"
+    const screenshotSrc = mounted && resolvedTheme === "dark" ? "/dark-dashboard.png" : "/light-dashboard.png"
 
     return (
         <main className="relative overflow-hidden min-h-screen bg-background">
