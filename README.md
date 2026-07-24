@@ -2,7 +2,7 @@
 
 A simple, open-source money tracker and savings planner.
 
-**Check it out -> ** https://dime-track.vercel.app/ 
+**Check it out ->** https://dime-track.vercel.app/ 
 
 ## Features
 
@@ -28,30 +28,15 @@ A simple, open-source money tracker and savings planner.
 
 A complete overview of your finances
 <br>
+
 <img width="1005" height="1885" alt="dark-dashboard" src="https://github.com/user-attachments/assets/494589d8-d36c-4be4-8f0f-c3af62144cae" />
-
-
-
-
-
-
-
-
-
-
-
-
 
 Create accounts, categories, rules, update currency, customize & more
 <br>
-<img width="384" height="766" alt="image" src="https://github.com/user-attachments/assets/f7dea837-0c54-4c51-890a-67b60a9d3281" />
-<img width="384" height="426" alt="image" src="https://github.com/user-attachments/assets/9ea3dffa-e15b-4594-931f-cc0911566744" />
-<img width="384" height="574" alt="image" src="https://github.com/user-attachments/assets/550648be-d4bd-4e54-a018-dc11600676dd" />
-<img width="384" height="484" alt="image" src="https://github.com/user-attachments/assets/e824aed0-18cf-435d-997d-01981ea28a8b" />
-
-
-
-
+<img width="384" height="766" alt="image" src="https://github.com/user-attachments/assets/f7dea837-0c54-4c51-890a-67b60a9d3281" /><br>
+<img width="384" height="426" alt="image" src="https://github.com/user-attachments/assets/9ea3dffa-e15b-4594-931f-cc0911566744" /><br>
+<img width="384" height="574" alt="image" src="https://github.com/user-attachments/assets/550648be-d4bd-4e54-a018-dc11600676dd" /><br>
+<img width="384" height="484" alt="image" src="https://github.com/user-attachments/assets/e824aed0-18cf-435d-997d-01981ea28a8b" /><br>
 
 How to add a transaction?
 <br>
