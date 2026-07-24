@@ -9,20 +9,19 @@ A simple, open-source money tracker and savings planner.
 - Track Checking, Savings, and Cash separately. Move money with transfers that don't inflate your income or expenses.
 - Search and filter transactions by description, amount, category or transaction type.
 - Export your transactions to CSV or create full JSON backups to transfer your data to any device.
-- Set multiple savings goals a time and contribute towards them directly, with full contribution history. Set savings goals with target dates and the app will calculate how much you need to save and contribute per month to hit your goal.
+- Set multiple savings goals at a time and contribute towards them directly, with full contribution history. Set savings goals with target dates and the app will calculate how much you need to save and contribute per month to hit your goal.
 - Create custom categories & set budget limits, with warnings as you approach them.
 - Split a single purchase across multiple categories.
-- See how your wealth grows with charts and generate monthly spending reports.
+- Track your finances with interactive charts, category breakdowns, net worth history and monthly spending reports.
 - Project upcoming bills and predict your spending before it happens with cash flow calendar.
 - Multi-currency support.
 - Schedule recurring transactions for bills, subscriptions, salaries, and more.
 - Set rules (e.g. "If description contains Uber, set category to Transport")
 - Personalize the app with a built-in color picker. Choose from presets or use a custom Hex code.
 - View balances for every account and your total net worth at a glance.
-- Visualize spending with interactive charts, category breakdowns, net worth tracking, and monthly reports.
 - Create custom spending categories with custom icons and colors.
 - Mobile friendly UI.
-& many more...
+- No accounts, subscriptions, servers. Everything stays in your device.
 
 ## Screenshots
 
@@ -68,7 +67,7 @@ Built with:
 - Tailwind CSS
 - shadcn/ui
 - Recharts
-- lucid-react
+- Lucide React
 - react-colorful
 - colord
 
