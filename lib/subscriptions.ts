@@ -16,7 +16,7 @@ export function getSubscriptionMetrics(recurring: RecurringTransaction[]): Subsc
         const amount = sub.amount
 
         if (sub.interval === "monthly") {
-            monthlyCost === amount
+            monthlyCost = amount
         } else if (sub.interval === "yearly") {
             monthlyCost = amount / 12
         } else if (sub.interval === "weekly") {
@@ -31,7 +31,7 @@ export function getSubscriptionMetrics(recurring: RecurringTransaction[]): Subsc
             if (sub.customIntervalUnit === "weeks") {
                 monthlyCost = (amount * 52) / 12 / val
             }
-            if (sub.customIntervalUnit == "days") {
+            if (sub.customIntervalUnit === "days") {
                 monthlyCost = (amount * 365) / 12 / val
             }
         }
