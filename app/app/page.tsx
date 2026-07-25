@@ -781,17 +781,16 @@ export default function Home() {
 
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-4 max-w-md sm:text-sm">
+          <TabsList className="grid w-full grid-cols-5 max-w-md sm:text-sm">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="calendar">Calendar</TabsTrigger>
             <TabsTrigger value="transactions">Transactions</TabsTrigger>
+            <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
             <TabsTrigger value="budgets">Budgets & Goals</TabsTrigger>
           </TabsList>
 
           {/* Overview tab */}
           <TabsContent value="overview" className="space-y-6 mt-4">
-            {/* subs */}
-            <Subscriptions recurring={recurring} currencySymbol={currencySymbol} onToggleActive={toggleSubscriptionActive} onDelete={deleteRecurring} />
             {/* networth */}
             <NetWorth currentBalance={balance} previousBalance={prevBalance} currencySymbol={currencySymbol} />
             {/* networth history */}
@@ -816,6 +815,11 @@ export default function Home() {
           {/* Calendar */}
           <TabsContent value="calendar" className="space-y-6 mt-4">
             <CalendarView transactions={transactions} recurring={recurring} currencySymbol={currencySymbol} />
+          </TabsContent>
+
+          {/* Subscriptions tab */}
+          <TabsContent value="subscriptions" className="space-y-6 mt-4">
+            <Subscriptions recurring={recurring} currencySymbol={currencySymbol} onToggleActive={toggleSubscriptionActive} onDelete={deleteRecurring} />
           </TabsContent>
 
           {/* transactions tab */}
