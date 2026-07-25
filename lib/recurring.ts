@@ -37,7 +37,12 @@ export function getNextDate(recurring: RecurringTransaction): Date {
 export function processRecurring(recurring: RecurringTransaction[]): { newTransactions: Transaction[], updatedRecurring: RecurringTransaction[]} {
     const now = new Date()
     const newTransactions: Transaction[] = []
+
     const updatedRecurring = recurring.map((recurring) => {
+        if (recurring.isActive === false) {
+            return recurring
+        }
+        
         let current = recurring
         let nextDate = getNextDate(current)
 
