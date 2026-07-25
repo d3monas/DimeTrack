@@ -24,6 +24,7 @@ import { Onboarding } from "@/components/onboarding"
 import { Button } from "@/components/ui/button"
 import { NetWorthHistoryChart } from "@/components/charts/netWorthHistoryChart"
 import { MonthlyReport } from "@/components/monthlyReport"
+import { Subscriptions } from "@/components/subscriptions"
 
 // types
 import type { Transaction, TransactionSplit } from "@/types/transaction"
@@ -785,6 +786,8 @@ export default function Home() {
 
           {/* Overview tab */}
           <TabsContent value="overview" className="space-y-6 mt-4">
+            {/* subs */}
+            <Subscriptions />
             {/* networth */}
             <NetWorth currentBalance={balance} previousBalance={prevBalance} currencySymbol={currencySymbol} />
             {/* networth history */}
