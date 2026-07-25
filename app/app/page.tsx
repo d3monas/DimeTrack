@@ -50,7 +50,7 @@ import { categoryCustomization } from "@/lib/categoryCustomization"
 import { colord } from "colord"
 import { getNetWorthHistory } from "@/lib/calculations"
 import { getMonthlyReportData } from "@/lib/calculations"
-import { Settings } from "lucide-react"
+import { ArrowLeftRight, CalendarDays, LayoutDashboard, Repeat, Settings, Target } from "lucide-react"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -781,12 +781,27 @@ export default function Home() {
 
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-5 sm:text-sm">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="calendar">Calendar</TabsTrigger>
-            <TabsTrigger value="transactions">Transactions</TabsTrigger>
-            <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
-            <TabsTrigger value="budgets">Budgets & Goals</TabsTrigger>
+          <TabsList className="w-full justify-start sm:justify-center overflow-x-auto sm:overflow-hidden">
+            <TabsTrigger value="overview" className="flex-1 sm:flex-initial gap-1.5">
+              <LayoutDashboard className="w-4 h-4" />
+              <span className="hidden sm:inline">Overview</span>
+            </TabsTrigger>
+            <TabsTrigger value="calendar" className="flex-1 sm:flex-initial gap-1.5">
+              <CalendarDays className="w-4 h-4" />
+              <span className="hidden sm:inline">Calendar</span>
+            </TabsTrigger>
+            <TabsTrigger value="transactions" className="flex-1 sm:flex-initial gap-1.5">
+              <ArrowLeftRight className="w-4 h-4" />
+              <span className="hidden sm:inline">Transactions</span>
+            </TabsTrigger>
+            <TabsTrigger value="subscriptions" className="flex-1 sm:flex-initial gap-1.5">
+              <Repeat className="w-4 h-4" />
+              <span className="hidden sm:inline">Subscriptions</span>
+            </TabsTrigger>
+            <TabsTrigger value="budgets" className="flex-1 sm:flex-initial gap-1.5">
+              <Target className="w-4 h-4" />
+              <span className="hidden sm:inline">Budgets & Goals</span>
+            </TabsTrigger>
           </TabsList>
 
           {/* Overview tab */}
