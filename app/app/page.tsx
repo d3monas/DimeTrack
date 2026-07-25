@@ -781,7 +781,7 @@ export default function Home() {
 
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-5 max-w-md sm:text-sm">
+          <TabsList className="grid w-full grid-cols-5 sm:text-sm">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="calendar">Calendar</TabsTrigger>
             <TabsTrigger value="transactions">Transactions</TabsTrigger>
