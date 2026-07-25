@@ -781,7 +781,7 @@ export default function Home() {
 
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-6">
-          <TabsList className="w-full justify-start sm:justify-center overflow-x-auto sm:overflow-hidden">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview" className="flex-1 sm:flex-initial gap-1.5">
               <LayoutDashboard className="w-4 h-4" />
               <span className="hidden sm:inline">Overview</span>
