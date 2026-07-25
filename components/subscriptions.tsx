@@ -50,7 +50,7 @@ export function Subscriptions({ recurring, currencySymbol, onToggleActive, onDel
             return (
               <div key={sub.id} className="flex flex-wrap items-center justify-between gap-4 border-b pb-3 last:border-0 last:pb-0">
                 <div className="min-w-0">
-                  <p className={`font-medium ${isActive ? "line-through text-muted-foreground" : ""}`}>{sub.description}</p>
+                  <p className={`font-medium ${!isActive ? "line-through text-muted-foreground" : ""}`}>{sub.description}</p>
                   <div className="flex flex-wrap gap-2 text-xs text-muted-foreground mt-1">
                     <span className="flex items-center gap-1"><CalendarDays className="h-3 w-3" />{sub.interval}</span>
                     <span className="flex items-center gap-1"><Tag className="h-3 w-3" />{sub.category}</span>
