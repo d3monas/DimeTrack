@@ -665,6 +665,10 @@ export default function Home() {
     setAccounts(prev => prev.map(account => account.id === id ? { ...account, ...data } : account))
   }
 
+  function toggleSubscriptionActive(id: string, isActive: boolean) {
+    setRecurring(prev => prev.map(recurring => recurring.id === id ? {...recurring, isActive} : recurring ))
+  }
+
   const accountBalances = accounts.map(account => {
     let accBalance = 0
 
@@ -787,7 +791,7 @@ export default function Home() {
           {/* Overview tab */}
           <TabsContent value="overview" className="space-y-6 mt-4">
             {/* subs */}
-            <Subscriptions />
+            <Subscriptions recurring={recurring} currencySymbol={currencySymbol} onToggleActive={toggleSubscriptionActive} onDelete={deleteRecurring} />
             {/* networth */}
             <NetWorth currentBalance={balance} previousBalance={prevBalance} currencySymbol={currencySymbol} />
             {/* networth history */}
