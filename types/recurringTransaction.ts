@@ -9,4 +9,5 @@ export type RecurringTransaction = {
     customIntervalUnit?: "days" | "weeks" | "months"
     lastProcessedDate: string
     createdAt: string
+    isActive?: boolean
 }
