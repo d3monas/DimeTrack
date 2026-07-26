@@ -98,7 +98,11 @@ export function GoalCard({ goal, progress, remaining, onEdit, onDelete, onContri
                     <div className="flex gap-2">
                         <Button size="sm" variant="outline" onClick={() => setContributeOpen(true)}>Contribute to goal</Button>
                         <Button size="sm" variant="outline" onClick={onEdit}>Edit</Button>
-                        <Button size="sm" variant="destructive" onClick={onDelete}>Delete</Button>
+                        <Button size="sm" variant="destructive" onClick={() => {
+                            if (confirm("Are you sure you want to delete this goal? This action cannot be undone")) {
+                                onDelete()
+                            }
+                        }}>Delete</Button>
                     </div>
                 </div>
             </div>
