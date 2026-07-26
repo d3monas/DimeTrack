@@ -104,7 +104,11 @@ export function AccountsManager({ accounts, onAddAccount, onDeleteAccount, defau
                                         {defaultAccountId !== account.id && (
                                             <Button variant="outline" size="sm" onClick={() => onSetDefaultAccount(account.id)}>Set Default</Button>
                                         )}
-                                        <Button variant="destructive" size="sm" onClick={() => onDeleteAccount(account.id)}>Delete</Button>
+                                        <Button variant="destructive" size="sm" onClick={() => {
+                                            if (confirm("Are you sure you want to delete this account? Linked transactions will remain but lose their account tag")) {
+                                                onDeleteAccount(account.id)
+                                            }
+                                        }}>Delete</Button>
                                     </div>
                                 )}
                             </div>
