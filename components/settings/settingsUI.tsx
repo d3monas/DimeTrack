@@ -132,7 +132,11 @@ export function SettingsDialog({
                                             {isSavingsCategory(category) ? (
                                                 <span className="text-xs text-muted-foreground px-2 py-1 rounded-md border">Default</span>
                                             ) : (
-                                                <Button variant="destructive" size="sm" onClick={() => onDeleteCategory(category)}>Delete</Button>
+                                                <Button variant="destructive" size="sm" onClick={() => {
+                                                    if (confirm("Are you sure you want to delete this category? Transactions will be moved to 'Uncategorized'")) {
+                                                        onDeleteCategory(category)
+                                                    }
+                                                }}>Delete</Button>
                                             )}
                                         </div>
                                     )
