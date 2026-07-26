@@ -63,7 +63,11 @@ export function Subscriptions({ recurring, currencySymbol, onToggleActive, onDel
                     <span className="text-xs text-muted-foreground">{isActive ? "Active" : "Cancelled"}</span>
                     <Switch checked={isActive} onCheckedChange={(checked) => onToggleActive(sub.id, checked)} />
                   </div>
-                  <Button variant="ghost" size="sm" className="text-red-500" onClick={() => onDelete(sub.id)}>
+                  <Button variant="ghost" size="sm" className="text-red-500" onClick={() => {
+                    if (confirm("Are you sure you want to delete this recurring transaction? Past transactions will NOT be deleted")) {
+                      onDelete(sub.id)
+                    }
+                  }}>
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>

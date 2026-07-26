@@ -48,7 +48,11 @@ export function RecurringManager({ recurring, currencySymbol, onDelete }: Recurr
                         <span className={`text-sm font-medium ${recurring.type === "income" ? "text-green-600" : "text-red-600"}`}>
                             {recurring.type === "income" ? "+" : "-"}{currencySymbol}{recurring.amount.toFixed(2)}
                         </span>
-                        <Button variant="destructive" size="sm" onClick={() => onDelete(recurring.id)}>Delete</Button>
+                        <Button variant="destructive" size="sm" onClick={() => {
+                            if (confirm("Are you sure you want to delete this recurring transaction? Past transactions will NOT be deleted")) {
+                                onDelete(recurring.id)
+                            }
+                        }}>Delete</Button>
                     </div>
                 </div>
                 ))}
