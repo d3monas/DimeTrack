@@ -174,6 +174,14 @@ export function TransactionList({
                                                         </span>
                                                     </>
                                                 )}
+
+                                                {transaction.tags && transaction.tags.length > 0 && (
+                                                    <div className="flex flex-wrap gap-1 items-center">
+                                                        {transaction.tags.map((tag, i) => (
+                                                            <span key={i} className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium">{tag}</span>
+                                                        ))}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
 
