@@ -270,7 +270,8 @@ export default function Home() {
     customIntervalUnit?: "days" | "weeks" | "months",
     splits?: TransactionSplit[],
     accountId?: string,
-    transferAccountId?: string
+    transferAccountId?: string,
+    tags?: string[]
   ) {
     const numberCheck = Number(amount)
 
@@ -295,6 +296,7 @@ export default function Home() {
       splits: splits,
       accountId: accountId,
       transferAccountId: transferAccountId,
+      tags: tags
     }
 
     setTransactions((prev) => [newTransaction, ...prev])
