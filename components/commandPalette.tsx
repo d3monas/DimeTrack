@@ -1,5 +1,5 @@
 import { Transaction } from "@/types/transaction"
-import { DialogContent, Dialog } from "./ui/dialog"
+import { DialogContent, Dialog, DialogHeader, DialogTitle } from "./ui/dialog"
 import { CommandInput, Command, CommandList, CommandEmpty, CommandGroup, CommandItem, CommandSeparator } from "./ui/command"
 import { CalendarDays, LayoutDashboard, PlusCircle, ArrowLeftRight, Repeat, Target, Search } from "lucide-react"
 
@@ -20,6 +20,9 @@ export function CommandPalette({ open, onOpenChange, transactions, onTabChange, 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="p-0 overflow-hidden max-w-2xl">
+        <DialogHeader className="sr-only">
+          <DialogTitle>Command Menu</DialogTitle>
+        </DialogHeader>
         <Command className="rounded-lg">
           <CommandInput placeholder="Type a command or search transactions..." />
           <CommandList className="max-h-100">
