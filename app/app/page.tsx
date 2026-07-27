@@ -51,7 +51,7 @@ import { categoryCustomization } from "@/lib/categoryCustomization"
 import { colord } from "colord"
 import { getNetWorthHistory } from "@/lib/calculations"
 import { getMonthlyReportData } from "@/lib/calculations"
-import { ArrowLeftRight, CalendarDays, LayoutDashboard, Repeat, Settings, Target } from "lucide-react"
+import { ArrowLeftRight, CalendarDays, LayoutDashboard, Repeat, Settings, Target, Search } from "lucide-react"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -725,14 +725,26 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-6xl p-4 sm:p-6">
-        <header className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-4xl font-bold sm:text-4xl">DimeTrack</h1>
-          </div>
-          <div className="flex items-center gap-2">
+        <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="text-3xl font-bold sm:text-4xl">DimeTrack</h1>
+
+          <Button
+            variant="outline"
+            className="w-full sm:flex-1 sm:max-w-sm flex items-center gap-2 text-muted-foreground justify-start font-normal"
+            onClick={() => setCommandOpen(true)}
+            >
+            <Search className="h-4 w-4" />
+            <span className="flex-1 text-left hidden sm:inline">Search transactions or jump to...</span>
+            <span className="flex-1 text-left sm:hidden">Search...</span>
+            <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] text-muted-foreground">
+              CTRL + K
+            </kbd>
+          </Button>
+
+          <div className="flex items-center gap-2 justify-end">
             <ThemeToggle />
             {!onboardingComplete && (
-              <Onboarding 
+              <Onboarding
                 hasAccounts={accounts.length > 0}
                 hasCategories={categories.length > 0}
                 hasBudgets={hasBudgets}
@@ -742,9 +754,9 @@ export default function Home() {
                 onOpenBudgets={() => setActiveTab("budgets")}
                 onCreateGoal={() => { setActiveTab("budgets"); setEditingGoal(null); setGoalDialogOpen(true) }}
                 onAddTransaction={() => { setActiveTab("transactions"); setOpen(true) }}
-                onComplete={() => setOnboardingComplete(true)} 
-                />
-              )}
+                onComplete={() => setOnboardingComplete(true)}
+              />
+            )}
             <MonthlyReport data={monthlyReportData} currencySymbol={currencySymbol} />
             <Button variant="outline" onClick={() => setSettingsOpen(true)} className="gap-2">
               <Settings className="w-4 h-4" />
@@ -775,11 +787,11 @@ export default function Home() {
               onDeleteAccount={deleteAccount}
               defaultAccountId={defaultAccountId}
               onSetDefaultAccount={setDefaultAccountId}
-              onUpdateAccount={updateAccount} 
+              onUpdateAccount={updateAccount}
               accentColor={accentColor}
-              onAccentChange={setAccentColor} 
-              open={settingsOpen} 
-              onOpenChange={setSettingsOpen} 
+              onAccentChange={setAccentColor}
+              open={settingsOpen}
+              onOpenChange={setSettingsOpen}
             />
           </div>
         </header>
@@ -934,6 +946,16 @@ export default function Home() {
               categoryCustomization={categoryCustomization} />
           </TabsContent>
         </Tabs>
+        <CommandPalette 
+          open={commandOpen} 
+          onOpenChange={setCommandOpen} 
+          transactions={transactions}
+          onTabChange={(tab) => setActiveTab(tab)} 
+          onAddTransaction={() => { setActiveTab("transactions"); setOpen(true) }}
+          onOpenSettings={() => setSettingsOpen(true)}
+          onAddGoal={() => { setActiveTab("budgets"); setEditingGoal(null); setGoalDialogOpen(true) }}
+          onExportBackup={handleExportBackup}
+        />
       </div>
     </main>
   )
