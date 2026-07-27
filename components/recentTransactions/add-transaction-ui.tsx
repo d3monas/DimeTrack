@@ -34,7 +34,8 @@ type AddTransactionDialogThings = {
         customIntervalUnit?: "days" | "weeks" | "months",
         splits?: TransactionSplit[],
         accountId?: string,
-        transferAccountId?: string) => void
+        transferAccountId?: string,
+        tags?: string[]) => void
     onAddNewCategory: (name: string) => void
     budgets: Record<string, number>
     categoryTotals: Record<string, number>
@@ -60,6 +61,9 @@ export function AddTransactionDialog({
     const [newCategoryName, setNewCategoryName] = useState("")
     const [accountId, setAccountId] = useState<string>("")
     const [transferAccountId, setTransferAccountId] = useState<string>("")
+
+    const [tags, setTags] = useState<string[]>([])
+    const [tagInput, setTagInput] = useState("")
 
     useEffect(() => {
         if (open && !accountId && defaultAccountId) {
@@ -134,7 +138,8 @@ export function AddTransactionDialog({
                 interval === "custom" ? customUnit : undefined,
                 isSplit ? splits : undefined,
                 accountId,
-                transactionType === "transfer" ? transferAccountId : undefined
+                transactionType === "transfer" ? transferAccountId : undefined,
+                tags.length > 0 ? tags : undefined
             )
             setErrors({})
             resetRecurringState()
@@ -142,6 +147,8 @@ export function AddTransactionDialog({
             setSplits([{ amount: 0, category: "" }])
             setAccountId("")
             setTransferAccountId("")
+            setTags([])
+            setTagInput("")
         }
     }
 
@@ -268,6 +275,26 @@ export function AddTransactionDialog({
                     <div>
                         <Label>Notes (optional)</Label>
                         <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Add any extra details here..." className="resize-none" rows={2} />
+                    </div>
+
+                    <div>
+                        <Label>Tags (Optional)</Label>
+                        <div className="flex flex-wrap ga-2 mb-2">
+                            {tags.map((tag, i) => (
+                                <span key={i} className="text-xs bg-muted px-2 py-1 rounded-md flex items-center gap-1">
+                                    {tag}
+                                    <button type="button" onClick={() => setTags(tags.filter((_, index) => index !== i))} className="text-muted-foreground hover:text-foreground">✕</button>
+                                </span>
+                            ))}
+                        </div>
+                        <Input value={tagInput} onChange={(e) => setTagInput(e.target.value)} onKeyDown={(e) => {
+                            if (e.key === "Enter" && tagInput.trim()) {
+                                e.preventDefault()
+                                setTags([...tags, tagInput.trim()])
+                                setTagInput("")
+                            }
+                        }}
+                        placeholder="Add tag (e.g., Vacation) and press Enter" />
                     </div>
 
                     <div className="flex items-center gap-2">
