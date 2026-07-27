@@ -934,10 +934,6 @@ export default function Home() {
               categoryCustomization={categoryCustomization} />
           </TabsContent>
         </Tabs>
-
-        <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} transactions={transactions} 
-          onTabChange={(tab) => setActiveTab(tab)} onAddTransaction={() => { setActiveTab("transactions"); setOpen(true)}} 
-        />
       </div>
     </main>
   )
