@@ -279,7 +279,7 @@ export function AddTransactionDialog({
 
                     <div>
                         <Label>Tags (Optional)</Label>
-                        <div className="flex flex-wrap ga-2 mb-2">
+                        <div className="flex flex-wrap gap-2 mb-2">
                             {tags.map((tag, i) => (
                                 <span key={i} className="text-xs bg-muted px-2 py-1 rounded-md flex items-center gap-1">
                                     {tag}
