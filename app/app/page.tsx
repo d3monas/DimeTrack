@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button"
 import { NetWorthHistoryChart } from "@/components/charts/netWorthHistoryChart"
 import { MonthlyReport } from "@/components/monthlyReport"
 import { Subscriptions } from "@/components/subscriptions"
+import { CommandPalette } from "@/components/commandPalette"
 
 // types
 import type { Transaction, TransactionSplit } from "@/types/transaction"
@@ -92,6 +93,8 @@ export default function Home() {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState("overview")
   const [onboardingComplete, setOnboardingComplete] = useState(false)
+
+  const [commandOpen, setCommandOpen] = useState(false)
 
   // load localstorage 
   useEffect(() => {
@@ -231,6 +234,19 @@ export default function Home() {
       saveOnboardingComplete(onboardingComplete)
     }
   }, [isLoaded, onboardingComplete])
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setCommandOpen((open) => !open)
+      }
+    }
+    document.addEventListener("keydown", down)
+    return (
+      () => document.removeEventListener("keydown", down)
+    )
+  }, [])
 
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
@@ -918,6 +934,10 @@ export default function Home() {
               categoryCustomization={categoryCustomization} />
           </TabsContent>
         </Tabs>
+
+        <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} transactions={transactions} 
+          onTabChange={(tab) => setActiveTab(tab)} onAddTransaction={() => { setActiveTab("transactions"); setOpen(true)}} 
+        />
       </div>
     </main>
   )
