@@ -9,6 +9,7 @@ export type Transaction = {
   splits?: TransactionSplit[]
   accountId?: string
   transferAccountId?: string
+  tags?: string[]
 }
 
 export type TransactionSplit = {
