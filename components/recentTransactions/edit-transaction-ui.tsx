@@ -15,7 +15,7 @@ type EditTransactionDialogThings = {
     transaction: Transaction | null
     open: boolean
     onClose: () => void
-    onSave: (id: string, description: string, amount: number, type: "income" | "expense" | "transfer", category: string, notes?: string) => void
+    onSave: (id: string, description: string, amount: number, type: "income" | "expense" | "transfer", category: string, notes?: string, tags?: string[]) => void
     categories: string[]
     budgets: Record<string, number>
     categoryTotals: Record<string, number>
@@ -32,6 +32,9 @@ export function EditTransactionDialog({ transaction, open, onClose, onSave, cate
     const [notes, setNotes] = useState("")
     const [errors, setErrors] = useState<Record<string, string>>({})
 
+    const [tags, setTags] = useState<string[]>([])
+    const [tagInput, setTagInput] = useState("")
+
     const currentLimit = budgets[category] ?? 0
     const currentSpent = (categoryTotals[category] ?? 0) - (transaction?.amount ?? 0)
     const projectedSpent = currentSpent + (Number(amount) || 0)
@@ -44,6 +47,8 @@ export function EditTransactionDialog({ transaction, open, onClose, onSave, cate
             setType(transaction.type)
             setCategory(transaction.category)
             setNotes(transaction.notes ?? "")
+            setTags(transaction.tags || [])
+            setTagInput("")
             setErrors({})
         }
     }, [open, transaction])
@@ -73,7 +78,7 @@ export function EditTransactionDialog({ transaction, open, onClose, onSave, cate
             return
         }
         if (validate()) {
-            onSave(transaction.id, description, Number(amount), type, category, notes)
+            onSave(transaction.id, description, Number(amount), type, category, notes, tags)
             onClose()
         }
     }
@@ -154,6 +159,26 @@ export function EditTransactionDialog({ transaction, open, onClose, onSave, cate
                     <div>
                         <Label>Notes (optional)</Label>
                         <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Add any extra details here..." className="resize-none" rows={2} />
+                    </div>
+
+                    <div>
+                        <Label>Tags (optional)</Label>
+                        <div className="flex flex-wrap gap-2 mb-2">
+                            {tags.map((tag, i) => (
+                                <span key={i} className="text-xs bg-muted px-2 py-1 rounded-md flex items-center gap-1">
+                                    {tag}
+                                    <button type="button" onClick={() => setTags(tags.filter((_, index) => index !== i))} className="text-muted-foreground hover:text-foreground">✕</button>
+                                </span>
+                            ))}
+                        </div>
+                        <Input value={tagInput} onChange={(e) => setTagInput(e.target.value)} onKeyDown={(e) => {
+                            if (e.key === "Enter" && tagInput.trim()) {
+                                e.preventDefault()
+                                setTags([...tags, tagInput.trim()])
+                                setTagInput("")
+                            }
+                        }}
+                        placeholder="Add tag (e.g., Vacation) and press Enter" />
                     </div>
 
                     <Button className="w-full" onClick={handleSave}>Save Changes</Button>
