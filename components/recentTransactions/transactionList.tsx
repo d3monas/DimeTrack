@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { Transaction } from "@/types/transaction"
 import { Button } from "../ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
@@ -41,6 +41,19 @@ export function TransactionList({
     const [typeFilter, setTypeFilter] = useState<string>("all")
     const [categoryFilter, setCategoryFilter] = useState<string>("all")
 
+    const [tagFilter, setTagFilter] = useState<string>("all")
+    const [sortOrder, setSortOrder] = useState<string>("date-desc")
+
+    const allTags = useMemo(() => {
+        const tagsSet = new Set<string>()
+        transactions.forEach(transaction => {
+            if (transaction.tags && transaction.tags.length > 0) {
+                transaction.tags.forEach(tag => tagsSet.add(tag))
+            }
+        })
+        return Array.from(tagsSet).sort()
+    }, [transactions])
+
     const getAccountName = (id?: string) => {
         if (!id) {
             return null
@@ -56,18 +69,21 @@ export function TransactionList({
             return true
         }
         const query = searchTerm.toLowerCase()
+        const tagsString = transaction.tags?.join(" ").toLowerCase() || ""
         return (
             transaction.description.toLowerCase().includes(query) ||
             transaction.category.toLowerCase().includes(query) ||
-            transaction.amount.toFixed(2).includes(query)
+            transaction.amount.toFixed(2).includes(query) ||
+            tagsString.includes(query)
         )
     })
 
     const filteredTransactions = searchedTransactions.filter((transaction) => {
         const matchesType = typeFilter === "all" || transaction.type === typeFilter
         const matchesCategory = categoryFilter === "all" || transaction.category === categoryFilter
+        const matchesTag = tagFilter === "all" || (transaction.tags && transaction.tags.includes(tagFilter))
         return (
-            matchesType && matchesCategory
+            matchesType && matchesCategory && matchesTag
         )
     })
 
@@ -75,7 +91,7 @@ export function TransactionList({
         exportToCSV(filteredTransactions, accounts)
     }
 
-    const { pageItems, currentPage, totalPages, nextPage, prevPage } = pagination(filteredTransactions, transactionsPerPage, `${searchTerm}-${typeFilter}-${categoryFilter}-${filter}`)
+    const { pageItems, currentPage, totalPages, nextPage, prevPage } = pagination(filteredTransactions, transactionsPerPage, `${searchTerm}-${typeFilter}-${categoryFilter}-${tagFilter}-${sortOrder}-${filter}`)
     return (
         <div>
             <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -109,6 +125,33 @@ export function TransactionList({
                             ))}
                         </SelectContent>
                     </Select>
+
+                    {allTags.length > 0 && (
+                        <Select value={tagFilter} onValueChange={setTagFilter}>
+                            <SelectTrigger className="h-8 w-full text-sm sm:w-36">
+                                <SelectValue placeholder="Tag" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Tags</SelectItem>
+                                {allTags.map((tag) => (
+                                    <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    )}
+
+                    <Select value={sortOrder} onValueChange={setSortOrder}>
+                        <SelectTrigger className="h-8 w-full text-sm sm:w-36">
+                            <SelectValue placeholder="Sort" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="data-desc">Date (Newest)</SelectItem>
+                            <SelectItem value="data-asc">Date (Oldest)</SelectItem>
+                            <SelectItem value="amount-desc">Amount (Higest)</SelectItem>
+                            <SelectItem value="amount-desc">Amount (Lowest)</SelectItem>
+                        </SelectContent>
+                    </Select>
+
                     <div className="flex gap-2">
                         <Button variant="outline" size="sm" onClick={handleExport} className="h-8">Export CSV</Button>
                         <DropdownMenu>
