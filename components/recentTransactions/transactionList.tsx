@@ -87,11 +87,27 @@ export function TransactionList({
         )
     })
 
+    const sortedTransactions = [...filteredTransactions].sort((a, b) => {
+        if (sortOrder === "date-desc") {
+            return new Date(b.date).getTime() - new Date(a.date).getTime()
+        }
+        if (sortOrder === "date-asc") {
+            return new Date(a.date).getTime() - new Date(b.date).getTime()
+        }
+        if (sortOrder === "amount-desc") {
+            return b.amount - a.amount
+        }
+        if (sortOrder === "amount-asc") {
+            return a.amount - b.amount
+        }
+        return 0
+    })
+
     function handleExport() {
-        exportToCSV(filteredTransactions, accounts)
+        exportToCSV(sortedTransactions, accounts)
     }
 
-    const { pageItems, currentPage, totalPages, nextPage, prevPage } = pagination(filteredTransactions, transactionsPerPage, `${searchTerm}-${typeFilter}-${categoryFilter}-${tagFilter}-${sortOrder}-${filter}`)
+    const { pageItems, currentPage, totalPages, nextPage, prevPage } = pagination(sortedTransactions, transactionsPerPage, `${searchTerm}-${typeFilter}-${categoryFilter}-${tagFilter}-${sortOrder}-${filter}`)
     return (
         <div>
             <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
