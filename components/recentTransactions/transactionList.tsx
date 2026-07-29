@@ -145,8 +145,8 @@ export function TransactionList({
                             <SelectValue placeholder="Sort" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="data-desc">Date (Newest)</SelectItem>
-                            <SelectItem value="data-asc">Date (Oldest)</SelectItem>
+                            <SelectItem value="date-desc">Date (Newest)</SelectItem>
+                            <SelectItem value="date-asc">Date (Oldest)</SelectItem>
                             <SelectItem value="amount-desc">Amount (Higest)</SelectItem>
                             <SelectItem value="amount-desc">Amount (Lowest)</SelectItem>
                         </SelectContent>
