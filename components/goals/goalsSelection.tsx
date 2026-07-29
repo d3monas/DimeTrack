@@ -24,9 +24,12 @@ export function GoalsSelection({ goals, transactions, currencySymbol ,onCreateGo
     if (goals.length === 0) {
         return (
             <div className="mt-6 rounded-2xl border p-4 sm:p-6">
-                <h2 className="text-xl font-semibold">Savings Goal</h2>
-                <EmptyState message="You haven't set a savings goal yet. Create one to start tracking progress" />
-                <Button size="lg" variant="default" onClick={onCreateGoal} className="mt-2">Create goal</Button>
+                <h2 className="text-xl font-semibold mb-4">Savings Goal</h2>
+                <EmptyState 
+                    message="You haven't set a savings goal yet. Create one to start tracking progress" 
+                    actionLabel="Create Goal"
+                    onAction={onCreateGoal}
+                />
             </div>
         )
     }
