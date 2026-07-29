@@ -191,8 +191,8 @@ export function TransactionList({
                 </div>
             </div>
 
-            {filteredTransactions.length === 0 ? (
-                <EmptyState message={searchTerm.trim() || typeFilter !== "all" || categoryFilter !== "all" ? `No transactions match your filters` : "No transactions for this period"} />
+            {sortedTransactions.length === 0 ? (
+                <EmptyState message={searchTerm.trim() || typeFilter !== "all" || categoryFilter !== "all" || tagFilter !== "all" ? `No transactions match your filters` : "No transactions for this period"} />
             ) : (
                 <>
                     <div className="space-y-4">
