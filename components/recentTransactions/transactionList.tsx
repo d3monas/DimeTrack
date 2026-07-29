@@ -110,69 +110,14 @@ export function TransactionList({
     const { pageItems, currentPage, totalPages, nextPage, prevPage } = pagination(sortedTransactions, transactionsPerPage, `${searchTerm}-${typeFilter}-${categoryFilter}-${tagFilter}-${sortOrder}-${filter}`)
     return (
         <div>
-            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <h2 className="text-xl font-semibold">Recent Transactions</h2>
-                <div className="flex flex-wrap items-center gap-2">
-                    <Input
-                        placeholder="Search"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="h-8 w-full text-sm sm:w-40"
-                    />
-                    <Select value={typeFilter} onValueChange={setTypeFilter}>
-                        <SelectTrigger className="h-8 w-full text-sm sm:w-28">
-                            <SelectValue placeholder="Type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Types</SelectItem>
-                            <SelectItem value="income">Income</SelectItem>
-                            <SelectItem value="expense">Expense</SelectItem>
-                            <SelectItem value="transfer">Transfer</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                        <SelectTrigger className="h-8 w-full text-sm sm:w-40">
-                            <SelectValue placeholder="Category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Categories</SelectItem>
-                            {categories.map((category) => (
-                                <SelectItem key={category} value={category}>{category}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-
-                    {allTags.length > 0 && (
-                        <Select value={tagFilter} onValueChange={setTagFilter}>
-                            <SelectTrigger className="h-8 w-full text-sm sm:w-36">
-                                <SelectValue placeholder="Tag" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All Tags</SelectItem>
-                                {allTags.map((tag) => (
-                                    <SelectItem key={tag} value={tag}>{tag}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    )}
-
-                    <Select value={sortOrder} onValueChange={setSortOrder}>
-                        <SelectTrigger className="h-8 w-full text-sm sm:w-36">
-                            <SelectValue placeholder="Sort" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="date-desc">Date (Newest)</SelectItem>
-                            <SelectItem value="date-asc">Date (Oldest)</SelectItem>
-                            <SelectItem value="amount-desc">Amount (Higest)</SelectItem>
-                            <SelectItem value="amount-desc">Amount (Lowest)</SelectItem>
-                        </SelectContent>
-                    </Select>
-
+            <div className="mb-6 space-y-4">
+                <div className="flex items-center justify-between gap-2">
+                    <h2 className="text-xl font-semibold">Recent Transactions</h2>
                     <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={handleExport} className="h-8">Export CSV</Button>
+                        <Button variant="outline" onClick={handleExport} className="h-9">Export CSV</Button>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="sm" className="flex items-center gap-1 h-8">
+                                <Button variant="outline" className="flex items-center gap-1 h-9">
                                     {filterLabels[filter]} <span className="text-xs">▾</span>
                                 </Button>
                             </DropdownMenuTrigger>
@@ -189,6 +134,65 @@ export function TransactionList({
                         </DropdownMenu>
                     </div>
                 </div>
+
+                <Input
+                    placeholder="Search description, amount, or tags..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="h-8 w-full text-sm"
+                />
+
+                <div className="flex flex-wrap items-center gap-2">
+                    <Select value={sortOrder} onValueChange={setSortOrder}>
+                        <SelectTrigger className="h-9 w-auto min-w-30 text-sm">
+                            <SelectValue placeholder="Sort" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="date-desc">Date (Newest)</SelectItem>
+                            <SelectItem value="date-asc">Date (Oldest)</SelectItem>
+                            <SelectItem value="amount-desc">Amount (Highest)</SelectItem>
+                            <SelectItem value="amount-asc">Amount (Lowest)</SelectItem>
+                        </SelectContent>
+                    </Select>
+
+                    <Select value={typeFilter} onValueChange={setTypeFilter}>
+                        <SelectTrigger className="h-9 w-auto min-w-25 text-sm">
+                            <SelectValue placeholder="Type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Types</SelectItem>
+                            <SelectItem value="income">Income</SelectItem>
+                            <SelectItem value="expense">Expense</SelectItem>
+                            <SelectItem value="transfer">Transfer</SelectItem>
+                        </SelectContent>
+                    </Select>
+
+                    <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                        <SelectTrigger className="h-9 w-auto min-w-32.5 text-sm">
+                            <SelectValue placeholder="Category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Categories</SelectItem>
+                            {categories.map((category) => (
+                                <SelectItem key={category} value={category}>{category}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
+                    {allTags.length > 0 && (
+                        <Select value={tagFilter} onValueChange={setTagFilter}>
+                            <SelectTrigger className="h-9 w-auto min-w-27.5 text-sm">
+                                <SelectValue placeholder="Tag" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Tags</SelectItem>
+                                {allTags.map((tag) => (
+                                    <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    )}
+                </div>
             </div>
 
             {sortedTransactions.length === 0 ? (
@@ -196,68 +200,68 @@ export function TransactionList({
             ) : (
                 <>
                     <div className="space-y-4">
-                            {pageItems.map((transaction) => {
-                                const fromAccount = getAccountName(transaction.accountId)
-                                const toAccount = getAccountName(transaction.transferAccountId)
-                                const isTransfer = transaction.type === "transfer"
+                        {pageItems.map((transaction) => {
+                            const fromAccount = getAccountName(transaction.accountId)
+                            const toAccount = getAccountName(transaction.transferAccountId)
+                            const isTransfer = transaction.type === "transfer"
 
-                                return (
-                                    <div key={transaction.id} className="flex flex-wrap gap-2 items-center justify-between border-b pb-3 last:border-0">
-                                        <div className="min-w-0">
-                                            <p className="font-medium">{transaction.description}</p>
+                            return (
+                                <div key={transaction.id} className="flex flex-wrap gap-2 items-center justify-between border-b pb-3 last:border-0">
+                                    <div className="min-w-0">
+                                        <p className="font-medium">{transaction.description}</p>
 
-                                            {transaction.notes && (
-                                                <p className="text-xs italic text-muted-foreground/80 mt-0.5">{transaction.notes}</p>
+                                        {transaction.notes && (
+                                            <p className="text-xs italic text-muted-foreground/80 mt-0.5">{transaction.notes}</p>
+                                        )}
+
+                                        <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+                                            <span>{new Date(transaction.date).toLocaleString()}</span>
+                                            {!isTransfer && (
+                                                <>
+                                                    <span>•</span>
+                                                    <span>
+                                                        {transaction.splits && transaction.splits.length > 0
+                                                            ? transaction.splits.map(split => `${split.category} - ${currencySymbol}${split.amount.toFixed(2)}`).join(", ")
+                                                            : transaction.category}
+                                                    </span>
+                                                </>
                                             )}
 
-                                            <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                                                <span>{new Date(transaction.date).toLocaleString()}</span>
-                                                {!isTransfer && (
-                                                    <>
-                                                        <span>•</span>
-                                                        <span>
-                                                            {transaction.splits && transaction.splits.length > 0
-                                                                ? transaction.splits.map(split => `${split.category} - ${currencySymbol}${split.amount.toFixed(2)}`).join(", ")
-                                                                : transaction.category}
-                                                        </span>
-                                                    </>
-                                                )}
-
-                                                {(fromAccount || toAccount) && (
-                                                    <>
-                                                        <span>•</span>
-                                                        <span className="text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                                                            {isTransfer
-                                                                ? `${fromAccount ?? "Unknown"} → ${toAccount ?? "Unknown"}` : fromAccount ?? "Uncategorized"
-                                                            }
-                                                        </span>
-                                                    </>
-                                                )}
-
-                                                {transaction.tags && transaction.tags.length > 0 && (
-                                                    <div className="flex flex-wrap gap-1 items-center">
-                                                        {transaction.tags.map((tag, i) => (
-                                                            <span key={i} className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium">{tag}</span>
-                                                        ))}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-center gap-2">
-                                            <span className={`font-medium ${transaction.type === "income" ? "text-green-600" : transaction.type === "expense" ? "text-red-600" : "text-muted-foreground"}`}>
-                                                {transaction.type === "income" ? "+" : transaction.type === "expense" ? "-" : ""}{currencySymbol}{transaction.amount.toFixed(2)}
-                                            </span>
-                                            {!isSavingsCategory(transaction.category) && !isTransfer ? (
-                                                <Button variant="ghost" size="sm" onClick={() => onEditClick(transaction)} aria-label="Edit transaction">✎</Button>
-                                            ) : (
-                                                <span className="w-8" />
+                                            {(fromAccount || toAccount) && (
+                                                <>
+                                                    <span>•</span>
+                                                    <span className="text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
+                                                        {isTransfer
+                                                            ? `${fromAccount ?? "Unknown"} → ${toAccount ?? "Unknown"}` : fromAccount ?? "Uncategorized"
+                                                        }
+                                                    </span>
+                                                </>
                                             )}
-                                            <Button variant="ghost" size="sm" className="text-red-500" onClick={() => onDelete(transaction.id)} aria-label="Delete transaction">✕</Button>
+
+                                            {transaction.tags && transaction.tags.length > 0 && (
+                                                <div className="flex flex-wrap gap-1 items-center">
+                                                    {transaction.tags.map((tag, i) => (
+                                                        <span key={i} className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium">{tag}</span>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                )
-                            })}
+
+                                    <div className="flex items-center gap-2">
+                                        <span className={`font-medium ${transaction.type === "income" ? "text-green-600" : transaction.type === "expense" ? "text-red-600" : "text-muted-foreground"}`}>
+                                            {transaction.type === "income" ? "+" : transaction.type === "expense" ? "-" : ""}{currencySymbol}{transaction.amount.toFixed(2)}
+                                        </span>
+                                        {!isSavingsCategory(transaction.category) && !isTransfer ? (
+                                            <Button variant="ghost" size="sm" onClick={() => onEditClick(transaction)} aria-label="Edit transaction">✎</Button>
+                                        ) : (
+                                            <span className="w-8" />
+                                        )}
+                                        <Button variant="ghost" size="sm" className="text-red-500" onClick={() => onDelete(transaction.id)} aria-label="Delete transaction">✕</Button>
+                                    </div>
+                                </div>
+                            )
+                        })}
                     </div>
                     <PaginationUI currentPage={currentPage} totalPages={totalPages} onPrev={prevPage} onNext={nextPage} />
                 </>
