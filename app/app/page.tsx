@@ -927,7 +927,9 @@ export default function Home() {
                 filter={filterPeriod}
                 onFilterChange={setFilterPeriod}
                 categories={categories}
-                accounts={accounts} />
+                accounts={accounts} 
+                onAddTransaction={() => setOpen(true)} 
+              />
             </div>
           </TabsContent>
 
