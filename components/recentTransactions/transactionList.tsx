@@ -32,10 +32,11 @@ type Things = {
     onFilterChange: (filter: FilterPeriod) => void
     categories: string[]
     accounts: Account[]
+    onAddTransaction: () => void
 }
 
 export function TransactionList({
-    transactions, onDelete, onEditClick, currencySymbol, filter, onFilterChange, categories, accounts
+    transactions, onDelete, onEditClick, currencySymbol, filter, onFilterChange, categories, accounts, onAddTransaction
 }: Things) {
     const [searchTerm, setSearchTerm] = useState("")
     const [typeFilter, setTypeFilter] = useState<string>("all")
@@ -196,7 +197,11 @@ export function TransactionList({
             </div>
 
             {sortedTransactions.length === 0 ? (
-                <EmptyState message={searchTerm.trim() || typeFilter !== "all" || categoryFilter !== "all" || tagFilter !== "all" ? `No transactions match your filters` : "No transactions for this period"} />
+                <EmptyState
+                    message={searchTerm.trim() || typeFilter !== "all" || categoryFilter !== "all" || tagFilter !== "all" ? `No transactions match your filters` : "No transactions for this period"}
+                    actionLabel={searchTerm.trim() || typeFilter !== "all" || categoryFilter !== "all" || tagFilter !== "all" ? undefined : "Add Transaction"}
+                    onAction={searchTerm.trim() || typeFilter !== "all" || categoryFilter !== "all" || tagFilter !== "all" ? undefined : onAddTransaction}
+                />
             ) : (
                 <>
                     <div className="space-y-4">
