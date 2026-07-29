@@ -354,10 +354,20 @@ export default function Home() {
     setTransactions((prev) => prev.filter((transaction) => transaction.id !== id))
   }
 
-  function editTransaction(id: string, description: string, amount: number, type: "income" | "expense" | "transfer", category: string, notes?: string, tags?: string[]) {
+  function editTransaction(id: string, description: string, amount: number, type: "income" | "expense" | "transfer", category: string, notes?: string, tags?: string[], accountId?: string, transferAccountId?: string) {
     setTransactions((prev) =>
       prev.map((transaction) =>
-        transaction.id === id ? { ...transaction, description, amount, category, type, notes: notes || undefined, tags: tags } : transaction
+        transaction.id === id ? { 
+          ...transaction, 
+          description, 
+          amount, 
+          category, 
+          type, 
+          notes: notes || undefined, 
+          tags: tags, 
+          accountId: accountId || undefined, 
+          transferAccountId: transferAccountId || undefined
+        } : transaction
       ))
   }
 
