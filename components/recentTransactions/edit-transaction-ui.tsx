@@ -15,7 +15,7 @@ type EditTransactionDialogThings = {
     transaction: Transaction | null
     open: boolean
     onClose: () => void
-    onSave: (id: string, description: string, amount: number, type: "income" | "expense" | "transfer", category: string, notes?: string, tags?: string[]) => void
+    onSave: (id: string, description: string, amount: number, type: "income" | "expense" | "transfer", category: string, notes?: string, tags?: string[], accountId?: string, transferAccountId?: string) => void
     categories: string[]
     budgets: Record<string, number>
     categoryTotals: Record<string, number>
@@ -35,6 +35,9 @@ export function EditTransactionDialog({ transaction, open, onClose, onSave, cate
     const [tags, setTags] = useState<string[]>([])
     const [tagInput, setTagInput] = useState("")
 
+    const [accountId, setAccountId] = useState<string>("")
+    const [transferAccountId, setTransferAccountId] = useState<string>("")
+
     const currentLimit = budgets[category] ?? 0
     const currentSpent = (categoryTotals[category] ?? 0) - (transaction?.amount ?? 0)
     const projectedSpent = currentSpent + (Number(amount) || 0)
@@ -49,12 +52,14 @@ export function EditTransactionDialog({ transaction, open, onClose, onSave, cate
             setNotes(transaction.notes ?? "")
             setTags(transaction.tags || [])
             setTagInput("")
+            setAccountId(transaction.accountId || "")
+            setTransferAccountId(transaction.transferAccountId || "")
             setErrors({})
         }
     }, [open, transaction])
 
     function validate() {
-        const newErrors: Record<string, string>= {}
+        const newErrors: Record<string, string> = {}
         const parsedAmount = Number(amount)
         if (!description.trim()) {
             newErrors.description = "Description is required"
@@ -64,8 +69,15 @@ export function EditTransactionDialog({ transaction, open, onClose, onSave, cate
         } else if (parsedAmount <= 0) {
             newErrors.amount = "Amount must be greater than 0"
         }
-        if (!category) {
+        if (!category && type !== "transfer") {
             newErrors.category = "Please select a category"
+        }
+        if (type === "transfer") {
+            if (!accountId) newErrors.accountId = "Please select a 'From' account"
+            if (!transferAccountId) newErrors.transferAccountId = "Please select a 'To' account"
+            if (accountId && transferAccountId && accountId === transferAccountId) {
+                newErrors.transferAccountId = "Cannot transfer to the same account"
+            }
         }
         setErrors(newErrors)
         return (
@@ -78,7 +90,7 @@ export function EditTransactionDialog({ transaction, open, onClose, onSave, cate
             return
         }
         if (validate()) {
-            onSave(transaction.id, description, Number(amount), type, category, notes, tags)
+            onSave(transaction.id, description, Number(amount), type, category, notes, tags, accountId || undefined, transferAccountId || undefined)
             onClose()
         }
     }
@@ -122,6 +134,53 @@ export function EditTransactionDialog({ transaction, open, onClose, onSave, cate
                             </SelectContent>
                         </Select>
                     </div>
+
+                    {type === "transfer" ? (
+                        <div className="grid grid-cols-2 gap-2">
+                            <div>
+                                <Label>From Account</Label>
+                                <Select value={accountId} onValueChange={(value) => {
+                                    setAccountId(value)
+                                    if (errors.accountId) setErrors((p) => ({...p, accountId: ""}))
+                                }}>
+                                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                                    <SelectContent>
+                                        {accounts.map((account) => (
+                                            <SelectItem key={account.id} value={account.id}>{account.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FieldError message={errors.accountId} />
+                            </div>
+                            <div>
+                                <Label>To Account</Label>
+                                <Select value={transferAccountId} onValueChange={(value) => {
+                                    setTransferAccountId(value)
+                                    if (errors.transferAccountId) setErrors((p) => ({...p, transferAccountId: ""}))
+                                }}>
+                                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                                    <SelectContent>
+                                        {accounts.map((account) => (
+                                            <SelectItem key={account.id} value={account.id}>{account.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FieldError message={errors.transferAccountId} />
+                            </div>
+                        </div>
+                    ) : (
+                        <div>
+                            <Label>Account (Optional)</Label>
+                            <Select value={accountId} onValueChange={setAccountId}>
+                                <SelectTrigger><SelectValue placeholder="Uncategorized" /></SelectTrigger>
+                                <SelectContent>
+                                    {accounts.map((account) => (
+                                        <SelectItem key={account.id} value={account.id}>{account.name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
 
                     <div>
                         <Label>Category</Label>
