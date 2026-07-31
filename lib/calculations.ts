@@ -178,11 +178,15 @@ export type ForecastPoint = {
 
 export function get12MonthForecast(currentBalance: number, recurring: RecurringTransaction[]): ForecastPoint[] {
     const now = new Date()
-    const forecast: ForecastPoint[] = []
-
+    
     const activeRecurring = recurring.filter(recurring => recurring.isActive !== false)
+    if (activeRecurring.length === 0) {
+        return []
+    }
+    
+    const forecast: ForecastPoint[] = []
     let runningBalance = currentBalance
-
+    
     forecast.push({ month: "Now", balance: runningBalance })
     for (let i = 1; i <= 12; i++) {
         const targetDate = new Date(now.getFullYear(), now.getMonth() + i, 1)
