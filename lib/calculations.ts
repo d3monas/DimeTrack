@@ -1,6 +1,7 @@
 import type { Transaction } from "../types/transaction"
 import { STARTING_BALANCE_CATEGORY } from "@/lib/consts"
 import { getCategoryTotals } from "./categories"
+import { RecurringTransaction } from "@/types/recurringTransaction"
 
 export function calculateIncome(transactions: Transaction[]) {
     return transactions
@@ -169,3 +170,56 @@ export function getMonthlyReportData(transactions: Transaction[]): MonthlyReport
         income, expenses, savings, savingsRate, topCategory, largestPurchase, dailyAverage, prevExpenses, expenseDiff
     }
 }
+
+export type ForecastPoint = {
+    month: string
+    balance: number
+}
+
+export function get12MonthForecast(currentBalance: number, recurring: RecurringTransaction[]): ForecastPoint[] {
+    const now = new Date()
+    const forecast: ForecastPoint[] = []
+
+    const activeRecurring = recurring.filter(recurring => recurring.isActive !== false)
+    let runningBalance = currentBalance
+
+    forecast.push({ month: "Now", balance: runningBalance })
+    for (let i = 1; i <= 12; i++) {
+        const targetDate = new Date(now.getFullYear(), now.getMonth() + i, 1)
+        const monthName = targetDate.toLocaleDateString("default", { month: "short" })
+
+        let monthlyNetChange = 0
+
+        activeRecurring.forEach(recurring => {
+            let monthlyCost = 0
+            const amount = recurring.amount
+
+            if (recurring.interval === "monthly") {
+                monthlyCost = amount
+            } else if (recurring.interval === "yearly") {
+                monthlyCost = amount / 12
+            } else if (recurring.interval === "weekly") {
+                monthlyCost = (amount * 52) / 12
+            } else if (recurring.interval === "daily") {
+                monthlyCost = (amount * 365) / 12
+            } else if (recurring.interval === "custom") {
+                const val = recurring.customIntervalValue ?? 1
+                if (recurring.customIntervalUnit === "months") {
+                    monthlyCost = amount / val
+                }
+                if (recurring.customIntervalUnit === "weeks") {
+                    monthlyCost = (amount * 52) / 12 / val
+                }
+                if (recurring.customIntervalUnit === "days") {
+                    monthlyCost = (amount * 365) / 12 / val
+                }
+            }
+            
+            monthlyNetChange += recurring.type === "income" ? monthlyCost : -monthlyCost
+        })
+        runningBalance += monthlyNetChange
+        forecast.push({ month: monthName, balance: runningBalance })
+    }
+    return forecast
+}
+
