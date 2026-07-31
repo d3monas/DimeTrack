@@ -1,7 +1,7 @@
 import { NetWorthHistoryPoint } from "@/lib/calculations"
 import { EmptyState } from "../emptyState"
 import { ResponsiveContainer, AreaChart, XAxis, YAxis, Tooltip, Area } from "recharts"
-import { chartTooltipStyle } from "@/lib/chartStyles"
+import { chartTooltipStyle, formatYAxis } from "@/lib/chartStyles"
 import { NETWORTH_CHART_COLOR } from "@/lib/consts"
 
 type NetWorthHistoryChartThings = {
@@ -35,7 +35,7 @@ export function NetWorthHistoryChart({ data, currencySymbol }: NetWorthHistoryCh
               </linearGradient>
             </defs>
             <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={12} fill="hsl(var(--muted-foreground))" />
-            <YAxis tickFormatter={(value) => `${currencySymbol}${value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value}`}
+            <YAxis tickFormatter={(value) => formatYAxis(Number(value), currencySymbol)}
               tickLine={false} axisLine={false} fontSize={12} width={60} fill="hsl(var(--muted-foreground))"
             />
             <Tooltip formatter={(value) => `${currencySymbol}${Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
