@@ -26,6 +26,7 @@ import { NetWorthHistoryChart } from "@/components/charts/netWorthHistoryChart"
 import { MonthlyReport } from "@/components/monthlyReport"
 import { Subscriptions } from "@/components/subscriptions"
 import { CommandPalette } from "@/components/commandPalette"
+import { ForecastChart } from "@/components/charts/forecastChart"
 
 // types
 import type { Transaction, TransactionSplit } from "@/types/transaction"
@@ -52,6 +53,7 @@ import { colord } from "colord"
 import { getNetWorthHistory } from "@/lib/calculations"
 import { getMonthlyReportData } from "@/lib/calculations"
 import { ArrowLeftRight, CalendarDays, LayoutDashboard, Repeat, Settings, Target, Search } from "lucide-react"
+import { get12MonthForecast } from "@/lib/calculations"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -278,6 +280,8 @@ export default function Home() {
   const netWorthHistory = getNetWorthHistory(transactions)
 
   const monthlyReportData = getMonthlyReportData(transactions)
+
+  const forecastData = get12MonthForecast(balance, recurring)
 
   function addTransaction(
     isRecurring: boolean,
@@ -856,6 +860,8 @@ export default function Home() {
             <SmartStats monthlyExpenses={expenses} currencySymbol={currencySymbol} />
             {/* Trend */}
             <TrendChart data={monthlyTrends} currencySymbol={currencySymbol} />
+            {/* 12 month forecast */}
+            <ForecastChart data={forecastData} currencySymbol={currencySymbol} />
             {/* account balances */}
             <AccountBalances accounts={accountBalances} currencySymbol={currencySymbol} />
 
