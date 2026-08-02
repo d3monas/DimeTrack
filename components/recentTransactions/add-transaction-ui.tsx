@@ -162,6 +162,16 @@ export function AddTransactionDialog({
         }
     }
 
+    function handleKeyDown(e: React.KeyboardEvent) {
+        if (e.key === "Enter") {
+            const target = e.target as HTMLElement
+            if (target.tagName !== "TEXTAREA" && target.tagName !== "BUTTON") {
+                e.preventDefault()
+                handleSave()
+            }
+        }
+    }
+
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
@@ -173,7 +183,7 @@ export function AddTransactionDialog({
                     <DialogTitle>Add Transaction</DialogTitle>
                 </DialogHeader>
 
-                <div className="space-y-4">
+                <div className="space-y-4" onKeyDown={handleKeyDown}>
                     <div>
                         <Label>Description</Label>
                         <Input value={description} onChange={(e) => {
