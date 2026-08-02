@@ -7,6 +7,7 @@ import { DEFAULT_CATEGORY_COLOR, DEFAULT_CATEGORY_ICON } from "@/lib/consts"
 
 type BudgetOverviewThings = {
   totals: Record<string, number>
+  prevTotals: Record<string, number>
   budgets: Record<string, number>
   onUpdateBudget: (category: string, limit: number) => void
   currencySymbol: string
@@ -37,12 +38,12 @@ function getWarning(progress: number) {
   return null
 }
 
-export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol, monthlyIncome, categoryCustomization }: BudgetOverviewThings) {
+export function BudgetOverview({ totals, prevTotals, budgets, onUpdateBudget, currencySymbol, monthlyIncome, categoryCustomization }: BudgetOverviewThings) {
   const [editingCategory, setEditingCategory] = useState<string | null>(null)
   const [editingValue, setEditingValue] = useState("")
 
   const allCategories = Object.keys(budgets)
-  
+
   const totalAssigned = Object.values(budgets).reduce((sum, limit) => sum + limit, 0)
   const availableToBudget = monthlyIncome - totalAssigned
   const totalSpent = Object.values(totals).reduce((sum, spent) => sum + spent, 0)
@@ -108,10 +109,15 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol
         {allCategories.map((category) => {
           const limit = budgets[category] ?? 0
           const spent = totals[category] ?? 0
+
+          const prevSpent = prevTotals[category] ?? 0
+          const rolloverAmount = limit > 0 ? (limit - prevSpent) : 0
+          const available = limit + rolloverAmount
+
           const hasLimit = limit > 0
-          const progress = hasLimit ? (spent / limit) * 100 : 0
+          const progress = available ? (spent / available) * 100 : 0
           const isEditing = editingCategory === category
-          const warning = hasLimit ? getWarning(progress) : null
+          const warning = progress ? getWarning(progress) : null
 
           return (
             <div key={category}>
@@ -156,7 +162,19 @@ export function BudgetOverview({ totals, budgets, onUpdateBudget, currencySymbol
                 ) : (
                   <div className="flex flex-wrap items-center gap-3">
                     {hasLimit ? (
-                      <span className={`text-sm ${getTextColor(progress)}`}>{currencySymbol}{spent.toFixed(2)} / {currencySymbol}{limit.toFixed(2)}</span>
+                      <div className="text-right">
+                        <span className={`text-sm ${getTextColor(progress)}`}>
+                          {currencySymbol}{spent.toFixed(2)} / {currencySymbol}{available.toFixed(2)}
+                        </span>
+                        <p className="text-[10px] text-muted-foreground">
+                          Limit: {currencySymbol}{limit.toFixed(2)}
+                          {rolloverAmount !== 0 && (
+                            <span className={rolloverAmount > 0 ? "text-green-600" : "text-red-600"}>
+                              {" ("}{rolloverAmount > 0 ? "+" : ""}{currencySymbol}{rolloverAmount.toFixed(2)} rollover{")"}
+                            </span>
+                          )}
+                        </p>
+                      </div>
                     ) : (
                       <span className="text-sm text-muted-foreground">No limit set</span>
                     )}
