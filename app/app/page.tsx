@@ -262,18 +262,34 @@ export default function Home() {
       return false
     }
     return (
-      date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear() && transaction.category !== STARTING_BALANCE_CATEGORY
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear() &&
+      transaction.category !== STARTING_BALANCE_CATEGORY
     )
   })
+
+  const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+  const startOfPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+  const prevMonthTransactions = transactions.filter((transaction) => {
+    const date = new Date(transaction.date)
+    if (isNaN(date.getTime())) {
+      return false
+    }
+    return (
+      date >= startOfPrevMonth &&
+      date < startOfThisMonth &&
+      transaction.category !== STARTING_BALANCE_CATEGORY
+    )
+  })
+
   const income = calculateIncome(thisMonthTransactions)
   const expenses = calculateExpenses(thisMonthTransactions)
   const filteredTransactions = filterTransactionsByPeriod(transactions, filterPeriod)
-  const categoryTotals = getCategoryTotals(filteredTransactions)
+  const categoryTotals = getCategoryTotals(prevMonthTransactions)
   const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
   const firstOfMonthLabel = firstOfMonth.toLocaleDateString(undefined, { month: "long", day: "numeric" })
   const monthlyTrends = getMonthlyTrends(transactions)
 
-  const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1)
   const prevTransactions = transactions.filter(transaction => new Date(transaction.date) < startOfThisMonth)
   const prevBalance = calculateIncome(prevTransactions) - calculateExpenses(prevTransactions)
 
