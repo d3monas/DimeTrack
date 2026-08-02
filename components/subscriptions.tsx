@@ -10,9 +10,10 @@ type SubscriptionsThings = {
   currencySymbol: string
   onToggleActive: (id: string, isActive: boolean) => void
   onDelete: (id: string) => void
+  onAddTransaction: () => void
 }
 
-export function Subscriptions({ recurring, currencySymbol, onToggleActive, onDelete }: SubscriptionsThings) {
+export function Subscriptions({ recurring, currencySymbol, onToggleActive, onDelete, onAddTransaction }: SubscriptionsThings) {
   const subs = recurring.filter(recurring => recurring.type === "expense")
   const metrics = getSubscriptionMetrics(recurring)
 
@@ -20,7 +21,11 @@ export function Subscriptions({ recurring, currencySymbol, onToggleActive, onDel
     return (
       <div className="mt-6 rounded-2xl border p-4 sm:p-6">
         <h2 className="mb-4 text-xl font-semibold">Subscriptions Auditor</h2>
-        <EmptyState message="No recurring expenses yet" />
+        <EmptyState
+          message="No recurring expenses yet. Check 'Recurring transaction' when adding an expense to track subscriptions here."
+          actionLabel="Add Transaction"
+          onAction={onAddTransaction}
+        />
       </div>
     )
   }
