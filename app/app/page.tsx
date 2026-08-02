@@ -957,6 +957,7 @@ export default function Home() {
                 categories={categories}
                 accounts={accounts} 
                 onAddTransaction={() => setOpen(true)} 
+                categoryCustomization={categoryCustomization}
               />
             </div>
           </TabsContent>
