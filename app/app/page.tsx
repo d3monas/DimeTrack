@@ -897,7 +897,12 @@ export default function Home() {
 
           {/* Subscriptions tab */}
           <TabsContent value="subscriptions" className="space-y-6 mt-4">
-            <Subscriptions recurring={recurring} currencySymbol={currencySymbol} onToggleActive={toggleSubscriptionActive} onDelete={deleteRecurring} />
+            <Subscriptions 
+            recurring={recurring} 
+            currencySymbol={currencySymbol} 
+            onToggleActive={toggleSubscriptionActive} 
+            onDelete={deleteRecurring} 
+            onAddTransaction={() => { setActiveTab("transactions"); setOpen(true) }} />
           </TabsContent>
 
           {/* transactions tab */}
