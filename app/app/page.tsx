@@ -973,6 +973,7 @@ export default function Home() {
             {/* budget */}
             <BudgetOverview
               totals={categoryTotals}
+              prevTotals={prevCategoryTotals}
               budgets={budgets}
               onUpdateBudget={updateBudget}
               currencySymbol={currencySymbol}
