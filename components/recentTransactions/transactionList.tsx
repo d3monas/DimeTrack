@@ -11,7 +11,7 @@ import { exportToCSV } from "@/lib/csv"
 import { EmptyState } from "../emptyState"
 import { SelectContent, SelectItem, SelectTrigger, Select, SelectValue } from "../ui/select"
 import type { Account } from "@/types/account"
-import { STARTING_BALANCE_CATEGORY } from "@/lib/consts"
+import { STARTING_BALANCE_CATEGORY, DEFAULT_CATEGORY_COLOR } from "@/lib/consts"
 
 const filterLabels: Record<FilterPeriod, string> = {
     today: "Today",
@@ -33,10 +33,11 @@ type Things = {
     categories: string[]
     accounts: Account[]
     onAddTransaction: () => void
+    categoryCustomization: Record<string, { color: string, icon: string }>
 }
 
 export function TransactionList({
-    transactions, onDelete, onEditClick, currencySymbol, filter, onFilterChange, categories, accounts, onAddTransaction
+    transactions, onDelete, onEditClick, currencySymbol, filter, onFilterChange, categories, accounts, onAddTransaction, categoryCustomization
 }: Things) {
     const [searchTerm, setSearchTerm] = useState("")
     const [typeFilter, setTypeFilter] = useState<string>("all")
@@ -238,10 +239,16 @@ export function TransactionList({
                                             {!isTransfer && (
                                                 <>
                                                     <span>•</span>
-                                                    <span>
-                                                        {transaction.splits && transaction.splits.length > 0
-                                                            ? transaction.splits.map(split => `${split.category} - ${currencySymbol}${split.amount.toFixed(2)}`).join(", ")
-                                                            : transaction.category}
+                                                    <span className="flex items-center gap-1.5">
+                                                        <span
+                                                            className="h-2 w-2 rounded-full"
+                                                            style={{ backgroundColor: categoryCustomization?.[transaction.category]?.color || DEFAULT_CATEGORY_COLOR }}
+                                                        />
+                                                        <span>
+                                                            {transaction.splits && transaction.splits.length > 0
+                                                                ? transaction.splits.map(split => `${split.category} - ${currencySymbol}${split.amount.toFixed(2)}`).join(", ")
+                                                                : transaction.category}
+                                                        </span>
                                                     </span>
                                                 </>
                                             )}
