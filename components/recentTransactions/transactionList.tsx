@@ -45,6 +45,16 @@ export function TransactionList({
     const [tagFilter, setTagFilter] = useState<string>("all")
     const [sortOrder, setSortOrder] = useState<string>("date-desc")
 
+    const isFiltered = searchTerm !== "" || typeFilter !== "all" || categoryFilter !== "all" || tagFilter !== "all" || sortOrder !== "date-desc"
+
+    function resetFilters() {
+        setSearchTerm("")
+        setTypeFilter("all")
+        setCategoryFilter("all")
+        setTagFilter("all")
+        setSortOrder("date-desc")
+    }
+
     const allTags = useMemo(() => {
         const tagsSet = new Set<string>()
         transactions.forEach(transaction => {
@@ -192,6 +202,10 @@ export function TransactionList({
                                 ))}
                             </SelectContent>
                         </Select>
+                    )}
+
+                    {isFiltered && (
+                        <Button variant="ghost" size="sm" className="h-9 text-xs text-muted-foreground hover:text-foreground" onClick={resetFilters}>Clear Filters</Button>
                     )}
                 </div>
             </div>
