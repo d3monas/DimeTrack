@@ -4,7 +4,7 @@ import type { RecurringTransaction } from "@/types/recurringTransaction"
 import type { Rule } from "@/types/rule"
 import { categoryCustomization } from "@/lib/categoryCustomization"
 import type { Account } from "@/types/account"
-import { Onboarding } from "@/components/onboarding"
+import { Onboarding } from "@/components/tutorials/onboarding"
 
 const isBrowser = typeof window !== "undefined"
 

@@ -1,5 +1,5 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog"
-import { Button } from "./ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/dialog"
+import { Button } from "../ui/button"
 import { Database } from "lucide-react"
 
 type TutorialDialogThings = {

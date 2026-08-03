@@ -1,6 +1,6 @@
 import { CheckCircle2, X } from "lucide-react"
 import { useEffect, useRef } from "react"
-import { Button } from "./ui/button"
+import { Button } from "../ui/button"
 import { cn } from "@/lib/utils"
 
 type TourGuideThings = {
@@ -149,9 +149,17 @@ export function TourGuide({ step, setStep, activeTab, isAddDialogOpen, isGoalDia
 
     const currentStep = steps[step]
 
+    const isDialogOpen = isAddDialogOpen || isGoalDialogOpen
+
     return (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-100 w-[calc(100%-2rem)] max-w-sm sm:left-auto sm:right-4 sm:translate-x-0 sm:max-w-xs">
-            <div className="rounded-xl border bg-card shadow-2xl p-3 space-y-2 text-sm">
+        <div className={cn(
+            "fixed z-100 w-[calc(100%-1rem)] max-w-70 sm:max-w-xs transition-all duration-300",
+            isDialogOpen
+                ? "top-4 left-1/2 -translate-x-1/2"
+                : "bottom-4 left-1/2 -translate-x-1/2",
+            "sm:top-auto sm:bottom-4 sm:left-auto sm:right-4 sm:translate-x-0"
+        )}>
+            <div className="rounded-xl border bg-card shadow-2xl p-2 sm:p-3 space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
                 <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2">
                         <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold">
@@ -164,7 +172,7 @@ export function TourGuide({ step, setStep, activeTab, isAddDialogOpen, isGoalDia
                     </button>
                 </div>
 
-                <p className="text-xs text-muted-foreground leading-relaxed">{currentStep.description}</p>
+                <p className="text-muted-foreground leading-relaxed">{currentStep.description}</p>
 
                 <div className="flex gap-1">
                     {steps.map((_, i) => (

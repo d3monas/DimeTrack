@@ -20,14 +20,14 @@ import { CalendarView } from "@/components/calendarView"
 import { AccountBalances } from "@/components/accountBalances"
 import { SmartStats } from "@/components/smartStats"
 import { NetWorth } from "@/components/netWorth"
-import { Onboarding } from "@/components/onboarding"
+import { Onboarding } from "@/components/tutorials/onboarding"
 import { Button } from "@/components/ui/button"
 import { NetWorthHistoryChart } from "@/components/charts/netWorthHistoryChart"
 import { MonthlyReport } from "@/components/monthlyReport"
 import { Subscriptions } from "@/components/subscriptions"
 import { CommandPalette } from "@/components/commandPalette"
 import { ForecastChart } from "@/components/charts/forecastChart"
-import { TutorialDialog } from "@/components/tutorial"
+import { TutorialDialog } from "@/components/tutorials/tutorial"
 
 // types
 import type { Transaction, TransactionSplit } from "@/types/transaction"
@@ -57,7 +57,7 @@ import { getMonthlyReportData } from "@/lib/calculations"
 import { ArrowLeftRight, CalendarDays, LayoutDashboard, Repeat, Settings, Target, Search } from "lucide-react"
 import { get12MonthForecast } from "@/lib/calculations"
 import { getSampleData } from "@/lib/sampleData" 
-import { TourGuide } from "@/components/tourGuide"
+import { TourGuide } from "@/components/tutorials/tourGuide"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
