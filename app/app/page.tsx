@@ -57,6 +57,7 @@ import { getMonthlyReportData } from "@/lib/calculations"
 import { ArrowLeftRight, CalendarDays, LayoutDashboard, Repeat, Settings, Target, Search } from "lucide-react"
 import { get12MonthForecast } from "@/lib/calculations"
 import { getSampleData } from "@/lib/sampleData" 
+import { TourGuide } from "@/components/tourGuide"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -103,6 +104,8 @@ export default function Home() {
 
   const [tutorialOpen, setTutorialOpen] = useState(false)
   const [tutorialSeen, setTutorialSeen] = useState(false)
+  const [tourActive, setTourActive] = useState(false)
+  const [tourStep, setTourStep] = useState(0)
 
   // load localstorage 
   useEffect(() => {
@@ -778,6 +781,14 @@ export default function Home() {
     setAccounts(sampleData.accounts)
     setDefaultAccountId(sampleData.defaultAccountId)
     setTutorialSeen(true)
+    setTourActive(true)
+    setTourStep(0)
+  }
+
+  function handleFinishTour() {
+    setTourActive(false)
+    setTourStep(0)
+    handleClearData()
   }
 
   if (!isLoaded) {
@@ -1034,6 +1045,17 @@ export default function Home() {
           onExportBackup={handleExportBackup}
         />
         <TutorialDialog open={tutorialOpen} onClose={() => { setTutorialOpen(false); setTutorialSeen(true) }} onLoadSampleData={handleLoadSampleData} />
+        {tourActive && (
+          <TourGuide 
+            step={tourStep}
+            setStep={setTourStep}
+            activeTab={activeTab}
+            isAddDialogOpen={open} 
+            transactionCount={transactions.length} 
+            onFinishTour={handleFinishTour}
+            onSkip={() => { setTourActive(false); setTourStep(0) }}
+          />
+        )}
       </div>
     </main>
   )
