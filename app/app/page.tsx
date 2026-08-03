@@ -1064,10 +1064,13 @@ export default function Home() {
             step={tourStep}
             setStep={setTourStep}
             activeTab={activeTab}
-            isAddDialogOpen={open}
+            isAddDialogOpen={open} 
             isGoalDialogOpen={goalDialogOpen}
-            transactionCount={transactions.length}
-            goalsCount={goals.length} 
+            isSettingsOpen={settingsOpen}
+            transactionCount={transactions.length} 
+            goalsCount={goals.length}
+            categoriesCount={categories.length}
+            rulesCount={rules.length}
             onFinishTour={handleFinishTour}
             onSkip={() => { setTourActive(false); setTourStep(0) }}
           />
