@@ -661,6 +661,7 @@ export default function Home() {
     setDefaultAccountId("")
     setAccentColor("")
     setOnboardingComplete(false)
+    setTutorialSeen(false)
 
     toast.success("All data has been cleared")
   }
