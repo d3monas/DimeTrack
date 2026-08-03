@@ -665,6 +665,11 @@ export default function Home() {
     setAccentColor("")
     setOnboardingComplete(false)
 
+    setTourActive(false)
+    setTourStep(0)
+
+    setTutorialOpen(true)
+
     toast.success("All data has been cleared")
   }
 
