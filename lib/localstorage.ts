@@ -327,6 +327,23 @@ export function loadOnboardingComplete(): boolean {
     )
 }
 
+// tutorial
+export function saveTutorialSeen(seen: boolean) {
+    if (!isBrowser) {
+        return
+    }
+    localStorage.setItem("tutorialSeen", JSON.stringify(seen))
+}
+
+export function loadTutorialSeen(): boolean {
+    if (!isBrowser) {
+        return false
+    }
+    return (
+        JSON.parse(localStorage.getItem("tutorialSeen") || "false")
+    )
+}
+
 export function loadAllData() {
     return {
         transactions: loadTransactions(),
@@ -341,6 +358,7 @@ export function loadAllData() {
         defaultAccountId: loadDefaultAccountId(),
         accentColor: loadAccentColor(),
         onboardingComplete: loadOnboardingComplete(),
+        tutorialSeen: loadTutorialSeen(),
     }
 }
 
@@ -361,4 +379,5 @@ export function clearAllData() {
     localStorage.removeItem("defaultAccountId")
     localStorage.removeItem("accentColor")
     localStorage.removeItem("onboardingComplete")
+    localStorage.removeItem("tutorialSeen")
 }
