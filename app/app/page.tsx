@@ -27,6 +27,7 @@ import { MonthlyReport } from "@/components/monthlyReport"
 import { Subscriptions } from "@/components/subscriptions"
 import { CommandPalette } from "@/components/commandPalette"
 import { ForecastChart } from "@/components/charts/forecastChart"
+import { TutorialDialog } from "@/components/tutorial"
 
 // types
 import type { Transaction, TransactionSplit } from "@/types/transaction"
@@ -40,7 +41,8 @@ import type { Account } from "@/types/account"
 import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends } from "@/lib/calculations"
 import {
   saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring,
-  saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, saveAccentColor, saveOnboardingComplete, clearAllData
+  saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, saveAccentColor, saveOnboardingComplete, 
+  saveTutorialSeen, clearAllData
 } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 import { savingsCategoryForGoal, isSavingsCategory, STARTING_BALANCE_CATEGORY } from "@/lib/consts"
@@ -54,6 +56,7 @@ import { getNetWorthHistory } from "@/lib/calculations"
 import { getMonthlyReportData } from "@/lib/calculations"
 import { ArrowLeftRight, CalendarDays, LayoutDashboard, Repeat, Settings, Target, Search } from "lucide-react"
 import { get12MonthForecast } from "@/lib/calculations"
+import { getSampleData } from "@/lib/sampleData" 
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -97,6 +100,9 @@ export default function Home() {
   const [onboardingComplete, setOnboardingComplete] = useState(false)
 
   const [commandOpen, setCommandOpen] = useState(false)
+
+  const [tutorialOpen, setTutorialOpen] = useState(false)
+  const [tutorialSeen, setTutorialSeen] = useState(true)
 
   // load localstorage 
   useEffect(() => {
@@ -249,6 +255,12 @@ export default function Home() {
       () => document.removeEventListener("keydown", down)
     )
   }, [])
+
+  useEffect(() => {
+    if (isLoaded) {
+      saveTutorialSeen(tutorialSeen)
+    }
+  }, [isLoaded, tutorialSeen])
 
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
@@ -745,6 +757,21 @@ export default function Home() {
     }
   })
 
+  function handleLoadSampleData() {
+    const sampleData = getSampleData()
+    setTransactions(sampleData.transactions)
+    setGoals(sampleData.goals)
+    setCategories(sampleData.categories)
+    setBudgets(sampleData.budgets)
+    setCurrency(sampleData.currency)
+    setRecurring(sampleData.recurring)
+    setRules(sampleData.rules)
+    setCategoryCustomization(sampleData.categoryCustomization)
+    setAccounts(sampleData.accounts)
+    setDefaultAccountId(sampleData.defaultAccountId)
+    setTutorialSeen(true)
+  }
+
   if (!isLoaded) {
     return (
       <main className="min-h-screen bg-background">
@@ -998,6 +1025,7 @@ export default function Home() {
           onAddGoal={() => { setActiveTab("budgets"); setEditingGoal(null); setGoalDialogOpen(true) }}
           onExportBackup={handleExportBackup}
         />
+        <TutorialDialog open={tutorialOpen} onClose={() => { setTutorialOpen(false); setTutorialSeen(true) }} onLoadSampleData={handleLoadSampleData} />
       </div>
     </main>
   )
