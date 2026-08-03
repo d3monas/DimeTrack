@@ -664,7 +664,6 @@ export default function Home() {
     setDefaultAccountId("")
     setAccentColor("")
     setOnboardingComplete(false)
-    setTutorialSeen(false)
 
     toast.success("All data has been cleared")
   }
@@ -788,7 +787,17 @@ export default function Home() {
   function handleFinishTour() {
     setTourActive(false)
     setTourStep(0)
-    handleClearData()
+    setTransactions([])
+    setGoals([])
+    setCategories([])
+    setBudgets({})
+    setRecurring([])
+    setRules([])
+    setCategoryCustomization({})
+    setAccounts([])
+    setDefaultAccountId("")
+    setAccentColor("")
+    toast.success("Tour finished! Start adding your own data.")
   }
 
   if (!isLoaded) {
