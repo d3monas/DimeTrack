@@ -11,9 +11,11 @@ type TutorialDialogThings = {
 
 export function TutorialDialog({ open, onClose, onLoadSampleData }: TutorialDialogThings) {
   const [step, setStep] = useState(0)
+  const [loadSampleOnFinish, setLoadSampleOnFinish] = useState(false)
 
   const handleClose = () => {
     setStep(0)
+    setLoadSampleOnFinish(false)
     onClose()
   }
 
@@ -21,13 +23,16 @@ export function TutorialDialog({ open, onClose, onLoadSampleData }: TutorialDial
     if (step < 3) {
       setStep(step + 1)
     } else {
+      if (loadSampleOnFinish) {
+        onLoadSampleData()
+      }
       handleClose()
     }
   }
 
-  const handleLoadSample = () => {
-    onLoadSampleData()
-    handleClose()
+  const handleLoadSampleStart = () => {
+    setLoadSampleOnFinish(true)
+    setStep(1)
   }
 
   const steps = [
@@ -38,7 +43,7 @@ export function TutorialDialog({ open, onClose, onLoadSampleData }: TutorialDial
       actions: (
         <div className="flex gap-2 w-full">
           <Button variant="outline" className="flex-1" onClick={handleClose}>Start Fresh</Button>
-          <Button className="flex-1" onClick={handleLoadSample}>Load Sample Data</Button>
+          <Button className="flex-1" onClick={handleLoadSampleStart}>Load Sample Data</Button>
         </div>
       )
     },
@@ -67,7 +72,7 @@ export function TutorialDialog({ open, onClose, onLoadSampleData }: TutorialDial
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex justify-center mb-4">
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -75,7 +80,7 @@ export function TutorialDialog({ open, onClose, onLoadSampleData }: TutorialDial
             </div>
           </div>
           <DialogTitle className="text-center text-2xl">{CurrentStep.title}</DialogTitle>
-          <DialogDescription className="text-center text-sm text-muted-foreground pt-2">
+          <DialogDescription className="text-center text-sm text-muted-foreground pt-2 min-h-15">
             {CurrentStep.description}
           </DialogDescription>
         </DialogHeader>
