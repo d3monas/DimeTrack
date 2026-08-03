@@ -8,7 +8,9 @@ type TourGuideThings = {
     setStep: (step: number) => void
     activeTab: string
     isAddDialogOpen: boolean
+    isGoalDialogOpen: boolean
     transactionCount: number
+    goalsCount: number
     onFinishTour: () => void
     onSkip: () => void
 }
@@ -30,24 +32,43 @@ const steps = [
         title: "3. Fill & Save",
         description: "Fill out the details (Description, Amount, Category) and click 'Save Transaction'.",
         targetTab: "transactions",
-        requiresAction: "save"
+        requiresAction: "saveTrans"
     },
     {
-        title: "4. View the Overview",
-        description: "The app just updated your charts and balances. Click the 'Overview' tab to see your new data visualized.",
+        title: "4. Set a Goal",
+        description: "Great job! Now let's set a savings goal. Click on the 'Budgets & Goals' tab.",
+        targetTab: "budgets",
+        requiresAction: "tab"
+    },
+    {
+        title: "5. Create a Goal",
+        description: "Click the 'Create goal' button to set up a new savings target.",
+        targetTab: "budgets",
+        requiresAction: "goalDialog"
+    },
+    {
+        title: "6. Save Your Goal",
+        description: "Name your goal, enter a target amount, and click 'Create'.",
+        targetTab: "budgets",
+        requiresAction: "saveGoal"
+    },
+    {
+        title: "7. View the Overview",
+        description: "You've got transactions and goals. Click the 'Overview' tab to see your data visualized in the charts.",
         targetTab: "overview",
         requiresAction: "tab"
     },
     {
-        title: "5. You're Ready!",
-        description: "Explore the Calendar and Budgets tabs to see the forecast and rollover features. When you're ready to use your own real data, click 'Finish & Start Fresh' below.",
+        title: "8. You're Ready!",
+        description: "Explore the Calendar and Subscriptions tabs. When you're ready to use your own real data, click 'Finish Tour & Start Fresh' below.",
         targetTab: "overview",
         requiresAction: "finish"
     }
 ]
 
-export function TourGuide({ step, setStep, activeTab, isAddDialogOpen, transactionCount, onFinishTour, onSkip }: TourGuideThings) {
+export function TourGuide({ step, setStep, activeTab, isAddDialogOpen, isGoalDialogOpen, transactionCount, goalsCount, onFinishTour, onSkip }: TourGuideThings) {
     const prevCount = useRef(transactionCount)
+    const prevGoalCount = useRef(goalsCount)
 
     useEffect(() => {
         const currentStep = steps[step]
@@ -62,16 +83,24 @@ export function TourGuide({ step, setStep, activeTab, isAddDialogOpen, transacti
             setStep(step + 1)
         }
 
-        if (currentStep.requiresAction === "save" && !isAddDialogOpen && transactionCount > prevCount.current) {
+        if (currentStep.requiresAction === "saveTrans" && !isAddDialogOpen && transactionCount > prevCount.current) {
             setStep(step + 1)
         }
 
-        if (transactionCount !== prevCount.current) {
-            prevCount.current = transactionCount
+        if (currentStep.requiresAction === "goalDialog" && isGoalDialogOpen) {
+            setStep(step + 1)
         }
-    }, [step, activeTab, isAddDialogOpen, transactionCount, setStep])
 
-    if (step > 4) {
+        if (currentStep.requiresAction === "saveGoal" && !isGoalDialogOpen && goalsCount > prevGoalCount.current) {
+            setStep(step + 1)
+        }
+
+        if (transactionCount !== prevCount.current) prevCount.current = transactionCount
+        if (goalsCount !== prevGoalCount.current) prevGoalCount.current = goalsCount
+
+    }, [step, activeTab, isAddDialogOpen, isGoalDialogOpen, transactionCount, goalsCount, setStep])
+
+    if (step > 7) {
         return null
     }
 
