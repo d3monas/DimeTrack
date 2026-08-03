@@ -102,7 +102,7 @@ export default function Home() {
   const [commandOpen, setCommandOpen] = useState(false)
 
   const [tutorialOpen, setTutorialOpen] = useState(false)
-  const [tutorialSeen, setTutorialSeen] = useState(true)
+  const [tutorialSeen, setTutorialSeen] = useState(false)
 
   // load localstorage 
   useEffect(() => {
@@ -119,6 +119,7 @@ export default function Home() {
     setDefaultAccountId(data.defaultAccountId || "")
     setAccentColor(data.accentColor || "")
     setOnboardingComplete(data.onboardingComplete || false)
+    setTutorialSeen(data.tutorialSeen || false)
     setIsLoaded(true)
   }, [])
 
@@ -261,6 +262,12 @@ export default function Home() {
       saveTutorialSeen(tutorialSeen)
     }
   }, [isLoaded, tutorialSeen])
+
+  useEffect(() => {
+    if (isLoaded && !tutorialSeen && transactions.length === 0 && accounts.length === 0 && goals.length === 0) {
+      setTutorialOpen(true)
+    }
+  }, [isLoaded, tutorialSeen, transactions, accounts, goals])
 
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
