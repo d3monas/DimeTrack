@@ -928,7 +928,7 @@ export default function Home() {
 
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="overview" className="flex-1 sm:flex-initial gap-1.5">
               <LayoutDashboard className="w-4 h-4" />
               <span className="hidden sm:inline">Overview</span>
@@ -944,6 +944,9 @@ export default function Home() {
             <TabsTrigger value="subscriptions" className="flex-1 sm:flex-initial gap-1.5">
               <Repeat className="w-4 h-4" />
               <span className="hidden sm:inline">Subscriptions</span>
+            </TabsTrigger>
+            <TabsTrigger value="investments" className="flex-1 sm:flex-initial gap-1.5">
+              <span className="hidden sm:inline">Investments</span>
             </TabsTrigger>
             <TabsTrigger value="budgets" className="flex-1 sm:flex-initial gap-1.5">
               <Target className="w-4 h-4" />
@@ -1046,6 +1049,11 @@ export default function Home() {
                 categoryCustomization={categoryCustomization}
               />
             </div>
+          </TabsContent>
+
+          {/* investments tab */}
+          <TabsContent value="investments" className="space-y-6 mt-4">
+            <Investments assets={assets} currencySymbol={currencySymbol} onAddAsset={addAsset} onDeleteAsset={deleteAsset} />
           </TabsContent>
 
           {/* budgets and goals tab */}
