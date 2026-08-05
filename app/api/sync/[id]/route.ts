@@ -1,10 +1,16 @@
 import { Redis } from "@upstash/redis";
 import { NextResponse } from "next/server";
 
-const redis = new Redis({
-  url: process.env.KV_URL || process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
+function getRedisClient() {
+  const url = process.env.KV_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  
+  if (!url || !token) {
+    throw new Error("Missing Redis environment variables");
+  }
+  
+  return new Redis({ url, token });
+}
 
 export async function GET(
   request: Request,
@@ -17,6 +23,7 @@ export async function GET(
   }
 
   try {
+    const redis = getRedisClient(); 
     const encryptedData = await redis.get<string>(`sync:${syncId}`);
     
     if (!encryptedData) {
@@ -44,6 +51,7 @@ export async function POST(
   }
 
   try {
+    const redis = getRedisClient();
     const encryptedData = await request.text();
     await redis.set(`sync:${syncId}`, encryptedData);
 
