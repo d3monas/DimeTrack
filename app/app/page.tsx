@@ -56,7 +56,7 @@ import { categoryCustomization } from "@/lib/categoryCustomization"
 import { colord } from "colord"
 import { getNetWorthHistory } from "@/lib/calculations"
 import { getMonthlyReportData } from "@/lib/calculations"
-import { ArrowLeftRight, CalendarDays, LayoutDashboard, Repeat, Settings, Target, Search } from "lucide-react"
+import { ArrowLeftRight, CalendarDays, LayoutDashboard, Repeat, Settings, Target, Search, LineChart } from "lucide-react"
 import { get12MonthForecast } from "@/lib/calculations"
 import { getSampleData } from "@/lib/sampleData" 
 import { TourGuide } from "@/components/tutorials/tourGuide"
@@ -633,7 +633,8 @@ export default function Home() {
       accounts,
       defaultAccountId,
       accentColor,
-      onboardingComplete
+      onboardingComplete,
+      assets
     })
   }
 
@@ -657,6 +658,7 @@ export default function Home() {
     setDefaultAccountId(data.defaultAccountId || "")
     setAccentColor(data.accentColor || "")
     setOnboardingComplete(data.onboardingComplete || false)
+    setAssets(data.assets || [])
 
     toast.success("Backup file imported successfully")
   }
@@ -831,6 +833,10 @@ export default function Home() {
     setAssets((prev) => prev.filter((asset) => asset.id !== id))
   }
 
+  function updateAsset(id: string, name: string, value: number, notes?: string, isRecurring?: boolean) {
+    setAssets((prev) => prev.map((asset) => asset.id === id ? { ...asset, name, value, notes, isRecurring } : asset))
+  }
+
   if (!isLoaded) {
     return (
       <main className="min-h-screen bg-background">
@@ -946,6 +952,7 @@ export default function Home() {
               <span className="hidden sm:inline">Subscriptions</span>
             </TabsTrigger>
             <TabsTrigger value="investments" className="flex-1 sm:flex-initial gap-1.5">
+              <LineChart className="w-4 h-4" />
               <span className="hidden sm:inline">Investments</span>
             </TabsTrigger>
             <TabsTrigger value="budgets" className="flex-1 sm:flex-initial gap-1.5">
@@ -1053,7 +1060,7 @@ export default function Home() {
 
           {/* investments tab */}
           <TabsContent value="investments" className="space-y-6 mt-4">
-            <Investments assets={assets} currencySymbol={currencySymbol} onAddAsset={addAsset} onDeleteAsset={deleteAsset} />
+            <Investments assets={assets} currencySymbol={currencySymbol} onAddAsset={addAsset} onUpdateAsset={updateAsset} onDeleteAsset={deleteAsset} />
           </TabsContent>
 
           {/* budgets and goals tab */}
