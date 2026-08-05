@@ -129,7 +129,11 @@ export function Investments({ assets, currencySymbol, onAddAsset, onUpdateAsset,
                 <div className="min-w-0 mr-4">
                   <div className="flex items-center gap-2">
                     <p className="font-medium">{asset.name}</p>
-                    {asset.isRecurring && <RefreshCw className="h-3 w-3 text-muted-foreground" />}
+                    {asset.isRecurring && (
+                      <span className="flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">
+                        <RefreshCw className="h-2.5 w-2.5" /> Recurring
+                      </span>
+                    )}
                   </div>
                   {asset.notes && <p className="text-xs italic text-muted-foreground/80 mt-0.5">{asset.notes}</p>}
                 </div>

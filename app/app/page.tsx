@@ -819,12 +819,13 @@ export default function Home() {
     toast.success("Tour finished! Start adding your own data.")
   }
 
-  function addAsset(name: string, value: number, notes?: string) {
+  function addAsset(name: string, value: number, notes?: string, isRecurring?: boolean) {
     const newAsset: Asset = {
       id: crypto.randomUUID(),
       name,
       value,
-      notes
+      notes,
+      isRecurring
     }
     setAssets((prev) => [...prev, newAsset])
   }
