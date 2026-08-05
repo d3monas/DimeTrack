@@ -3,4 +3,5 @@ export type Asset = {
   name: string
   value: number
   notes?: string
+  isRecurring?: boolean
 }
