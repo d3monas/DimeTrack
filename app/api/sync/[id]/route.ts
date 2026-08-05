@@ -8,9 +8,9 @@ const redis = new Redis({
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const syncId = params.id;
+  const { id: syncId } = await params;
 
   if (!syncId) {
     return NextResponse.json({ error: "Invalid Sync ID" }, { status: 400 });
@@ -35,9 +35,9 @@ export async function GET(
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const syncId = params.id;
+  const { id: syncId } = await params;
 
   if (!syncId) {
     return NextResponse.json({ error: "Invalid Sync ID" }, { status: 400 });
