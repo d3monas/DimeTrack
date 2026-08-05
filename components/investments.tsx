@@ -94,7 +94,7 @@ export function Investments({ assets, currencySymbol, onAddAsset, onUpdateAsset,
               <div className="space-y-4">
                 <div>
                   <Label>Asset Name</Label>
-                  <Input value={name} onChange={(e) => { setName(e.target.value); if (errors.name) setErrors((p) => ({ ...p, name: "" })) }} placeholder="e.g., Bitcoin, Tesla Stock, Car" />
+                  <Input value={name} onChange={(e) => { setName(e.target.value); if (errors.name) setErrors((p) => ({ ...p, name: "" })) }} placeholder="e.g., Bitcoin, Stocks" />
                   <FieldError message={errors.name} />
                 </div>
                 <div>
@@ -109,7 +109,7 @@ export function Investments({ assets, currencySymbol, onAddAsset, onUpdateAsset,
                 <div className="flex items-center gap-2">
                   <Checkbox id="recurring-asset" checked={isRecurring} onCheckedChange={(checked) => setIsRecurring(checked === true)} />
                   <Label htmlFor="recurring-asset" className="cursor-pointer flex items-center gap-1 text-sm">
-                    <RefreshCw className="h-3 w-3" /> Recurring investment (I add to this monthly)
+                    <RefreshCw className="h-3 w-3" /> Recurring investment (add to this monthly)
                   </Label>
                 </div>
                 <Button className="w-full" onClick={handleSave}>{editingAsset ? "Save Changes" : "Save Asset"}</Button>
