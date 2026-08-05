@@ -28,6 +28,7 @@ import { Subscriptions } from "@/components/subscriptions"
 import { CommandPalette } from "@/components/commandPalette"
 import { ForecastChart } from "@/components/charts/forecastChart"
 import { TutorialDialog } from "@/components/tutorials/tutorial"
+import { Investments } from "@/components/investments"
 
 // types
 import type { Transaction, TransactionSplit } from "@/types/transaction"
@@ -36,13 +37,14 @@ import type { FilterPeriod } from "@/lib/calculations"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
 import type { Rule } from "@/types/rule"
 import type { Account } from "@/types/account"
+import type { Asset } from "@/types/asset"
 
 // libs
 import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends } from "@/lib/calculations"
 import {
   saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring,
   saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, saveAccentColor, saveOnboardingComplete, 
-  saveTutorialSeen, clearAllData
+  saveTutorialSeen, saveAssets, clearAllData
 } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 import { savingsCategoryForGoal, isSavingsCategory, STARTING_BALANCE_CATEGORY } from "@/lib/consts"
@@ -107,6 +109,8 @@ export default function Home() {
   const [tourActive, setTourActive] = useState(false)
   const [tourStep, setTourStep] = useState(0)
 
+  const [assets, setAssets] = useState<Asset[]>([])
+
   // load localstorage 
   useEffect(() => {
     const data = loadAllData()
@@ -123,6 +127,7 @@ export default function Home() {
     setAccentColor(data.accentColor || "")
     setOnboardingComplete(data.onboardingComplete || false)
     setTutorialSeen(data.tutorialSeen || false)
+    setAssets(data.assets || [])
     setIsLoaded(true)
   }, [])
 
@@ -272,9 +277,16 @@ export default function Home() {
     }
   }, [isLoaded, tutorialSeen, transactions, accounts, goals])
 
+  useEffect(() => {
+    if (isLoaded) {
+      saveAssets(assets)
+    }
+  }, [isLoaded, assets])
+
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
-  const balance = lifetimeIncome - lifetimeExpenses
+  const totalAssetsValue = assets.reduce((sum, asset) => sum + asset.value, 0)
+  const balance = lifetimeIncome - lifetimeExpenses + totalAssetsValue
   const currencySymbol = { USD: "$", EUR: "€", GBP: "£", JPY: "¥", CAD: "CA$", AUD: "A$", CHF: "Fr", INR: "₹" }[currency] ?? "$"
 
   const now = new Date()
@@ -803,6 +815,20 @@ export default function Home() {
     setDefaultAccountId("")
     setAccentColor("")
     toast.success("Tour finished! Start adding your own data.")
+  }
+
+  function addAsset(name: string, value: number, notes?: string) {
+    const newAsset: Asset = {
+      id: crypto.randomUUID(),
+      name,
+      value,
+      notes
+    }
+    setAssets((prev) => [...prev, newAsset])
+  }
+
+  function deleteAsset(id: string) {
+    setAssets((prev) => prev.filter((asset) => asset.id !== id))
   }
 
   if (!isLoaded) {
