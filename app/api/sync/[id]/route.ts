@@ -1,25 +1,28 @@
-import { Redis } from "@upstash/redis"
 import { NextResponse } from "next/server"
 
-function getRedisClient() {
-  const url =
-    process.env.KV_REST_API_URL ||
-    process.env.KV_URL ||
-    process.env.UPSTASH_REDIS_REST_URL
-  const token =
+function getConfig() {
+  let url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL
+  let token =
     process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN
 
   if (!url || !token) {
-    console.error(
-      "Missing Redis environment variables. URL exists:",
-      !!url,
-      "Token exists:",
-      !!token
-    )
-    throw new Error("Missing Redis environment variables")
+    const rawUrl = process.env.KV_URL || process.env.UPSTASH_REDIS_URL
+    if (rawUrl && rawUrl.startsWith("rediss://")) {
+      try {
+        const parsed = new URL(rawUrl)
+        url = `https://${parsed.hostname}`
+        token = parsed.password
+      } catch (e) {
+        console.error("Failed to parse KV_URL")
+      }
+    }
   }
 
-  return new Redis({ url, token })
+  if (!url || !token) {
+    throw new Error("Missing KV environment variables")
+  }
+
+  return { url, token }
 }
 
 export async function GET(
@@ -27,29 +30,28 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: syncId } = await params
-
-  if (!syncId) {
+  if (!syncId)
     return NextResponse.json({ error: "Invalid Sync ID" }, { status: 400 })
-  }
 
   try {
-    const redis = getRedisClient()
-    const encryptedData = await redis.get<string>(`sync:${syncId}`)
+    const { url, token } = getConfig()
 
-    if (!encryptedData) {
+    const res = await fetch(`${url}/get/sync:${syncId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    const data = await res.json()
+
+    if (!data.result) {
       return NextResponse.json({ error: "Sync ID not found" }, { status: 404 })
     }
 
-    return new Response(encryptedData, {
+    return new Response(data.result, {
       status: 200,
       headers: { "Content-Type": "text/plain" },
     })
   } catch (error) {
     console.error("KV GET Error:", error)
-    return NextResponse.json(
-      { error: "Database error", details: (error as Error).message },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Database error" }, { status: 500 })
   }
 }
 
@@ -58,22 +60,27 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: syncId } = await params
-
-  if (!syncId) {
+  if (!syncId)
     return NextResponse.json({ error: "Invalid Sync ID" }, { status: 400 })
-  }
 
   try {
-    const redis = getRedisClient()
+    const { url, token } = getConfig()
     const encryptedData = await request.text()
-    await redis.set(`sync:${syncId}`, encryptedData)
+
+    const res = await fetch(`${url}/set/sync:${syncId}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify([encryptedData]),
+    })
+
+    if (!res.ok) throw new Error("Failed to save to KV")
 
     return NextResponse.json({ success: true }, { status: 200 })
   } catch (error) {
     console.error("KV POST Error:", error)
-    return NextResponse.json(
-      { error: "Database error", details: (error as Error).message },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Database error" }, { status: 500 })
   }
 }
