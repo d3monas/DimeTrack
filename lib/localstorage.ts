@@ -4,7 +4,7 @@ import type { RecurringTransaction } from "@/types/recurringTransaction"
 import type { Rule } from "@/types/rule"
 import { categoryCustomization } from "@/lib/categoryCustomization"
 import type { Account } from "@/types/account"
-import { Onboarding } from "@/components/tutorials/onboarding"
+import type { Asset } from "@/types/asset"
 
 const isBrowser = typeof window !== "undefined"
 
@@ -344,6 +344,25 @@ export function loadTutorialSeen(): boolean {
     )
 }
 
+// assets
+export function saveAssets(assets: Asset[]) {
+    if (!isBrowser) return
+    localStorage.setItem("assets", JSON.stringify(assets))
+}
+
+export function loadAssets(): Asset[] {
+    if (!isBrowser) return []
+    try {
+        const saved = localStorage.getItem("assets")
+        if (!saved) return []
+        const parsed = JSON.parse(saved)
+        if (!Array.isArray(parsed)) return []
+        return parsed
+    } catch {
+        return []
+    }
+}
+
 export function loadAllData() {
     return {
         transactions: loadTransactions(),
@@ -359,8 +378,10 @@ export function loadAllData() {
         accentColor: loadAccentColor(),
         onboardingComplete: loadOnboardingComplete(),
         tutorialSeen: loadTutorialSeen(),
+        assets: loadAssets(),
     }
 }
+
 
 export function clearAllData() {
     if (!isBrowser) {
@@ -380,4 +401,5 @@ export function clearAllData() {
     localStorage.removeItem("accentColor")
     localStorage.removeItem("onboardingComplete")
     localStorage.removeItem("tutorialSeen")
+    localStorage.removeItem("assets")
 }
