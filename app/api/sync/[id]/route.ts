@@ -18,6 +18,11 @@ function getConfig() {
     }
   }
 
+  console.log("REST URL:", process.env.KV_REST_API_URL)
+  console.log("KV URL:", process.env.KV_URL)
+
+  console.log("Using URL:", url)
+
   if (!url || !token) {
     throw new Error("Missing KV environment variables")
   }
