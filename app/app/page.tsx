@@ -686,6 +686,10 @@ export default function Home() {
     setAccentColor("")
     setOnboardingComplete(false)
 
+    setSyncId("")
+    setSessionPassword(null)
+    setLastSynced(null)
+
     setTourActive(false)
     setTourStep(0)
 
