@@ -29,7 +29,6 @@ import { CommandPalette } from "@/components/commandPalette"
 import { ForecastChart } from "@/components/charts/forecastChart"
 import { TutorialDialog } from "@/components/tutorials/tutorial"
 import { Investments } from "@/components/investments"
-import { SyncManager } from "@/components/settings/syncManager"
 
 // types
 import type { Transaction, TransactionSplit } from "@/types/transaction"
@@ -44,8 +43,8 @@ import type { Asset } from "@/types/asset"
 import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends } from "@/lib/calculations"
 import {
   saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring,
-  saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, saveAccentColor, saveOnboardingComplete, 
-  saveTutorialSeen, saveSyncId, loadSyncId, clearAllData
+  saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, saveAccentColor, saveOnboardingComplete,
+  saveTutorialSeen, saveAssets, saveSyncId, clearAllData
 } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 import { savingsCategoryForGoal, isSavingsCategory, STARTING_BALANCE_CATEGORY } from "@/lib/consts"
@@ -59,7 +58,7 @@ import { getNetWorthHistory } from "@/lib/calculations"
 import { getMonthlyReportData } from "@/lib/calculations"
 import { ArrowLeftRight, CalendarDays, LayoutDashboard, Repeat, Settings, Target, Search, LineChart } from "lucide-react"
 import { get12MonthForecast } from "@/lib/calculations"
-import { getSampleData } from "@/lib/sampleData" 
+import { getSampleData } from "@/lib/sampleData"
 import { TourGuide } from "@/components/tutorials/tourGuide"
 import { pushSyncData, pullSyncData } from "@/lib/sync"
 
@@ -114,6 +113,7 @@ export default function Home() {
   const [syncId, setSyncId] = useState("")
   const [isSyncing, setIsSyncing] = useState(false)
   const [lastSynced, setLastSynced] = useState<string | null>(null)
+
   const [assets, setAssets] = useState<Asset[]>([])
 
   // load localstorage 
@@ -218,7 +218,7 @@ export default function Home() {
     if (isLoaded) {
       if (accentColor) {
         const c = colord(accentColor)
-        
+
         if (!c.isValid()) {
           return
         }
@@ -418,15 +418,15 @@ export default function Home() {
   function editTransaction(id: string, description: string, amount: number, type: "income" | "expense" | "transfer", category: string, notes?: string, tags?: string[], accountId?: string, transferAccountId?: string) {
     setTransactions((prev) =>
       prev.map((transaction) =>
-        transaction.id === id ? { 
-          ...transaction, 
-          description, 
-          amount, 
-          category, 
-          type, 
-          notes: notes || undefined, 
-          tags: tags, 
-          accountId: accountId || undefined, 
+        transaction.id === id ? {
+          ...transaction,
+          description,
+          amount,
+          category,
+          type,
+          notes: notes || undefined,
+          tags: tags,
+          accountId: accountId || undefined,
           transferAccountId: transferAccountId || undefined
         } : transaction
       ))
@@ -762,7 +762,7 @@ export default function Home() {
   }
 
   function toggleSubscriptionActive(id: string, isActive: boolean) {
-    setRecurring(prev => prev.map(recurring => recurring.id === id ? {...recurring, isActive} : recurring ))
+    setRecurring(prev => prev.map(recurring => recurring.id === id ? { ...recurring, isActive } : recurring))
   }
 
   const accountBalances = accounts.map(account => {
@@ -823,6 +823,25 @@ export default function Home() {
     setDefaultAccountId("")
     setAccentColor("")
     toast.success("Tour finished! Start adding your own data.")
+  }
+
+  function addAsset(name: string, value: number, notes?: string, isRecurring?: boolean) {
+    const newAsset: Asset = {
+      id: crypto.randomUUID(),
+      name,
+      value,
+      notes,
+      isRecurring
+    }
+    setAssets((prev) => [...prev, newAsset])
+  }
+
+  function deleteAsset(id: string) {
+    setAssets((prev) => prev.filter((asset) => asset.id !== id))
+  }
+
+  function updateAsset(id: string, name: string, value: number, notes?: string, isRecurring?: boolean) {
+    setAssets((prev) => prev.map((asset) => asset.id === id ? { ...asset, name, value, notes, isRecurring } : asset))
   }
 
   async function handleEnableSync(newId: string, password: string) {
@@ -906,7 +925,7 @@ export default function Home() {
             variant="outline"
             className="w-full sm:flex-1 sm:max-w-sm flex items-center gap-2 text-muted-foreground justify-start font-normal"
             onClick={() => setCommandOpen(true)}
-            >
+          >
             <Search className="h-4 w-4" />
             <span className="flex-1 text-left hidden sm:inline">Search transactions or jump to...</span>
             <span className="flex-1 text-left sm:hidden">Search...</span>
@@ -1050,12 +1069,12 @@ export default function Home() {
 
           {/* Subscriptions tab */}
           <TabsContent value="subscriptions" className="space-y-6 mt-4">
-            <Subscriptions 
-            recurring={recurring} 
-            currencySymbol={currencySymbol} 
-            onToggleActive={toggleSubscriptionActive} 
-            onDelete={deleteRecurring} 
-            onAddTransaction={() => { setActiveTab("transactions"); setOpen(true) }} />
+            <Subscriptions
+              recurring={recurring}
+              currencySymbol={currencySymbol}
+              onToggleActive={toggleSubscriptionActive}
+              onDelete={deleteRecurring}
+              onAddTransaction={() => { setActiveTab("transactions"); setOpen(true) }} />
           </TabsContent>
 
           {/* transactions tab */}
@@ -1108,8 +1127,8 @@ export default function Home() {
                 filter={filterPeriod}
                 onFilterChange={setFilterPeriod}
                 categories={categories}
-                accounts={accounts} 
-                onAddTransaction={() => setOpen(true)} 
+                accounts={accounts}
+                onAddTransaction={() => setOpen(true)}
                 categoryCustomization={categoryCustomization}
               />
             </div>
@@ -1146,11 +1165,11 @@ export default function Home() {
               categoryCustomization={categoryCustomization} />
           </TabsContent>
         </Tabs>
-        <CommandPalette 
-          open={commandOpen} 
-          onOpenChange={setCommandOpen} 
+        <CommandPalette
+          open={commandOpen}
+          onOpenChange={setCommandOpen}
           transactions={transactions}
-          onTabChange={(tab) => setActiveTab(tab)} 
+          onTabChange={(tab) => setActiveTab(tab)}
           onAddTransaction={() => { setActiveTab("transactions"); setOpen(true) }}
           onOpenSettings={() => setSettingsOpen(true)}
           onAddGoal={() => { setActiveTab("budgets"); setEditingGoal(null); setGoalDialogOpen(true) }}
@@ -1158,14 +1177,14 @@ export default function Home() {
         />
         <TutorialDialog open={tutorialOpen} onClose={() => { setTutorialOpen(false); setTutorialSeen(true) }} onLoadSampleData={handleLoadSampleData} />
         {tourActive && (
-          <TourGuide 
+          <TourGuide
             step={tourStep}
             setStep={setTourStep}
             activeTab={activeTab}
-            isAddDialogOpen={open} 
+            isAddDialogOpen={open}
             isGoalDialogOpen={goalDialogOpen}
             isSettingsOpen={settingsOpen}
-            transactionCount={transactions.length} 
+            transactionCount={transactions.length}
             goalsCount={goals.length}
             categoriesCount={categories.length}
             rulesCount={rules.length}
