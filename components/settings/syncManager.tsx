@@ -3,7 +3,7 @@ import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import { FieldError } from "../fieldError"
-import { CloudDownload, CloudUpload, RefreshCw } from "lucide-react"
+import { CloudDownload, CloudUpload, RefreshCw, Lock } from "lucide-react"
 
 type SyncManagerThings = {
   syncId: string
@@ -111,23 +111,23 @@ export function SyncManager({ syncId, hasSessionPassword, onEnableSync, onPullDa
             {hasSessionPassword ? "Auto-sync is active. Changes will push to the cloud automatically." : "Auto-sync is paused. Enter your password to push an update manually."}
           </div>
 
-          {!hasSessionPassword && (
-            <div>
-              <Label>Encryption Password</Label>
-              <p className="text-xs text-muted-foreground mb-2">Enter your password to encrypt and push an update.</p>
-              <Input 
-                type="password" 
-                value={pushPassword} 
-                onChange={(e) => { setPushPassword(e.target.value); if (errors.pushPassword) setErrors({}) }} 
-                placeholder="Password" 
-              />
-              {errors.pushPassword && <FieldError message={errors.pushPassword} />}
+          {!hasSessionPassword ? (
+            <div className="space-y-3">
+              <div>
+                <Label>Unlock Sync</Label>
+                <p className="text-xs text-muted-foreground mb-2">Enter your encryption password to resume auto-sync and push updates.</p>
+                <Input type="password" value={pushPassword}  onChange={(e) => { setPushPassword(e.target.value); if (errors.pushPassword) setErrors({}) }} placeholder="Password" />
+                {errors.pushPassword && <FieldError message={errors.pushPassword} />}
+              </div>
+              <Button className="w-full" onClick={handlePush} disabled={isSyncing}>
+                <Lock className="h-4 w-4 mr-2" /> Unlock Sync
+              </Button>
             </div>
+          ) : (
+            <Button variant="outline" className="w-full" onClick={handlePush} disabled={isSyncing}>
+              <RefreshCw className={`h-4 w-4 mr-2 ${isSyncing ? 'animate-spin' : ''}`} /> Push Update to Cloud Manually
+            </Button>
           )}
-
-          <Button variant="outline" className="w-full" onClick={handlePush} disabled={isSyncing}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${isSyncing ? 'animate-spin' : ''}`} /> Push Update to Cloud Manually
-          </Button>
 
           <div className="border-t pt-4">
             <Label>Pull Data (Overwrite local)</Label>

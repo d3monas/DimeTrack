@@ -901,19 +901,29 @@ export default function Home() {
     const passwordToUse = passwordOverride || sessionPassword
 
     if (!passwordToUse) {
-      toast.error("Please enter your password to push an update")
+      toast.error("Please enter your password to resume sync")
       return
     }
 
     setIsSyncing(true)
     try {
+      if (passwordOverride) {
+        await pullSyncData(syncId, passwordOverride)
+      }
+
       const state = loadAllData()
       await pushSyncData(syncId, passwordToUse, state)
+      
       setSessionPassword(passwordToUse)
       setLastSynced(new Date().toLocaleString())
-      toast.success("Data pushed to cloud successfully!")
+      toast.success("Sync unlocked and data pushed successfully!")
     } catch (error) {
-      toast.error("Failed to push data. Check your password")
+      if (error instanceof Error && error.message.includes("Invalid password")) {
+        toast.error("Wrong password. Please check your password and try again")
+      } else {
+        console.error("Push Error:", error)
+        toast.error("Failed to push data. Check your connection")
+      }
     } finally {
       setIsSyncing(false)
     }
