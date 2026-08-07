@@ -877,10 +877,18 @@ export default function Home() {
     setAssets((prev) => prev.map((asset) => asset.id === id ? { ...asset, name, value, notes, isRecurring } : asset))
   }
 
+  function getCurrentState() {
+    return {
+      transactions, goals, categories, budgets, currency,
+      recurring, rules, categoryCustomization, accounts,
+      defaultAccountId, accentColor, onboardingComplete, assets
+    }
+  }
+
   async function handleEnableSync(newId: string, password: string) {
     setIsSyncing(true)
     try {
-      const state = loadAllData()
+      const state = getCurrentState()
       await pushSyncData(newId, password, state)
 
       setSyncId(newId)
@@ -890,6 +898,7 @@ export default function Home() {
       toast.success("Sync enabled!")
     } catch (error) {
       toast.error("Failed to enable sync")
+      throw error
     } finally {
       setIsSyncing(false)
     }
@@ -911,7 +920,7 @@ export default function Home() {
         await pullSyncData(syncId, passwordOverride)
       }
 
-      const state = loadAllData()
+      const state = getCurrentState()
       await pushSyncData(syncId, passwordToUse, state)
       
       setSessionPassword(passwordToUse)
@@ -924,6 +933,7 @@ export default function Home() {
         console.error("Push Error:", error)
         toast.error("Failed to push data. Check your connection")
       }
+      throw error
     } finally {
       setIsSyncing(false)
     }
@@ -955,6 +965,7 @@ export default function Home() {
       toast.success("Data pulled successfully!")
     } catch (error) {
       toast.error("Failed to pull data. Check your ID and password")
+      throw error
     } finally {
       setIsSyncing(false)
     }

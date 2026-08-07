@@ -51,9 +51,9 @@ type SettingsDialogThings = {
     onOpenChange: (open: boolean) => void
     syncId: string
     hasSessionPassword: boolean
-    onEnableSync: (id: string, password: string) => void
-    onPullData: (id: string, password: string) => void
-    onPushData: (password?: string) => void
+    onEnableSync: (id: string, password: string) => Promise<void>
+    onPullData: (id: string, password: string) => Promise<void>
+    onPushData: (password?: string) => Promise<void>
     isSyncing: boolean
     lastSynced: string | null
 }

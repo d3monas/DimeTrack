@@ -8,9 +8,9 @@ import { CloudDownload, CloudUpload, RefreshCw, Lock } from "lucide-react"
 type SyncManagerThings = {
   syncId: string
   hasSessionPassword: boolean
-  onEnableSync: (id: string, password: string) => void
-  onPullData: (id: string, password: string) => void
-  onPushData: (password?: string) => void
+  onEnableSync: (id: string, password: string) => Promise<void>
+  onPullData: (id: string, password: string) => Promise<void>
+  onPushData: (password?: string) => Promise<void>
   isSyncing: boolean
   lastSynced: string | null
 }
@@ -22,39 +22,48 @@ export function SyncManager({ syncId, hasSessionPassword, onEnableSync, onPullDa
   const [pushPassword, setPushPassword] = useState("")
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  function handleEnable() {
+  async function handleEnable() {
     if (!newPassword.trim()) {
       setErrors({ newPassword: "Password is required to encrypt your data" })
       return
     }
     const newId = crypto.randomUUID().split('-')[0]
-    onEnableSync(newId, newPassword.trim())
-    setNewPassword("")
-    setErrors({})
+    try {
+      await onEnableSync(newId, newPassword.trim())
+      setNewPassword("")
+      setErrors({})
+    } catch { }
   }
 
-  function handlePull() {
+  async function handlePull() {
     if (!inputId.trim() || !pullPassword.trim()) {
       setErrors({ pull: "Sync ID and Password are required to pull data" })
       return
     }
-    onPullData(inputId.trim(), pullPassword.trim())
-    setPullPassword("")
-    setErrors({})
+    try {
+      await onPullData(inputId.trim(), pullPassword.trim())
+      setPullPassword("")
+      setErrors({})
+    } catch { }
   }
 
-  function handlePush() {
+  async function handlePush() {
     if (!hasSessionPassword) {
       if (!pushPassword.trim()) {
         setErrors({ pushPassword: "Password required to encrypt data" })
         return
       }
-      onPushData(pushPassword.trim())
-      setPushPassword("")
+      try {
+        await onPushData(pushPassword.trim())
+        setPushPassword("")
+        setErrors({})
+      } catch { }
     } else {
-      onPushData()
+      try {
+        await onPushData()
+        setErrors({})
+      } catch { }
     }
-    setErrors({})
   }
 
   return (
@@ -135,9 +144,9 @@ export function SyncManager({ syncId, hasSessionPassword, onEnableSync, onPullDa
             <div className="flex gap-2">
               <Input type="password" placeholder="Password" value={pullPassword} onChange={(e) => setPullPassword(e.target.value)} />
             </div>
-            <Button variant="outline" className="w-full mt-2" onClick={() => onPullData(syncId, pullPassword)} disabled={isSyncing || !pullPassword}>
-              <CloudDownload className="h-4 w-4 mr-2" /> Pull Data
-            </Button>
+              <Button variant="outline" className="w-full mt-2" onClick={() => onPullData(syncId, pullPassword).catch(() => { })} disabled={isSyncing || !pullPassword}>
+                <CloudDownload className="h-4 w-4 mr-2" /> Pull Data
+              </Button>
           </div>
         </div>
       )}
