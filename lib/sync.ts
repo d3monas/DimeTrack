@@ -8,11 +8,16 @@ function buf2str(buf: BufferSource): string {
 
 function buf2b64(buf: ArrayBuffer | Uint8Array): string {
   const bytes = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
-  return btoa(String.fromCharCode(...bytes));
+  let binary = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk) as unknown as number[]);
+  }
+  return btoa(binary);
 }
 
 function b642buf(b64: string): Uint8Array {
-  return Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  return Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
 }
 
 async function deriveKey(password: string, salt: string): Promise<CryptoKey> {
@@ -29,7 +34,7 @@ async function deriveKey(password: string, salt: string): Promise<CryptoKey> {
     {
       name: "PBKDF2",
       salt: enc.encode(salt),
-      iterations: 100000,
+      iterations: 600000,
       hash: "SHA-256",
     },
     keyMaterial,
@@ -63,13 +68,20 @@ async function decryptData(encryptedB64: string, password: string, syncId: strin
   const iv = combined.slice(0, 12);
   const ciphertext = combined.slice(12);
 
-  const decryptedBuffer = await crypto.subtle.decrypt(
-    { name: "AES-GCM", iv },
-    key,
-    ciphertext
-  );
+  try {
+    const decryptedBuffer = await crypto.subtle.decrypt(
+      { name: "AES-GCM", iv },
+      key,
+      ciphertext
+    );
 
-  return buf2str(decryptedBuffer);
+    return buf2str(decryptedBuffer);
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "OperationError") {
+      throw new Error("Invalid password or corrupted data");
+    }
+    throw error;
+  }
 }
 
 export async function pushSyncData(syncId: string, password: string, state: Record<string, unknown>) {
@@ -105,7 +117,10 @@ export async function pullSyncData(syncId: string, password: string): Promise<Re
     
     return JSON.parse(decryptedJson);
   } catch (error) {
+    if (error instanceof Error && error.message.includes("Invalid password")) {
+      throw error;
+    }
     console.error("Sync Pull Error:", error);
-    throw error;
+    throw new Error("Failed to pull data. Check your connection and try again.");
   }
 }
