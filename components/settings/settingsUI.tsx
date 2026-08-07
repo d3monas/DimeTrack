@@ -93,18 +93,18 @@ export function SettingsDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[85vh] overflow-y-auto">
+            <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Settings</DialogTitle>
                 </DialogHeader>
 
                 <Tabs defaultValue="general" className="w-full">
-                    <TabsList className="grid w-full grid-cols-5">
-                        <TabsTrigger value="general">General</TabsTrigger>
-                        <TabsTrigger value="appearance">Appearance</TabsTrigger>
-                        <TabsTrigger value="automation">Automation</TabsTrigger>
-                        <TabsTrigger value="data">Data</TabsTrigger>
-                        <TabsTrigger value="sync">Sync</TabsTrigger>
+                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 gap-2">
+                        <TabsTrigger value="general" className="whitespace-nowrap">General</TabsTrigger>
+                        <TabsTrigger value="appearance" className="whitespace-nowrap">Appearance</TabsTrigger>
+                        <TabsTrigger value="automation" className="whitespace-nowrap">Automation</TabsTrigger>
+                        <TabsTrigger value="data" className="whitespace-nowrap">Data</TabsTrigger>
+                        <TabsTrigger value="sync" className="whitespace-nowrap">Sync</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="general" className="mt-6">
