@@ -997,6 +997,7 @@ export default function Home() {
               open={settingsOpen}
               onOpenChange={setSettingsOpen}
               syncId={syncId}
+              hasSessionPassword={!!sessionPassword}
               onEnableSync={handleEnableSync}
               onPullData={handlePullData}
               onPushData={handlePushData}

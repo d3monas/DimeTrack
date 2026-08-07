@@ -49,9 +49,10 @@ type SettingsDialogThings = {
     open: boolean
     onOpenChange: (open: boolean) => void
     syncId: string
+    hasSessionPassword: boolean
     onEnableSync: (id: string, password: string) => void
     onPullData: (id: string, password: string) => void
-    onPushData: () => void
+    onPushData: (password?: string) => void
     isSyncing: boolean
     lastSynced: string | null
 }
@@ -72,7 +73,7 @@ export function SettingsDialog({
     onCurrencyChange, recurring, onDeleteRecurring, onImportCSV, onExportBackup, onImportBackup, onClearData,
     rules, onAddRule, onDeleteRule, categoryCustomization, onUpdateCategoryCustomization, accounts, onAddAccount,
     onDeleteAccount, defaultAccountId, onSetDefaultAccount, onUpdateAccount, accentColor, onAccentChange, open, onOpenChange,
-    syncId, onEnableSync, onPullData, onPushData, isSyncing, lastSynced
+    syncId, hasSessionPassword, onEnableSync, onPullData, onPushData, isSyncing, lastSynced
 }: SettingsDialogThings) {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const backupInputRef = useRef<HTMLInputElement>(null)
@@ -261,7 +262,7 @@ export function SettingsDialog({
                     </TabsContent>
 
                     <TabsContent value="sync" className="mt-6">
-                        <SyncManager syncId={syncId} onEnableSync={onEnableSync} onPullData={onPullData} onPushData={onPushData} isSyncing={isSyncing} lastSynced={lastSynced} />
+                        <SyncManager syncId={syncId} hasSessionPassword={hasSessionPassword} onEnableSync={onEnableSync} onPullData={onPullData} onPushData={onPushData} isSyncing={isSyncing} lastSynced={lastSynced} />
                     </TabsContent>
                 </Tabs>
             </DialogContent>
