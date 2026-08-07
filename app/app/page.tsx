@@ -28,6 +28,7 @@ import { Subscriptions } from "@/components/subscriptions"
 import { CommandPalette } from "@/components/commandPalette"
 import { ForecastChart } from "@/components/charts/forecastChart"
 import { TutorialDialog } from "@/components/tutorials/tutorial"
+import { Investments } from "@/components/investments"
 import { SyncManager } from "@/components/settings/syncManager"
 
 // types
@@ -37,6 +38,7 @@ import type { FilterPeriod } from "@/lib/calculations"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
 import type { Rule } from "@/types/rule"
 import type { Account } from "@/types/account"
+import type { Asset } from "@/types/asset"
 
 // libs
 import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends } from "@/lib/calculations"
@@ -55,7 +57,7 @@ import { categoryCustomization } from "@/lib/categoryCustomization"
 import { colord } from "colord"
 import { getNetWorthHistory } from "@/lib/calculations"
 import { getMonthlyReportData } from "@/lib/calculations"
-import { ArrowLeftRight, CalendarDays, LayoutDashboard, Repeat, Settings, Target, Search } from "lucide-react"
+import { ArrowLeftRight, CalendarDays, LayoutDashboard, Repeat, Settings, Target, Search, LineChart } from "lucide-react"
 import { get12MonthForecast } from "@/lib/calculations"
 import { getSampleData } from "@/lib/sampleData" 
 import { TourGuide } from "@/components/tutorials/tourGuide"
@@ -112,6 +114,7 @@ export default function Home() {
   const [syncId, setSyncId] = useState("")
   const [isSyncing, setIsSyncing] = useState(false)
   const [lastSynced, setLastSynced] = useState<string | null>(null)
+  const [assets, setAssets] = useState<Asset[]>([])
 
   // load localstorage 
   useEffect(() => {
@@ -130,6 +133,7 @@ export default function Home() {
     setOnboardingComplete(data.onboardingComplete || false)
     setTutorialSeen(data.tutorialSeen || false)
     setSyncId(data.syncId || "")
+    setAssets(data.assets || [])
     setIsLoaded(true)
   }, [])
 
@@ -279,9 +283,16 @@ export default function Home() {
     }
   }, [isLoaded, tutorialSeen, transactions, accounts, goals])
 
+  useEffect(() => {
+    if (isLoaded) {
+      saveAssets(assets)
+    }
+  }, [isLoaded, assets])
+
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
-  const balance = lifetimeIncome - lifetimeExpenses
+  const totalAssetsValue = assets.reduce((sum, asset) => sum + asset.value, 0)
+  const balance = lifetimeIncome - lifetimeExpenses + totalAssetsValue
   const currencySymbol = { USD: "$", EUR: "€", GBP: "£", JPY: "¥", CAD: "CA$", AUD: "A$", CHF: "Fr", INR: "₹" }[currency] ?? "$"
 
   const now = new Date()
@@ -628,7 +639,8 @@ export default function Home() {
       accounts,
       defaultAccountId,
       accentColor,
-      onboardingComplete
+      onboardingComplete,
+      assets
     })
   }
 
@@ -652,6 +664,7 @@ export default function Home() {
     setDefaultAccountId(data.defaultAccountId || "")
     setAccentColor(data.accentColor || "")
     setOnboardingComplete(data.onboardingComplete || false)
+    setAssets(data.assets || [])
 
     toast.success("Backup file imported successfully")
   }
@@ -978,7 +991,7 @@ export default function Home() {
 
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="overview" className="flex-1 sm:flex-initial gap-1.5">
               <LayoutDashboard className="w-4 h-4" />
               <span className="hidden sm:inline">Overview</span>
@@ -994,6 +1007,10 @@ export default function Home() {
             <TabsTrigger value="subscriptions" className="flex-1 sm:flex-initial gap-1.5">
               <Repeat className="w-4 h-4" />
               <span className="hidden sm:inline">Subscriptions</span>
+            </TabsTrigger>
+            <TabsTrigger value="investments" className="flex-1 sm:flex-initial gap-1.5">
+              <LineChart className="w-4 h-4" />
+              <span className="hidden sm:inline">Investments</span>
             </TabsTrigger>
             <TabsTrigger value="budgets" className="flex-1 sm:flex-initial gap-1.5">
               <Target className="w-4 h-4" />
@@ -1096,6 +1113,11 @@ export default function Home() {
                 categoryCustomization={categoryCustomization}
               />
             </div>
+          </TabsContent>
+
+          {/* investments tab */}
+          <TabsContent value="investments" className="space-y-6 mt-4">
+            <Investments assets={assets} currencySymbol={currencySymbol} onAddAsset={addAsset} onUpdateAsset={updateAsset} onDeleteAsset={deleteAsset} />
           </TabsContent>
 
           {/* budgets and goals tab */}

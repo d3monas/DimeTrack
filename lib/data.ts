@@ -4,6 +4,7 @@ import type { RecurringTransaction } from "@/types/recurringTransaction"
 import type { Rule } from "@/types/rule"
 import type { Account } from "@/types/account"
 import type { categoryCustomization } from "./categoryCustomization"
+import type { Asset } from "@/types/asset"
 
 type AppBackupThings = {
     transactions: Transaction[]
@@ -14,6 +15,7 @@ type AppBackupThings = {
     recurring: RecurringTransaction[]
     rules: Rule[]
     accounts: Account[]
+    assets?: Asset[]
     categoryCustomization: Record<string, categoryCustomization>
     defaultAccountId?: string
     accentColor?: string
