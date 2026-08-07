@@ -28,6 +28,7 @@ import { Subscriptions } from "@/components/subscriptions"
 import { CommandPalette } from "@/components/commandPalette"
 import { ForecastChart } from "@/components/charts/forecastChart"
 import { TutorialDialog } from "@/components/tutorials/tutorial"
+import { SyncManager } from "@/components/settings/syncManager"
 
 // types
 import type { Transaction, TransactionSplit } from "@/types/transaction"
@@ -42,7 +43,7 @@ import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMont
 import {
   saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring,
   saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, saveAccentColor, saveOnboardingComplete, 
-  saveTutorialSeen, clearAllData
+  saveTutorialSeen, saveSyncId, loadSyncId, clearAllData
 } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 import { savingsCategoryForGoal, isSavingsCategory, STARTING_BALANCE_CATEGORY } from "@/lib/consts"
@@ -58,6 +59,7 @@ import { ArrowLeftRight, CalendarDays, LayoutDashboard, Repeat, Settings, Target
 import { get12MonthForecast } from "@/lib/calculations"
 import { getSampleData } from "@/lib/sampleData" 
 import { TourGuide } from "@/components/tutorials/tourGuide"
+import { pushSyncData, pullSyncData } from "@/lib/sync"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -107,6 +109,10 @@ export default function Home() {
   const [tourActive, setTourActive] = useState(false)
   const [tourStep, setTourStep] = useState(0)
 
+  const [syncId, setSyncId] = useState("")
+  const [isSyncing, setIsSyncing] = useState(false)
+  const [lastSynced, setLastSynced] = useState<string | null>(null)
+
   // load localstorage 
   useEffect(() => {
     const data = loadAllData()
@@ -123,6 +129,7 @@ export default function Home() {
     setAccentColor(data.accentColor || "")
     setOnboardingComplete(data.onboardingComplete || false)
     setTutorialSeen(data.tutorialSeen || false)
+    setSyncId(data.syncId || "")
     setIsLoaded(true)
   }, [])
 
@@ -805,6 +812,69 @@ export default function Home() {
     toast.success("Tour finished! Start adding your own data.")
   }
 
+  async function handleEnableSync(newId: string, password: string) {
+    setIsSyncing(true)
+    try {
+      const state = loadAllData()
+      await pushSyncData(newId, password, state)
+
+      setSyncId(newId)
+      saveSyncId(newId)
+      setLastSynced(new Date().toLocaleString())
+      toast.success("Sync enabled!")
+    } catch (error) {
+      toast.error("Failed to enable sync")
+    } finally {
+      setIsSyncing(false)
+    }
+  }
+
+  async function handlePushData() {
+    if (!syncId) {
+      return
+    }
+    setIsSyncing(true)
+    try {
+      const state = loadAllData()
+      toast.error("Please enter your password to push an update")
+    } catch (error) {
+      toast.error("Failed to push data")
+    } finally {
+      setIsSyncing(false)
+    }
+  }
+
+  async function handlePullData(id: string, password: string) {
+    setIsSyncing(true)
+    try {
+      const pulledState = await pullSyncData(id, password)
+
+      const data = pulledState as any
+
+      setTransactions(data.transactions || [])
+      setGoals(data.goals || [])
+      setCategories(data.categories || [])
+      setBudgets(data.budgets || {})
+      setCurrency(data.currency || "USD")
+      setRecurring(data.recurring || [])
+      setRules(data.rules || [])
+      setCategoryCustomization(data.categoryCustomization || {})
+      setAccounts(data.accounts || [])
+      setDefaultAccountId(data.defaultAccountId || "")
+      setAccentColor(data.accentColor || "")
+      setAssets(data.assets || [])
+
+      setSyncId(id)
+      saveSyncId(id)
+      setLastSynced(new Date().toLocaleString())
+      toast.success("Data pulled successfully!")
+    } catch (error) {
+      toast.error("Failed to pull data. Check your ID and password")
+    } finally {
+      setIsSyncing(false)
+    }
+  }
+
   if (!isLoaded) {
     return (
       <main className="min-h-screen bg-background">
@@ -883,6 +953,12 @@ export default function Home() {
               onAccentChange={setAccentColor}
               open={settingsOpen}
               onOpenChange={setSettingsOpen}
+              syncId={syncId}
+              onEnableSync={handleEnableSync}
+              onPullData={handlePullData}
+              onPushData={handlePushData}
+              isSyncing={isSyncing}
+              lastSynced={lastSynced}
             />
           </div>
         </header>
