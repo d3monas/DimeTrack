@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import { Dispatch, SetStateAction, useRef } from "react"
@@ -17,6 +17,7 @@ import { ColorIconPicker } from "./colorIconPicker"
 import { ACCENT_COLORS } from "@/lib/consts"
 import { HexColorPicker } from "react-colorful"
 import { SyncManager } from "./syncManager"
+import { Settings, Palette, Zap, Database, Cloud } from "lucide-react"
 
 type SettingsDialogThings = {
     categories: string[]
@@ -99,12 +100,27 @@ export function SettingsDialog({
                 </DialogHeader>
 
                 <Tabs defaultValue="general" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 gap-2">
-                        <TabsTrigger value="general" className="whitespace-nowrap">General</TabsTrigger>
-                        <TabsTrigger value="appearance" className="whitespace-nowrap">Appearance</TabsTrigger>
-                        <TabsTrigger value="automation" className="whitespace-nowrap">Automation</TabsTrigger>
-                        <TabsTrigger value="data" className="whitespace-nowrap">Data</TabsTrigger>
-                        <TabsTrigger value="sync" className="whitespace-nowrap">Sync</TabsTrigger>
+                    <TabsList className="grid w-full grid-cols-5">
+                        <TabsTrigger value="general" className="flex-1 sm:flex-initial gap-1.5">
+                            <Settings className="w-4 h-4" />
+                            <span className="hidden sm:inline">General</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="appearance" className="flex-1 sm:flex-initial gap-1.5">
+                            <Palette className="w-4 h-4" />
+                            <span className="hidden sm:inline">Appearance</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="automation" className="flex-1 sm:flex-initial gap-1.5">
+                            <Zap className="w-4 h-4" />
+                            <span className="hidden sm:inline">Automation</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="data" className="flex-1 sm:flex-initial gap-1.5">
+                            <Database className="w-4 h-4" />
+                            <span className="hidden sm:inline">Data</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="sync" className="flex-1 sm:flex-initial gap-1.5">
+                            <Cloud className="w-4 h-4" />
+                            <span className="hidden sm:inline">Sync</span>
+                        </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="general" className="mt-6">
