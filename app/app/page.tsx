@@ -113,6 +113,7 @@ export default function Home() {
   const [syncId, setSyncId] = useState("")
   const [isSyncing, setIsSyncing] = useState(false)
   const [lastSynced, setLastSynced] = useState<string | null>(null)
+  const [sessionPassword, setSessionPassword] = useState<string | null>(null)
 
   const [assets, setAssets] = useState<Asset[]>([])
 
@@ -851,6 +852,7 @@ export default function Home() {
       await pushSyncData(newId, password, state)
 
       setSyncId(newId)
+      setSessionPassword(password)
       saveSyncId(newId)
       setLastSynced(new Date().toLocaleString())
       toast.success("Sync enabled!")
@@ -861,16 +863,25 @@ export default function Home() {
     }
   }
 
-  async function handlePushData() {
-    if (!syncId) {
+  async function handlePushData(passwordOverride?: string) {
+    if (!syncId) return
+
+    const passwordToUse = passwordOverride || sessionPassword
+
+    if (!passwordToUse) {
+      toast.error("Please enter your password to push an update")
       return
     }
+
     setIsSyncing(true)
     try {
       const state = loadAllData()
-      toast.error("Please enter your password to push an update")
+      await pushSyncData(syncId, passwordToUse, state)
+      setSessionPassword(passwordToUse)
+      setLastSynced(new Date().toLocaleString())
+      toast.success("Data pushed to cloud successfully!")
     } catch (error) {
-      toast.error("Failed to push data")
+      toast.error("Failed to push data. Check your password")
     } finally {
       setIsSyncing(false)
     }
@@ -880,7 +891,6 @@ export default function Home() {
     setIsSyncing(true)
     try {
       const pulledState = await pullSyncData(id, password)
-
       const data = pulledState as any
 
       setTransactions(data.transactions || [])
@@ -897,6 +907,7 @@ export default function Home() {
       setAssets(data.assets || [])
 
       setSyncId(id)
+      setSessionPassword(password)
       saveSyncId(id)
       setLastSynced(new Date().toLocaleString())
       toast.success("Data pulled successfully!")
