@@ -344,6 +344,23 @@ export function loadTutorialSeen(): boolean {
     )
 }
 
+// sync
+export function saveSyncId(id: string) {
+    if (!isBrowser) {
+        return
+    }
+    localStorage.setItem("syncId", id)
+}
+
+export function loadSyncId(): string {
+    if (!isBrowser) {
+        return ""
+    }
+    return (
+        localStorage.getItem("syncId") || ""
+    )
+}
+
 export function loadAllData() {
     return {
         transactions: loadTransactions(),
@@ -359,6 +376,7 @@ export function loadAllData() {
         accentColor: loadAccentColor(),
         onboardingComplete: loadOnboardingComplete(),
         tutorialSeen: loadTutorialSeen(),
+        syncId: loadSyncId()
     }
 }
 
@@ -380,4 +398,5 @@ export function clearAllData() {
     localStorage.removeItem("accentColor")
     localStorage.removeItem("onboardingComplete")
     localStorage.removeItem("tutorialSeen")
+    localStorage.removeItem("syncId")
 }
