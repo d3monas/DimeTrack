@@ -290,6 +290,34 @@ export default function Home() {
     }
   }, [isLoaded, assets])
 
+  // auto sync
+  useEffect(() => {
+    if (!isLoaded || !syncId || !sessionPassword) return
+
+    const syncTimer = setTimeout(() => {
+      const state = {
+        transactions, goals, categories, budgets, currency,
+        recurring, rules, categoryCustomization, accounts,
+        defaultAccountId, accentColor, onboardingComplete, assets
+      }
+
+      pushSyncData(syncId, sessionPassword, state)
+        .then(() => {
+          setLastSynced(new Date().toLocaleString())
+        })
+        .catch((error) => {
+          console.error("Auto-sync failed:", error)
+        })
+    }, 3000)
+
+    return () => clearTimeout(syncTimer)
+  }, [
+    isLoaded, syncId, sessionPassword,
+    transactions, goals, categories, budgets, currency,
+    recurring, rules, categoryCustomization, accounts,
+    defaultAccountId, accentColor, assets
+  ])
+
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
   const totalAssetsValue = assets.reduce((sum, asset) => sum + asset.value, 0)
