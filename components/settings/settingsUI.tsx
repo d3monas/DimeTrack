@@ -16,6 +16,7 @@ import { AccountsManager } from "./accountManager"
 import { ColorIconPicker } from "./colorIconPicker"
 import { ACCENT_COLORS } from "@/lib/consts"
 import { HexColorPicker } from "react-colorful"
+import { SyncManager } from "./syncManager"
 
 type SettingsDialogThings = {
     categories: string[]
@@ -47,6 +48,12 @@ type SettingsDialogThings = {
     onAccentChange: (color: string) => void
     open: boolean
     onOpenChange: (open: boolean) => void
+    syncId: string
+    onEnableSync: (id: string, password: string) => void
+    onPullData: (id: string, password: string) => void
+    onPushData: () => void
+    isSyncing: boolean
+    lastSynced: string | null
 }
 
 const currencies = [
@@ -64,7 +71,8 @@ export function SettingsDialog({
     categories, onDeleteCategory, newCategory, setNewCategory, onAddNewCategory, currency, currencySymbol,
     onCurrencyChange, recurring, onDeleteRecurring, onImportCSV, onExportBackup, onImportBackup, onClearData,
     rules, onAddRule, onDeleteRule, categoryCustomization, onUpdateCategoryCustomization, accounts, onAddAccount,
-    onDeleteAccount, defaultAccountId, onSetDefaultAccount, onUpdateAccount, accentColor, onAccentChange, open, onOpenChange
+    onDeleteAccount, defaultAccountId, onSetDefaultAccount, onUpdateAccount, accentColor, onAccentChange, open, onOpenChange,
+    syncId, onEnableSync, onPullData, onPushData, isSyncing, lastSynced
 }: SettingsDialogThings) {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const backupInputRef = useRef<HTMLInputElement>(null)
@@ -90,11 +98,12 @@ export function SettingsDialog({
                 </DialogHeader>
 
                 <Tabs defaultValue="general" className="w-full">
-                    <TabsList className="grid w-full grid-cols-4">
+                    <TabsList className="grid w-full grid-cols-5">
                         <TabsTrigger value="general">General</TabsTrigger>
                         <TabsTrigger value="appearance">Appearance</TabsTrigger>
                         <TabsTrigger value="automation">Automation</TabsTrigger>
                         <TabsTrigger value="data">Data</TabsTrigger>
+                        <TabsTrigger value="sync">Sync</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="general" className="mt-6">
@@ -249,6 +258,10 @@ export function SettingsDialog({
                             }}>Clear all data</Button>
                         </div>
 
+                    </TabsContent>
+
+                    <TabsContent value="sync" className="mt-6">
+                        <SyncManager syncId={syncId} onEnableSync={onEnableSync} onPullData={onPullData} onPushData={onPushData} isSyncing={isSyncing} lastSynced={lastSynced} />
                     </TabsContent>
                 </Tabs>
             </DialogContent>
