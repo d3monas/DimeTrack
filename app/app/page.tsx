@@ -37,7 +37,7 @@ import type { FilterPeriod } from "@/lib/calculations"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
 import type { Rule } from "@/types/rule"
 import type { Account } from "@/types/account"
-import type { Asset } from "@/types/asset"
+import type { Asset, InvestmentTransaction, InvestmentType } from "@/types/asset"
 
 // libs
 import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends } from "@/lib/calculations"
@@ -61,6 +61,7 @@ import { get12MonthForecast } from "@/lib/calculations"
 import { getSampleData } from "@/lib/sampleData"
 import { TourGuide } from "@/components/tutorials/tourGuide"
 import { pushSyncData, pullSyncData } from "@/lib/sync"
+import { getPortfolioSummary } from "@/lib/investmentCalculations"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -320,7 +321,7 @@ export default function Home() {
 
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
-  const totalAssetsValue = assets.reduce((sum, asset) => sum + asset.value, 0)
+  const totalAssetsValue = getPortfolioSummary(assets).totalValue
   const balance = lifetimeIncome - lifetimeExpenses + totalAssetsValue
   const currencySymbol = { USD: "$", EUR: "€", GBP: "£", JPY: "¥", CAD: "CA$", AUD: "A$", CHF: "Fr", INR: "₹" }[currency] ?? "$"
 
@@ -858,13 +859,18 @@ export default function Home() {
     toast.success("Tour finished! Start adding your own data.")
   }
 
-  function addAsset(name: string, value: number, notes?: string, isRecurring?: boolean) {
+  function addAsset(name: string, ticker: string, type: InvestmentType, notes?: string) {
+    if (!name.trim()) {
+      return
+    }
+
     const newAsset: Asset = {
       id: crypto.randomUUID(),
-      name,
-      value,
+      name: name.trim(),
+      ticker: ticker || undefined,
+      type,
       notes,
-      isRecurring
+      transactions: []
     }
     setAssets((prev) => [...prev, newAsset])
   }
@@ -873,8 +879,43 @@ export default function Home() {
     setAssets((prev) => prev.filter((asset) => asset.id !== id))
   }
 
-  function updateAsset(id: string, name: string, value: number, notes?: string, isRecurring?: boolean) {
-    setAssets((prev) => prev.map((asset) => asset.id === id ? { ...asset, name, value, notes, isRecurring } : asset))
+  function handleLogInvestmentTransaction(assetId: string, type: "buy" | "sell" | "update", quantity: number, pricePerUnit: number, date: string, notes?: string) {
+    const asset = assets.find((a) => a.id === assetId)
+    if (!asset) {
+      return
+    }
+
+    const newInvestmentTransaction: InvestmentTransaction = {
+      id: crypto.randomUUID(),
+      type,
+      date,
+      quantity,
+      pricePerUnit,
+      notes
+    }
+
+    setAssets((prev) => prev.map((a) =>
+      a.id === assetId ? { ...a, transactions: [...a.transactions, newInvestmentTransaction]} : a
+    ))
+
+    if (type !== "update") {
+      const totalCashValue = quantity * pricePerUnit
+      const isBuy = type === "buy"
+
+      setCategories((prev) => prev.includes("Investments") ? prev : [...prev, "Investments"])
+
+      const cashTransaction: Transaction = {
+        id: crypto.randomUUID(),
+        description: `${isBuy ? "Bought" : "Sold"} ${quantity} ${asset.ticker || asset.name} @ ${currencySymbol}${pricePerUnit.toFixed(2)}`,
+        amount: totalCashValue,
+        type: isBuy ? "expense" : "income",
+        category: "Investments",
+        date: date,
+        notes: notes,
+        accountId: defaultAccountId || undefined
+      }
+      setTransactions((prev) => [cashTransaction, ...prev])
+    }
   }
 
   function getCurrentState() {
@@ -1201,7 +1242,7 @@ export default function Home() {
 
           {/* investments tab */}
           <TabsContent value="investments" className="space-y-6 mt-4">
-            <Investments assets={assets} currencySymbol={currencySymbol} onAddAsset={addAsset} onUpdateAsset={updateAsset} onDeleteAsset={deleteAsset} />
+            <Investments assets={assets} currencySymbol={currencySymbol} onAddAsset={addAsset} onLogInvestmentTransaction={handleLogInvestmentTransaction} onDeleteAsset={deleteAsset} />
           </TabsContent>
 
           {/* budgets and goals tab */}
