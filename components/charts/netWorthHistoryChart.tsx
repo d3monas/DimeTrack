@@ -1,4 +1,4 @@
-import { NetWorthHistoryPoint } from "@/lib/calculations"
+import { NetWorthHistoryPoint } from "@/lib/calculations/calculations"
 import { EmptyState } from "../emptyState"
 import { ResponsiveContainer, AreaChart, XAxis, YAxis, Tooltip, Area } from "recharts"
 import { chartTooltipStyle, formatYAxis } from "@/lib/chartStyles"

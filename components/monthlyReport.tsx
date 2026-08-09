@@ -1,4 +1,4 @@
-import { MonthlyReportData } from "@/lib/calculations";
+import { MonthlyReportData } from "@/lib/calculations/calculations";
 import { useState } from "react";
 import { Button } from "./ui/button"
 import { DialogTrigger, Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";

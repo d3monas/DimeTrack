@@ -1,4 +1,4 @@
-import { ForecastPoint } from "@/lib/calculations"
+import { ForecastPoint } from "@/lib/calculations/calculations"
 import { EmptyState } from "../emptyState"
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from "recharts"
 import { chartTooltipStyle, formatYAxis } from "@/lib/chartStyles"

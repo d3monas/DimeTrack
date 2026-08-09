@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import type { Transaction } from "@/types/transaction"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
 import { getNextDate } from "@/lib/recurring"
-import { calculateIncome, calculateExpenses } from "@/lib/calculations"
+import { calculateIncome, calculateExpenses } from "@/lib/calculations/calculations"
 
 type CalendarViewThings = {
     transactions: Transaction[]

@@ -33,14 +33,14 @@ import { Investments } from "@/components/investments"
 // types
 import type { Transaction, TransactionSplit } from "@/types/transaction"
 import type { Goal } from "@/types/goal"
-import type { FilterPeriod } from "@/lib/calculations"
+import type { FilterPeriod } from "@/lib/calculations/calculations"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
 import type { Rule } from "@/types/rule"
 import type { Account } from "@/types/account"
 import type { Asset, InvestmentTransaction, InvestmentType } from "@/types/asset"
 
 // libs
-import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends } from "@/lib/calculations"
+import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends } from "@/lib/calculations/calculations"
 import {
   saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring,
   saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, saveAccentColor, saveOnboardingComplete,
@@ -54,14 +54,14 @@ import { exportToJSON, importFromJSON } from "@/lib/data"
 import { autoCategories } from "@/lib/rules"
 import { categoryCustomization } from "@/lib/categoryCustomization"
 import { colord } from "colord"
-import { getNetWorthHistory } from "@/lib/calculations"
-import { getMonthlyReportData } from "@/lib/calculations"
+import { getNetWorthHistory } from "@/lib/calculations/calculations"
+import { getMonthlyReportData } from "@/lib/calculations/calculations"
 import { ArrowLeftRight, CalendarDays, LayoutDashboard, Repeat, Settings, Target, Search, LineChart } from "lucide-react"
-import { get12MonthForecast } from "@/lib/calculations"
+import { get12MonthForecast } from "@/lib/calculations/calculations"
 import { getSampleData } from "@/lib/sampleData"
 import { TourGuide } from "@/components/tutorials/tourGuide"
 import { pushSyncData, pullSyncData } from "@/lib/sync"
-import { getPortfolioSummary } from "@/lib/investmentCalculations"
+import { getPortfolioSummary } from "@/lib/calculations/investmentCalculations"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -914,7 +914,7 @@ export default function Home() {
       const totalCashValue = quantity * pricePerUnit
       const isBuy = type === "buy"
 
-      setCategories((prev) => prev.includes("Investments") ? prev : [...prev, "Investments"])
+      setCategories((prev) => prev.includes(INVESTMENT_CATEGORY) ? prev : [...prev, INVESTMENT_CATEGORY])
 
       const cashTransaction: Transaction = {
         id: crypto.randomUUID(),
