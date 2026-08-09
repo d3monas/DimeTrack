@@ -1,5 +1,8 @@
 import type { RecurringTransaction } from "@/types/recurringTransaction"
 
+export const STARTING_BALANCE_CATEGORY = "Starting Balance"
+export const INVESTMENT_CATEGORY = "Investments"
+
 export function savingsCategoryForGoal(goalName: string): string {
     return (
         `Savings: ${goalName}`
@@ -8,7 +11,9 @@ export function savingsCategoryForGoal(goalName: string): string {
 
 export function isSavingsCategory(category: string): boolean {
     return (
-        category.startsWith("Savings: ")
+        category.startsWith("Savings: ") ||
+        category === STARTING_BALANCE_CATEGORY ||
+        category === INVESTMENT_CATEGORY
     )
 }
 
@@ -19,9 +24,6 @@ export const recurringIntervalLabels: Record<RecurringTransaction["interval"], s
 export const DEFAULT_CATEGORY_COLOR = "#6b7280"
 export const DEFAULT_CATEGORY_ICON = "Tag"
 export const DEFAULT_ACCOUNT_ICON = "Wallet"
-
-export const STARTING_BALANCE_CATEGORY = "Starting Balance"
-export const INVESMENT_CATEGORY = "Investments"
 
 export const ACCENT_COLORS = [
     {name: "Emerald", hex: "#10b981"},
