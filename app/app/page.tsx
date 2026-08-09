@@ -47,7 +47,7 @@ import {
   saveTutorialSeen, saveAssets, saveSyncId, clearAllData
 } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
-import { savingsCategoryForGoal, isSavingsCategory, STARTING_BALANCE_CATEGORY } from "@/lib/consts"
+import { savingsCategoryForGoal, isSavingsCategory, STARTING_BALANCE_CATEGORY, INVESTMENT_CATEGORY } from "@/lib/consts"
 import { processRecurring } from "@/lib/recurring"
 import { importFromCSV } from "@/lib/csv"
 import { exportToJSON, importFromJSON } from "@/lib/data"
@@ -879,6 +879,18 @@ export default function Home() {
     setAssets((prev) => prev.filter((asset) => asset.id !== id))
   }
 
+  function updateAsset(id: string, name: string, ticker: string, type: InvestmentType, notes?: string) {
+    setAssets((prev) => prev.map((asset) =>
+      asset.id === id ? {
+        ...asset,
+        name,
+        ticker: ticker || undefined,
+        type,
+        notes
+      } : asset
+    ))
+  }
+
   function handleLogInvestmentTransaction(assetId: string, type: "buy" | "sell" | "update", quantity: number, pricePerUnit: number, date: string, notes?: string) {
     const asset = assets.find((a) => a.id === assetId)
     if (!asset) {
@@ -909,7 +921,7 @@ export default function Home() {
         description: `${isBuy ? "Bought" : "Sold"} ${quantity} ${asset.ticker || asset.name} @ ${currencySymbol}${pricePerUnit.toFixed(2)}`,
         amount: totalCashValue,
         type: isBuy ? "expense" : "income",
-        category: "Investments",
+        category: INVESTMENT_CATEGORY,
         date: date,
         notes: notes,
         accountId: defaultAccountId || undefined
@@ -1242,7 +1254,13 @@ export default function Home() {
 
           {/* investments tab */}
           <TabsContent value="investments" className="space-y-6 mt-4">
-            <Investments assets={assets} currencySymbol={currencySymbol} onAddAsset={addAsset} onLogInvestmentTransaction={handleLogInvestmentTransaction} onDeleteAsset={deleteAsset} />
+            <Investments 
+              assets={assets}
+              currencySymbol={currencySymbol} 
+              onAddAsset={addAsset}
+              onUpdateAsset={updateAsset}
+              onLogInvestmentTransaction={handleLogInvestmentTransaction} 
+              onDeleteAsset={deleteAsset} />
           </TabsContent>
 
           {/* budgets and goals tab */}
