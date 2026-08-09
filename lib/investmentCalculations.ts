@@ -1,4 +1,4 @@
-import type { Asset, InvestmentTransaction } from "@/types/asset"
+import type { Asset } from "@/types/asset"
 
 export type AssetSummary = {
   quantity: number
@@ -16,9 +16,7 @@ export function getAssetSummary(asset: Asset): AssetSummary {
   let currentPrice = 0
   let latestDate = 0
 
-  const sorted = [...asset.transactions].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  )
+  const sorted = [...asset.transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
   sorted.forEach((transaction) => {
     if (transaction.type === "buy") {
