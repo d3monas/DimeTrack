@@ -16,7 +16,9 @@ export function getAssetSummary(asset: Asset): AssetSummary {
   let currentPrice = 0
   let latestDate = 0
 
-  const sorted = [...asset.transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  const sorted = [...(asset.transactions || [])].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  )
 
   sorted.forEach((transaction) => {
     if (transaction.type === "buy") {
@@ -51,27 +53,31 @@ export function getAssetSummary(asset: Asset): AssetSummary {
     totalCost,
     currentValue,
     totalProfitLoss,
-    plPercentage
+    plPercentage,
   }
 }
 
 export function getPortfolioSummary(assets: Asset[]) {
-    let totalValue = 0
-    let totalCost = 0
+  let totalValue = 0
+  let totalCost = 0
 
-    assets.forEach((asset) => {
-        const summary = getAssetSummary(asset)
-        totalValue += summary.currentValue
-        totalCost += summary.totalCost
-    })
-
-    const totalProfitLoss = totalValue - totalCost
-    const plPercentage = totalCost > 0 ? (totalProfitLoss / totalCost) * 100 : 0
-
-    return {
-        totalValue,
-        totalCost,
-        totalProfitLoss,
-        plPercentage
+  assets.forEach((asset) => {
+    if (!asset.transactions) {
+      return
     }
+
+    const summary = getAssetSummary(asset)
+    totalValue += summary.currentValue
+    totalCost += summary.totalCost
+  })
+
+  const totalProfitLoss = totalValue - totalCost
+  const plPercentage = totalCost > 0 ? (totalProfitLoss / totalCost) * 100 : 0
+
+  return {
+    totalValue,
+    totalCost,
+    totalProfitLoss,
+    plPercentage,
+  }
 }
