@@ -21,6 +21,7 @@ export const DEFAULT_CATEGORY_ICON = "Tag"
 export const DEFAULT_ACCOUNT_ICON = "Wallet"
 
 export const STARTING_BALANCE_CATEGORY = "Starting Balance"
+export const INVESMENT_CATEGORY = "Investments"
 
 export const ACCENT_COLORS = [
     {name: "Emerald", hex: "#10b981"},
