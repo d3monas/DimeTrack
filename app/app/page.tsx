@@ -16,7 +16,7 @@ import { TrendChart } from "@/components/charts/trendChart"
 import { UpcomingTransactions } from "@/components/upcomingTransactions"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
-import { CalendarView } from "@/components/calendarView"
+import { CashFlowTimeline } from "@/components/cashFlowTimeline"
 import { AccountBalances } from "@/components/accountBalances"
 import { SmartStats } from "@/components/smartStats"
 import { NetWorth } from "@/components/netWorth"
@@ -1133,9 +1133,9 @@ export default function Home() {
               <LayoutDashboard className="w-4 h-4" />
               <span className="hidden sm:inline">Overview</span>
             </TabsTrigger>
-            <TabsTrigger value="calendar" className="flex-1 sm:flex-initial gap-1.5">
+            <TabsTrigger value="timeline" className="flex-1 sm:flex-initial gap-1.5">
               <CalendarDays className="w-4 h-4" />
-              <span className="hidden sm:inline">Calendar</span>
+              <span className="hidden sm:inline">Timeline</span>
             </TabsTrigger>
             <TabsTrigger value="transactions" className="flex-1 sm:flex-initial gap-1.5">
               <ArrowLeftRight className="w-4 h-4" />
@@ -1181,8 +1181,8 @@ export default function Home() {
           </TabsContent>
 
           {/* Calendar */}
-          <TabsContent value="calendar" className="space-y-6 mt-4">
-            <CalendarView transactions={transactions} recurring={recurring} currencySymbol={currencySymbol} />
+          <TabsContent value="timeline" className="space-y-6 mt-4">
+            <CashFlowTimeline currentBalance={balance} recurring={recurring} currencySymbol={currencySymbol} />
           </TabsContent>
 
           {/* Subscriptions tab */}
