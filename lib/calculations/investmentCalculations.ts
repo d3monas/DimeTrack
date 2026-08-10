@@ -157,5 +157,18 @@ export function getPortfolioHistory(assets: Asset[]): PortfolioHistory[] {
   if (history.length === 0 && assets.length > 0) {
     return [{ date: new Date().toLocaleDateString(), value: 0, cost: 0 }]
   }
+
+  if (history.length > 0) {
+    const firstDateStr = history[0].date
+    const firstDate = new Date(firstDateStr)
+    firstDate.setDate(firstDate.getDate() - 1)
+
+    history.unshift({
+      date: firstDate.toLocaleDateString(),
+      value: 0,
+      cost: 0,
+    })
+  }
+  
   return history
 }
