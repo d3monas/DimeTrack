@@ -7,8 +7,9 @@ import { Textarea } from "./ui/textarea"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
 import { FieldError } from "./fieldError"
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "./ui/select"
-import { getAssetSummary, getPortfolioSummary } from "@/lib/calculations/investmentCalculations"
+import { getAssetSummary, getPortfolioSummary, getPortfolioHistory } from "@/lib/calculations/investmentCalculations"
 import { Trash2, PlusCircle, TrendingUp, TrendingDown, Wallet, Pencil } from "lucide-react"
+import { PortfolioChart } from "./charts/portfolioChart"
 
 type InvestmentsThings = {
   assets: Asset[]
@@ -40,6 +41,7 @@ export function Investments({ assets, currencySymbol, onAddAsset, onUpdateAsset,
   const [transactionNotes, setTransactionNotes] = useState("")
 
   const portfolio = getPortfolioSummary(assets)
+  const historyData = getPortfolioHistory(assets)
 
   function handleAddAsset() {
     const newErrors: Record<string, string> = {}
@@ -160,6 +162,8 @@ export function Investments({ assets, currencySymbol, onAddAsset, onUpdateAsset,
           </h2>
         </div>
       </div>
+
+      <PortfolioChart data={historyData} currencySymbol={currencySymbol} />
 
       <div className="rounded-2xl border p-4 sm:p-6">
         <div className="flex items-center justify-between mb-4">
