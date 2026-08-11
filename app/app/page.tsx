@@ -1121,6 +1121,8 @@ export default function Home() {
               onPushData={handlePushData}
               isSyncing={isSyncing}
               lastSynced={lastSynced}
+              dashboardVisibility={dashboardVisibility}
+              onUpdateDashboardVisibility={(key, value) => setDashboardVisiblity(prev => ({...prev, [key]: value }))}
             />
           </div>
         </header>
@@ -1169,27 +1171,33 @@ export default function Home() {
 
           {/* Overview tab */}
           <TabsContent value="overview" className="space-y-6 mt-4">
-            {/* networth */}
-            <NetWorth currentBalance={balance} previousBalance={prevBalance} currencySymbol={currencySymbol} />
-            {/* networth history */}
-            <NetWorthHistoryChart data={netWorthHistory} currencySymbol={currencySymbol} />
-            {/* upcoming recurring transactions */}
-            <UpcomingTransactions recurring={recurring} currencySymbol={currencySymbol} />
-            {/* smart stats */}
-            <SmartStats monthlyExpenses={expenses} currencySymbol={currencySymbol} />
-            {/* Trend */}
-            <TrendChart data={monthlyTrends} currencySymbol={currencySymbol} />
-            {/* 12 month forecast */}
-            <ForecastChart data={forecastData} currencySymbol={currencySymbol} />
-            {/* account balances */}
-            <AccountBalances accounts={accountBalances} currencySymbol={currencySymbol} />
-
-            <div className="grid gap-4 md:grid-cols-2">
-              {/* Breakdown into categories */}
-              <CategoryBreakdown totals={categoryTotals} currencySymbol={currencySymbol} />
-              {/* chart */}
-              <SpendingChart totals={categoryTotals} categoryCustomization={categoryCustomization} currencySymbol={currencySymbol} />
-            </div>
+            {dashboardVisibility.networth && (
+              <NetWorth currentBalance={balance} previousBalance={prevBalance} currencySymbol={currencySymbol} />
+            )}
+            {dashboardVisibility.networth_history && (
+              <NetWorthHistoryChart data={netWorthHistory} currencySymbol={currencySymbol} />
+            )}
+            {dashboardVisibility.upcoming && (
+              <UpcomingTransactions recurring={recurring} currencySymbol={currencySymbol} />
+            )}
+            {dashboardVisibility.smart_stats && (
+              <SmartStats monthlyExpenses={expenses} currencySymbol={currencySymbol} />
+            )}
+            {dashboardVisibility.trend && (
+              <TrendChart data={monthlyTrends} currencySymbol={currencySymbol} />
+            )}
+            {dashboardVisibility.forecast && (
+              <ForecastChart data={forecastData} currencySymbol={currencySymbol} />
+            )}
+            {dashboardVisibility.accounts && (
+              <AccountBalances accounts={accountBalances} currencySymbol={currencySymbol} />
+            )}
+            {dashboardVisibility.breakdown && (
+              <div className="grid gap-4 md:grid-cols-2">
+                <CategoryBreakdown totals={categoryTotals} currencySymbol={currencySymbol} />
+                <SpendingChart totals={categoryTotals} categoryCustomization={categoryCustomization} currencySymbol={currencySymbol} />
+              </div>
+            )}
           </TabsContent>
 
           {/* Calendar */}
