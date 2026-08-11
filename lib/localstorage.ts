@@ -6,7 +6,6 @@ import { categoryCustomization } from "@/lib/categoryCustomization"
 import type { Account } from "@/types/account"
 import type { Asset } from "@/types/asset"
 import { DashboardVisibility } from "@/types/dashboard"
-import { TruckMonsterIcon } from "@hugeicons/core-free-icons"
 
 const isBrowser = typeof window !== "undefined"
 
