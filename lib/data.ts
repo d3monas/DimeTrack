@@ -5,6 +5,7 @@ import type { Rule } from "@/types/rule"
 import type { Account } from "@/types/account"
 import type { categoryCustomization } from "./categoryCustomization"
 import type { Asset } from "@/types/asset"
+import type { DashboardVisibility } from "@/types/dashboard"
 
 type AppBackupThings = {
     transactions: Transaction[]
@@ -20,6 +21,7 @@ type AppBackupThings = {
     defaultAccountId?: string
     accentColor?: string
     onboardingComplete?: boolean
+    dashboardVisibility?: DashboardVisibility
 }
 
 export function exportToJSON(data: AppBackupThings, filename = "dimetrack-backup.json") {
