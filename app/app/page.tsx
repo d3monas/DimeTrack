@@ -148,6 +148,7 @@ export default function Home() {
     setTutorialSeen(data.tutorialSeen || false)
     setSyncId(data.syncId || "")
     setAssets(data.assets || [])
+    setDashboardVisibility(data.dashboardVisibility)
     setIsLoaded(true)
   }, [])
 
