@@ -714,7 +714,17 @@ export default function Home() {
     setAccentColor(data.accentColor || "")
     setOnboardingComplete(data.onboardingComplete || false)
     setAssets(data.assets || [])
-    setDashboardVisibility(data.dashboardVisibility)
+
+    setDashboardVisibility(data.dashboardVisibility || {
+      networth: true,
+      networth_history: true,
+      upcoming: true,
+      smart_stats: true,
+      trend: true,
+      forecast: true,
+      accounts: true,
+      breakdown: true
+    })
 
     toast.success("Backup file imported successfully")
   }
@@ -1031,7 +1041,17 @@ export default function Home() {
       setDefaultAccountId(data.defaultAccountId || "")
       setAccentColor(data.accentColor || "")
       setAssets(data.assets || [])
-      setDashboardVisibility(data.dashboardVisibility)
+
+      setDashboardVisibility(data.dashboardVisibility || {
+        networth: true,
+        networth_history: true,
+        upcoming: true,
+        smart_stats: true,
+        trend: true,
+        forecast: true,
+        accounts: true,
+        breakdown: true
+      })
 
       setSyncId(id)
       setSessionPassword(password)
