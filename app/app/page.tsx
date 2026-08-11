@@ -45,7 +45,7 @@ import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMont
 import {
   saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring,
   saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, saveAccentColor, saveOnboardingComplete,
-  saveTutorialSeen, saveAssets, saveSyncId, clearAllData
+  saveTutorialSeen, saveAssets, saveSyncId, saveDashboardVisibility, clearAllData
 } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 import { savingsCategoryForGoal, isSavingsCategory, STARTING_BALANCE_CATEGORY, INVESTMENT_CATEGORY } from "@/lib/consts"
@@ -119,7 +119,7 @@ export default function Home() {
 
   const [assets, setAssets] = useState<Asset[]>([])
 
-  const [dashboardVisibility, setDashboardVisiblity] = useState<DashboardVisibility>({
+  const [dashboardVisibility, setDashboardVisibility] = useState<DashboardVisibility>({
     networth: true,
     networth_history: true,
     upcoming: true,
@@ -330,6 +330,12 @@ export default function Home() {
     recurring, rules, categoryCustomization, accounts,
     defaultAccountId, accentColor, assets
   ])
+
+  useEffect(() => {
+    if (isLoaded) {
+      saveDashboardVisibility(dashboardVisibility)
+    }
+  }, [isLoaded, dashboardVisibility])
 
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
@@ -1122,7 +1128,7 @@ export default function Home() {
               isSyncing={isSyncing}
               lastSynced={lastSynced}
               dashboardVisibility={dashboardVisibility}
-              onUpdateDashboardVisibility={(key, value) => setDashboardVisiblity(prev => ({...prev, [key]: value }))}
+              onUpdateDashboardVisibility={(key, value) => setDashboardVisibility(prev => ({...prev, [key]: value }))}
             />
           </div>
         </header>
