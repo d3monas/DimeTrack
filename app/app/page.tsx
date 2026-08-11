@@ -688,7 +688,8 @@ export default function Home() {
       defaultAccountId,
       accentColor,
       onboardingComplete,
-      assets
+      assets,
+      dashboardVisibility
     })
   }
 
@@ -713,6 +714,7 @@ export default function Home() {
     setAccentColor(data.accentColor || "")
     setOnboardingComplete(data.onboardingComplete || false)
     setAssets(data.assets || [])
+    setDashboardVisibility(data.dashboardVisibility)
 
     toast.success("Backup file imported successfully")
   }
@@ -952,7 +954,8 @@ export default function Home() {
     return {
       transactions, goals, categories, budgets, currency,
       recurring, rules, categoryCustomization, accounts,
-      defaultAccountId, accentColor, onboardingComplete, assets
+      defaultAccountId, accentColor, onboardingComplete, assets,
+      dashboardVisibility
     }
   }
 
@@ -1028,6 +1031,7 @@ export default function Home() {
       setDefaultAccountId(data.defaultAccountId || "")
       setAccentColor(data.accentColor || "")
       setAssets(data.assets || [])
+      setDashboardVisibility(data.dashboardVisibility)
 
       setSyncId(id)
       setSessionPassword(password)
