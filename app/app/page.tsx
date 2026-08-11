@@ -38,6 +38,7 @@ import type { RecurringTransaction } from "@/types/recurringTransaction"
 import type { Rule } from "@/types/rule"
 import type { Account } from "@/types/account"
 import type { Asset, InvestmentTransaction, InvestmentType } from "@/types/asset"
+import type { DashboardVisibility } from "@/types/dashboard"
 
 // libs
 import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends } from "@/lib/calculations/calculations"
@@ -117,6 +118,17 @@ export default function Home() {
   const [sessionPassword, setSessionPassword] = useState<string | null>(null)
 
   const [assets, setAssets] = useState<Asset[]>([])
+
+  const [dashboardVisibility, setDashboardVisiblity] = useState<DashboardVisibility>({
+    networth: true,
+    networth_history: true,
+    upcoming: true,
+    smart_stats: true,
+    trend: true,
+    forecast: true,
+    accounts: true,
+    breakdown: true,
+  })
 
   // load localstorage 
   useEffect(() => {
