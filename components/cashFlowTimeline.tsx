@@ -1,10 +1,10 @@
 import { useState, useMemo } from "react"
 import { Button } from "./ui/button"
 import { EmptyState } from "./emptyState"
-import { TrendingUp, TrendingDown, CalendarClock, Wallet } from "lucide-react"
+import { TrendingUp, TrendingDown, CalendarClock, Wallet, ArrowDownUp, AlertTriangle } from "lucide-react"
 import { getNextDate } from "@/lib/recurring"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
-import { AreaChart, Area, Tooltip, ResponsiveContainer } from "recharts"
+import { AreaChart, Area, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from "recharts"
 import { chartTooltipStyle } from "@/lib/chartStyles"
 import { cn } from "@/lib/utils"
 
@@ -14,22 +14,34 @@ type CashFlowTimelineThings = {
     currencySymbol: string
 }
 
-const filterOptions = [
-    { label: "7 days", value: 7 },
-    { label: "30 days", value: 30 },
-    { label: "3 months", value: 90 },
-]
+type TimelineEvent = {
+    date: Date
+    description: string
+    amount: number
+    type: "income" | "expense" | "transfer"
+}
 
 export function CashFlowTimeline({ currentBalance, recurring, currencySymbol }: CashFlowTimelineThings) {
-    const [filterDays, setFilterDays] = useState(7)
+    const [filterValue, setFilterValue] = useState<"7days" | "1month" | "3months">("7days")
 
-    const { groupedEvents, chartData, projectedBalance } = useMemo(() => {
+    const { timelineGroups, chartData, projectedBalance, minBalance, filterLabel } = useMemo(() => {
         const now = new Date()
         now.setHours(0, 0, 0, 0)
         const futureDate = new Date(now)
-        futureDate.setDate(now.getDate() + filterDays)
+        let label = "7 days"
 
-        const events: { date: Date; description: string; amount: number; type: "income" | "expense" | "transfer" }[] = []
+        if (filterValue === "7days") {
+            futureDate.setDate(now.getDate() + 7)
+            label = "7 days"
+        } else if (filterValue === "1month") {
+            futureDate.setMonth(now.getMonth() + 1)
+            label = "1 month"
+        } else if (filterValue === "3months") {
+            futureDate.setMonth(now.getMonth() + 3)
+            label = "3 months"
+        }
+
+        const events: TimelineEvent[] = []
 
         recurring.forEach((rec) => {
             if (rec.isActive === false) return
@@ -52,30 +64,45 @@ export function CashFlowTimeline({ currentBalance, recurring, currencySymbol }: 
 
         events.sort((a, b) => a.date.getTime() - b.date.getTime())
 
-        const groups: Record<string, typeof events> = {}
-        events.forEach((ev) => {
-            const dateStr = ev.date.toLocaleDateString(undefined, { month: "short", day: "numeric" })
-            if (!groups[dateStr]) groups[dateStr] = []
-            groups[dateStr].push(ev)
-        })
-
-        const groupedEvents = Object.entries(groups)
-
         let running = currentBalance
+        let minBal = currentBalance
         const chartData = [{ date: "Today", balance: running }]
+
+        const monthGroupsMap: Record<string, { monthName: string, daysMap: Record<string, { date: Date, events: TimelineEvent[], dayEndBalance: number }> }> = {}
 
         events.forEach((ev) => {
             if (ev.type === "income") running += ev.amount
             else if (ev.type === "expense") running -= ev.amount
 
-            const dateStr = ev.date.toLocaleDateString(undefined, { month: "short", day: "numeric" })
-            chartData.push({ date: dateStr, balance: running })
+            if (running < minBal) minBal = running
+
+            const chartDateStr = ev.date.toLocaleDateString(undefined, { month: "short", day: "numeric" })
+            chartData.push({ date: chartDateStr, balance: running })
+
+            const monthName = ev.date.toLocaleDateString(undefined, { month: "long", year: "numeric" })
+            if (!monthGroupsMap[monthName]) {
+                monthGroupsMap[monthName] = { monthName, daysMap: {} }
+            }
+
+            const dayStr = ev.date.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })
+            if (!monthGroupsMap[monthName].daysMap[dayStr]) {
+                monthGroupsMap[monthName].daysMap[dayStr] = { date: ev.date, events: [], dayEndBalance: running }
+            }
+
+            monthGroupsMap[monthName].daysMap[dayStr].dayEndBalance = running
+            monthGroupsMap[monthName].daysMap[dayStr].events.push(ev)
         })
 
-        return { groupedEvents, chartData, projectedBalance: running }
-    }, [recurring, filterDays, currentBalance])
+        const timelineGroups = Object.values(monthGroupsMap).map(monthGroup => ({
+            monthName: monthGroup.monthName,
+            days: Object.values(monthGroup.daysMap).sort((a, b) => a.date.getTime() - b.date.getTime())
+        }))
+
+        return { timelineGroups, chartData, projectedBalance: running, minBalance: minBal, filterLabel: label }
+    }, [recurring, filterValue, currentBalance])
 
     const isProjectionPositive = projectedBalance >= currentBalance
+    const hasNegativeDip = minBalance < 0
 
     return (
         <div className="mt-6 space-y-6">
@@ -87,11 +114,9 @@ export function CashFlowTimeline({ currentBalance, recurring, currencySymbol }: 
                     <p className="text-sm text-muted-foreground">Current balance: <span className="font-bold text-foreground">{currencySymbol}{currentBalance.toFixed(2)}</span></p>
                 </div>
                 <div className="flex gap-1 rounded-lg border p-1 w-fit">
-                    {filterOptions.map((opt) => (
-                        <Button key={opt.value} size="sm" variant={filterDays === opt.value ? "default" : "ghost"} onClick={() => setFilterDays(opt.value)} className="h-7">
-                            {opt.label}
-                        </Button>
-                    ))}
+                    <Button size="sm" variant={filterValue === "7days" ? "default" : "ghost"} onClick={() => setFilterValue("7days")} className="h-7">7 days</Button>
+                    <Button size="sm" variant={filterValue === "1month" ? "default" : "ghost"} onClick={() => setFilterValue("1month")} className="h-7">1 month</Button>
+                    <Button size="sm" variant={filterValue === "3months" ? "default" : "ghost"} onClick={() => setFilterValue("3months")} className="h-7">3 months</Button>
                 </div>
             </div>
 
@@ -105,11 +130,18 @@ export function CashFlowTimeline({ currentBalance, recurring, currencySymbol }: 
                         {isProjectionPositive ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
                         {currencySymbol}{projectedBalance.toFixed(2)}
                     </h3>
-                    <p className="text-xs text-muted-foreground mt-1">In {filterDays} days</p>
+                    <p className="text-xs text-muted-foreground mt-1">In {filterLabel}</p>
+
+                    {hasNegativeDip && (
+                        <div className="mt-3 flex items-center gap-2 text-xs font-medium text-red-600 bg-red-500/10 p-2 rounded-md">
+                            <AlertTriangle className="h-4 w-4" />
+                            Warning: Balance drops below zero during this period
+                        </div>
+                    )}
                 </div>
 
                 <div className="rounded-xl border p-2">
-                    <div className="h-20 w-full">
+                    <div className="h-24 w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={chartData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
                                 <defs>
@@ -118,10 +150,12 @@ export function CashFlowTimeline({ currentBalance, recurring, currencySymbol }: 
                                         <stop offset="95%" stopColor={isProjectionPositive ? "#22c55e" : "#ef4444"} stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                                 <Tooltip
                                     formatter={(value) => [`${currencySymbol}${Number(value).toFixed(2)}`, "Balance"]}
                                     {...chartTooltipStyle}
                                 />
+                                <ReferenceLine y={0} stroke="#ef4444" strokeDasharray="4 4" />
                                 <Area type="monotone" dataKey="balance" stroke={isProjectionPositive ? "#22c55e" : "#ef4444"} strokeWidth={2} fillOpacity={1} fill="url(#colorBalance)" />
                             </AreaChart>
                         </ResponsiveContainer>
@@ -130,36 +164,70 @@ export function CashFlowTimeline({ currentBalance, recurring, currencySymbol }: 
             </div>
 
             <div className="rounded-2xl border p-4 sm:p-6">
-                {groupedEvents.length === 0 ? (
-                    <EmptyState message={`No recurring transactions expected in the next ${filterDays} days`} />
+                {timelineGroups.length === 0 ? (
+                    <EmptyState message={`No recurring transactions expected in the next ${filterLabel}`} />
                 ) : (
-                    <div className="space-y-6">
-                        {groupedEvents.map(([dateStr, events]) => (
-                            <div key={dateStr} className="relative pl-6">
-                                <div className="absolute left-0 top-1 h-full w-px bg-border" />
-                                <div className="absolute left-0.75 top-1.5 h-2 w-2 rounded-full bg-primary ring-4 ring-background" />
-                                <h3 className="text-sm font-semibold mb-2 text-muted-foreground">{dateStr}</h3>
-                                <div className="space-y-2">
-                                    {events.map((ev, i) => (
-                                        <div key={i} className="flex items-center justify-between gap-2 rounded-lg bg-muted/30 p-2 transition-colors hover:bg-muted">
-                                            <div className="flex items-center gap-3 min-w-0">
+                    <div className="space-y-8">
+                        {timelineGroups.map((monthGroup) => (
+                            <div key={monthGroup.monthName}>
+                                <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4 pb-2 border-b">
+                                    {monthGroup.monthName}
+                                </h3>
+                                <div className="space-y-6">
+                                    {monthGroup.days.map((day) => {
+                                        const isDayNegative = day.dayEndBalance < 0
+                                        return (
+                                            <div key={day.date.toISOString()} className="relative pl-6">
+                                                <div className="absolute left-0 top-1 h-full w-px bg-border" />
                                                 <div className={cn(
-                                                    "h-8 w-8 rounded-full flex items-center justify-center shrink-0",
-                                                    ev.type === "income" ? "bg-green-500/10" : "bg-red-500/10"
-                                                )}>
-                                                    {ev.type === "income" ? <TrendingUp className="h-4 w-4 text-green-600" /> : <TrendingDown className="h-4 w-4 text-red-600" />}
+                                                    "absolute left-0.75 top-1.5 h-2 w-2 rounded-full ring-4 ring-background",
+                                                    isDayNegative ? "bg-red-500" : "bg-primary"
+                                                )} />
+
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <span className={cn("text-sm font-semibold", isDayNegative ? "text-red-600" : "text-muted-foreground")}>
+                                                        {day.date.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}
+                                                    </span>
+                                                    <span className={cn(
+                                                        "text-xs font-bold",
+                                                        isDayNegative ? "text-red-600" : "text-muted-foreground"
+                                                    )}>
+                                                        {currencySymbol}{day.dayEndBalance.toFixed(2)}
+                                                    </span>
                                                 </div>
-                                                <div className="min-w-0">
-                                                    <p className="text-sm font-medium truncate">{ev.description}</p>
-                                                    <p className="text-xs text-muted-foreground">Recurring</p>
+
+                                                <div className="space-y-2">
+                                                    {day.events.map((ev, i) => (
+                                                        <div key={i} className="flex items-center justify-between gap-2 rounded-lg bg-muted/30 p-2 transition-colors hover:bg-muted">
+                                                            <div className="flex items-center gap-3 min-w-0">
+                                                                <div className={cn(
+                                                                    "h-8 w-8 rounded-full flex items-center justify-center shrink-0",
+                                                                    ev.type === "income" ? "bg-green-500/10" : ev.type === "expense" ? "bg-red-500/10" : "bg-blue-500/10"
+                                                                )}>
+                                                                    {ev.type === "income" ? <TrendingUp className="h-4 w-4 text-green-600" /> :
+                                                                        ev.type === "expense" ? <TrendingDown className="h-4 w-4 text-red-600" /> :
+                                                                            <ArrowDownUp className="h-4 w-4 text-blue-600" />}
+                                                                </div>
+                                                                <div className="min-w-0">
+                                                                    <p className="text-sm font-medium truncate">{ev.description}</p>
+                                                                    <p className="text-xs text-muted-foreground">
+                                                                        {ev.type === "transfer" ? "Transfer" : "Recurring"}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+
+                                                            <span className={cn(
+                                                                "text-sm font-semibold whitespace-nowrap",
+                                                                ev.type === "income" ? "text-green-600" : ev.type === "expense" ? "text-red-600" : "text-muted-foreground"
+                                                            )}>
+                                                                {ev.type === "income" ? "+" : ev.type === "expense" ? "-" : ""}{currencySymbol}{ev.amount.toFixed(2)}
+                                                            </span>
+                                                        </div>
+                                                    ))}
                                                 </div>
                                             </div>
-
-                                            <span className={cn("text-sm font-semibold whitespace-nowrap", ev.type === "income" ? "text-green-600" : "text-red-600")}>
-                                                {ev.type === "income" ? "+" : "-"}{currencySymbol}{ev.amount.toFixed(2)}
-                                            </span>
-                                        </div>
-                                    ))}
+                                        )
+                                    })}
                                 </div>
                             </div>
                         ))}
