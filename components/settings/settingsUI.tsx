@@ -18,6 +18,8 @@ import { ACCENT_COLORS } from "@/lib/consts"
 import { HexColorPicker } from "react-colorful"
 import { SyncManager } from "./syncManager"
 import { Settings, Palette, Zap, Database, Cloud } from "lucide-react"
+import { DashboardVisibility } from "@/types/dashboard"
+import { Switch } from "../ui/switch"
 
 type SettingsDialogThings = {
     categories: string[]
@@ -56,6 +58,8 @@ type SettingsDialogThings = {
     onPushData: (password?: string) => Promise<void>
     isSyncing: boolean
     lastSynced: string | null
+    dashboardVisibility: DashboardVisibility
+    onUpdateDashboardVisibility: (key: keyof DashboardVisibility, value: boolean) => void
 }
 
 const currencies = [
@@ -74,7 +78,7 @@ export function SettingsDialog({
     onCurrencyChange, recurring, onDeleteRecurring, onImportCSV, onExportBackup, onImportBackup, onClearData,
     rules, onAddRule, onDeleteRule, categoryCustomization, onUpdateCategoryCustomization, accounts, onAddAccount,
     onDeleteAccount, defaultAccountId, onSetDefaultAccount, onUpdateAccount, accentColor, onAccentChange, open, onOpenChange,
-    syncId, hasSessionPassword, onEnableSync, onPullData, onPushData, isSyncing, lastSynced
+    syncId, hasSessionPassword, onEnableSync, onPullData, onPushData, isSyncing, lastSynced, dashboardVisibility, onUpdateDashboardVisibility
 }: SettingsDialogThings) {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const backupInputRef = useRef<HTMLInputElement>(null)
@@ -219,6 +223,24 @@ export function SettingsDialog({
                                 </div>
                                 <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={() => onAccentChange("")}>Reset to Default</Button>
                                 <p className="text-xs text-muted-foreground">Click a preset, drag the picker, or type a Hex code</p>
+                            </div>
+                        </div>
+
+                        <div className="border-t pt-6 mt-6">
+                            <h3 className="font-semibold mb-2">Dashboard Sections</h3>
+                            <p className="text-sm text-muted-foreground mb-3">Choose which widgets appear on your Overview tab</p>
+
+                            <div className="space-y-2">
+                                {Object.entries(dashboardVisibility).map(([key, isVisible]) => {
+                                    const title = key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+
+                                    return (
+                                        <div key={key} className="flex items-center justify-between gap-2 rounded-md p-2 border">
+                                            <span className="break-all text-sm">{title}</span>
+                                            <Switch checked={isVisible} onCheckedChange={(checked) => onUpdateDashboardVisibility(key as keyof DashboardVisibility, checked)} />
+                                        </div>
+                                    )
+                                })}
                             </div>
                         </div>
                     </TabsContent>
