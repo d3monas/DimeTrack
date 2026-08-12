@@ -166,6 +166,7 @@ export default function Home() {
       }
     })
     setCheckedAchievements(initialChecked)
+    prevCheckedRef.current = initialChecked
 
     setIsLoaded(true)
   }, [])
