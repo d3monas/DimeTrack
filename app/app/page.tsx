@@ -809,6 +809,10 @@ export default function Home() {
     setAccentColor("")
     setOnboardingComplete(false)
 
+    setAssets([])
+    setCheckedAchievements({})
+    prevCheckedRef.current = {}
+
     setSyncId("")
     setSessionPassword(null)
     setLastSynced(null)

@@ -478,5 +478,5 @@ export function clearAllData() {
     localStorage.removeItem("syncId")
     localStorage.removeItem("assets")
     localStorage.removeItem("dashboardVisibility")
-    localStorage.removeItem("achievements")
+    localStorage.removeItem("unlockedAchievements")
 }
