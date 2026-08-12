@@ -29,6 +29,7 @@ import { CommandPalette } from "@/components/commandPalette"
 import { ForecastChart } from "@/components/charts/forecastChart"
 import { TutorialDialog } from "@/components/tutorials/tutorial"
 import { Investments } from "@/components/investments"
+import { AchievementsDialog } from "@/components/achievements"
 
 // types
 import type { Transaction, TransactionSplit } from "@/types/transaction"
@@ -57,12 +58,13 @@ import { categoryCustomization } from "@/lib/categoryCustomization"
 import { colord } from "colord"
 import { getNetWorthHistory } from "@/lib/calculations/calculations"
 import { getMonthlyReportData } from "@/lib/calculations/calculations"
-import { ArrowLeftRight, CalendarDays, LayoutDashboard, Repeat, Settings, Target, Search, LineChart } from "lucide-react"
+import { ArrowLeftRight, CalendarDays, LayoutDashboard, Repeat, Settings, Target, Search, LineChart, Trophy } from "lucide-react"
 import { get12MonthForecast } from "@/lib/calculations/calculations"
 import { getSampleData } from "@/lib/sampleData"
 import { TourGuide } from "@/components/tutorials/tourGuide"
 import { pushSyncData, pullSyncData } from "@/lib/sync"
 import { getPortfolioSummary } from "@/lib/calculations/investmentCalculations"
+import { ACHIEVEMENTS, checkAchievements } from "@/lib/achievements"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -129,6 +131,9 @@ export default function Home() {
     accounts: true,
     breakdown: true,
   })
+
+  const [isAchievementsOpen, setIsAchievementsOpen] = useState(false)
+  const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([])
 
   // load localstorage 
   useEffect(() => {
@@ -337,6 +342,27 @@ export default function Home() {
       saveDashboardVisibility(dashboardVisibility)
     }
   }, [isLoaded, dashboardVisibility])
+
+  useEffect(() => {
+    if (!isLoaded) return
+
+    const currentUnlocked = checkAchievements(transactions, goals, assets)
+
+    setUnlockedAchievements(prev => {
+      const justGot = currentUnlocked.filter(id => !prev.includes(id))
+
+      if (justGot.length > 0) {
+        if (justGot.length === 1) {
+          const ach = ACHIEVEMENTS.find(a => a.id === justGot[0])
+          toast.success(`🏆 Achievement Unlocked!`, { description: ach?.title })
+        } else {
+          toast.success(`🏆 ${justGot.length} Achievements Unlocked!`, { description: "Check the achievements page to see what you earned." })
+        }
+        return [...prev, ...justGot]
+      }
+      return prev
+    })
+  }, [isLoaded, transactions, goals, assets])
 
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
@@ -938,7 +964,7 @@ export default function Home() {
     }
 
     setAssets((prev) => prev.map((a) =>
-      a.id === assetId ? { ...a, transactions: [...a.transactions, newInvestmentTransaction]} : a
+      a.id === assetId ? { ...a, transactions: [...a.transactions, newInvestmentTransaction] } : a
     ))
 
     if (type !== "update") {
@@ -1111,10 +1137,19 @@ export default function Home() {
               />
             )}
             <MonthlyReport data={monthlyReportData} currencySymbol={currencySymbol} />
+            <Button variant="outline" size="icon" onClick={() => setIsAchievementsOpen(true)} className="relative">
+              <Trophy className="w-4 h-4" />
+              {unlockedAchievements.length > 0 && (
+                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
+                  {unlockedAchievements.length}
+                </span>
+              )}
+            </Button>
             <Button variant="outline" onClick={() => setSettingsOpen(true)} className="gap-2">
               <Settings className="w-4 h-4" />
               <span className="hidden sm:inline">Settings</span>
             </Button>
+            <AchievementsDialog open={isAchievementsOpen} onOpenChange={setIsAchievementsOpen} unlockedAchievements={unlockedAchievements} />
             <SettingsDialog
               categories={categories}
               newCategory={newCategory}
