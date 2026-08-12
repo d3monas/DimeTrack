@@ -1,6 +1,6 @@
 "use client"
 // components
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { TransactionList } from "@/components/recentTransactions/transactionList"
 import { GoalDialog } from "@/components/goals/add-goal-ui"
 import { AddTransactionDialog } from "@/components/recentTransactions/add-transaction-ui"
@@ -134,6 +134,7 @@ export default function Home() {
 
   const [isAchievementsOpen, setIsAchievementsOpen] = useState(false)
   const [checkedAchievements, setCheckedAchievements] = useState<Record<string, CheckedAchievement>>({})
+  const prevCheckedRef = useRef<Record<string, CheckedAchievement>>({})
 
   // load localstorage 
   useEffect(() => {
@@ -370,7 +371,7 @@ export default function Home() {
     const currentChecked = checkAchievements(transactions, goals, assets)
 
     const justGot = Object.values(currentChecked).filter(
-      ev => ev.unlocked && (!checkedAchievements[ev.id] || !checkedAchievements[ev.id].unlocked)
+      ev => ev.unlocked && (!prevCheckedRef.current[ev.id] || !prevCheckedRef.current[ev.id].unlocked)
     )
 
     if (justGot.length > 0) {
@@ -382,8 +383,9 @@ export default function Home() {
       }
     }
 
+    prevCheckedRef.current = currentChecked
     setCheckedAchievements(currentChecked)
-  }, [isLoaded, transactions, goals, assets, checkedAchievements])
+  }, [isLoaded, transactions, goals, assets])
 
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
