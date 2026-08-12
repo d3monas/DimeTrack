@@ -418,6 +418,22 @@ export function loadDashboardVisibility(): DashboardVisibility {
     }
 }
 
+// achievs
+export function saveUnlockedAchievements(ids: string[]) {
+  if (!isBrowser) return
+  localStorage.setItem("unlockedAchievements", JSON.stringify(ids))
+}
+
+export function loadUnlockedAchievements(): string[] {
+  if (!isBrowser) return []
+  try {
+    const saved = localStorage.getItem("unlockedAchievements")
+    return saved ? JSON.parse(saved) : []
+  } catch {
+    return []
+  }
+}
+
 export function loadAllData() {
     return {
         transactions: loadTransactions(),
