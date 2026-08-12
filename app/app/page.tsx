@@ -788,6 +788,7 @@ export default function Home() {
       }
     })
     setCheckedAchievements(initialChecked)
+    prevCheckedRef.current = initialChecked
 
     toast.success("Backup file imported successfully")
   }
@@ -1126,6 +1127,7 @@ export default function Home() {
         }
       })
       setCheckedAchievements(initialChecked)
+      prevCheckedRef.current = initialChecked
 
       setSyncId(id)
       setSessionPassword(password)
