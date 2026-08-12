@@ -452,6 +452,7 @@ export function loadAllData() {
         syncId: loadSyncId(),
         assets: loadAssets(),
         dashboardVisibility: loadDashboardVisibility(),
+        achievements: loadUnlockedAchievements(),
     }
 }
 
@@ -477,4 +478,5 @@ export function clearAllData() {
     localStorage.removeItem("syncId")
     localStorage.removeItem("assets")
     localStorage.removeItem("dashboardVisibility")
+    localStorage.removeItem("achievements")
 }
