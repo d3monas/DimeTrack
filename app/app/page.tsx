@@ -46,7 +46,7 @@ import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMont
 import {
   saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring,
   saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, saveAccentColor, saveOnboardingComplete,
-  saveTutorialSeen, saveAssets, saveSyncId, saveDashboardVisibility, clearAllData
+  saveTutorialSeen, saveAssets, saveSyncId, saveDashboardVisibility, saveUnlockedAchievements, clearAllData
 } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 import { savingsCategoryForGoal, isSavingsCategory, STARTING_BALANCE_CATEGORY, INVESTMENT_CATEGORY } from "@/lib/consts"
@@ -64,7 +64,7 @@ import { getSampleData } from "@/lib/sampleData"
 import { TourGuide } from "@/components/tutorials/tourGuide"
 import { pushSyncData, pullSyncData } from "@/lib/sync"
 import { getPortfolioSummary } from "@/lib/calculations/investmentCalculations"
-import { ACHIEVEMENTS, checkAchievements } from "@/lib/achievements"
+import { ACHIEVEMENTS, checkAchievements, CheckedAchievement } from "@/lib/achievements"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -133,7 +133,7 @@ export default function Home() {
   })
 
   const [isAchievementsOpen, setIsAchievementsOpen] = useState(false)
-  const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([])
+  const [checkedAchievements, setCheckedAchievements] = useState<Record<string, CheckedAchievement>>({})
 
   // load localstorage 
   useEffect(() => {
@@ -154,6 +154,18 @@ export default function Home() {
     setSyncId(data.syncId || "")
     setAssets(data.assets || [])
     setDashboardVisibility(data.dashboardVisibility)
+
+    const savedUnlocked = data.achievements || []
+    const initialChecked: Record<string, CheckedAchievement> = {}
+    ACHIEVEMENTS.forEach(ach => {
+      initialChecked[ach.id] = {
+        id: ach.id,
+        currentValue: 0,
+        unlocked: savedUnlocked.includes(ach.id)
+      }
+    })
+    setCheckedAchievements(initialChecked)
+
     setIsLoaded(true)
   }, [])
 
@@ -344,25 +356,34 @@ export default function Home() {
   }, [isLoaded, dashboardVisibility])
 
   useEffect(() => {
-    if (!isLoaded) return
+    if (isLoaded) {
+      const unlockedIds = Object.values(checkedAchievements).filter(e => e.unlocked).map(e => e.id)
+      saveUnlockedAchievements(unlockedIds)
+    }
+  }, [isLoaded, checkedAchievements])
 
-    const currentUnlocked = checkAchievements(transactions, goals, assets)
+  useEffect(() => {
+    if (!isLoaded) {
+      return
+    }
 
-    setUnlockedAchievements(prev => {
-      const justGot = currentUnlocked.filter(id => !prev.includes(id))
+    const currentChecked = checkAchievements(transactions, goals, assets)
 
-      if (justGot.length > 0) {
-        if (justGot.length === 1) {
-          const ach = ACHIEVEMENTS.find(a => a.id === justGot[0])
-          toast.success(`🏆 Achievement Unlocked!`, { description: ach?.title })
-        } else {
-          toast.success(`🏆 ${justGot.length} Achievements Unlocked!`, { description: "Check the achievements page to see what you earned." })
-        }
-        return [...prev, ...justGot]
+    const justGot = Object.values(currentChecked).filter(
+      ev => ev.unlocked && (!checkedAchievements[ev.id] || !checkedAchievements[ev.id].unlocked)
+    )
+
+    if (justGot.length > 0) {
+      if (justGot.length === 1) {
+        const ach = ACHIEVEMENTS.find(a => a.id === justGot[0].id)
+        toast.success(`🏆 Achievement Unlocked!`, { description: ach?.title })
+      } else {
+        toast.success(`🏆 ${justGot.length} Achievements Unlocked!`, { description: "Check the achievements page to see what you earned." })
       }
-      return prev
-    })
-  }, [isLoaded, transactions, goals, assets])
+    }
+
+    setCheckedAchievements(currentChecked)
+  }, [isLoaded, transactions, goals, assets, checkedAchievements])
 
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
@@ -716,7 +737,8 @@ export default function Home() {
       accentColor,
       onboardingComplete,
       assets,
-      dashboardVisibility
+      dashboardVisibility,
+      unlockedAchievements: Object.values(checkedAchievements).filter(e => e.unlocked).map(e => e.id)
     })
   }
 
@@ -752,6 +774,17 @@ export default function Home() {
       accounts: true,
       breakdown: true
     })
+
+    const savedUnlocked = data.unlockedAchievements || []
+    const initialChecked: Record<string, CheckedAchievement> = {}
+    ACHIEVEMENTS.forEach(ach => {
+      initialChecked[ach.id] = {
+        id: ach.id,
+        currentValue: 0,
+        unlocked: savedUnlocked.includes(ach.id)
+      }
+    })
+    setCheckedAchievements(initialChecked)
 
     toast.success("Backup file imported successfully")
   }
@@ -992,7 +1025,7 @@ export default function Home() {
       transactions, goals, categories, budgets, currency,
       recurring, rules, categoryCustomization, accounts,
       defaultAccountId, accentColor, onboardingComplete, assets,
-      dashboardVisibility
+      dashboardVisibility, unlockedAchievements: Object.values(checkedAchievements).filter(e => e.unlocked).map(e => e.id),
     }
   }
 
@@ -1080,6 +1113,17 @@ export default function Home() {
         breakdown: true
       })
 
+      const savedUnlocked = data.unlockedAchievements || []
+      const initialChecked: Record<string, CheckedAchievement> = {}
+      ACHIEVEMENTS.forEach(ach => {
+        initialChecked[ach.id] = {
+          id: ach.id,
+          currentValue: 0,
+          unlocked: savedUnlocked.includes(ach.id)
+        }
+      })
+      setCheckedAchievements(initialChecked)
+
       setSyncId(id)
       setSessionPassword(password)
       saveSyncId(id)
@@ -1137,19 +1181,21 @@ export default function Home() {
               />
             )}
             <MonthlyReport data={monthlyReportData} currencySymbol={currencySymbol} />
+
             <Button variant="outline" size="icon" onClick={() => setIsAchievementsOpen(true)} className="relative">
               <Trophy className="w-4 h-4" />
-              {unlockedAchievements.length > 0 && (
+              {Object.values(checkedAchievements).filter(e => e.unlocked).length > 0 && (
                 <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
-                  {unlockedAchievements.length}
+                  {Object.values(checkedAchievements).filter(e => e.unlocked).length}
                 </span>
               )}
             </Button>
+
             <Button variant="outline" onClick={() => setSettingsOpen(true)} className="gap-2">
               <Settings className="w-4 h-4" />
               <span className="hidden sm:inline">Settings</span>
             </Button>
-            <AchievementsDialog open={isAchievementsOpen} onOpenChange={setIsAchievementsOpen} unlockedAchievements={unlockedAchievements} />
+            <AchievementsDialog open={isAchievementsOpen} onOpenChange={setIsAchievementsOpen} checkedAchievements={checkedAchievements} />
             <SettingsDialog
               categories={categories}
               newCategory={newCategory}
