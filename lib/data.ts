@@ -22,6 +22,7 @@ type AppBackupThings = {
     accentColor?: string
     onboardingComplete?: boolean
     dashboardVisibility?: DashboardVisibility
+    unlockedAchievements?: string[]
 }
 
 export function exportToJSON(data: AppBackupThings, filename = "dimetrack-backup.json") {
