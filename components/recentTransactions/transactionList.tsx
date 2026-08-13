@@ -29,6 +29,8 @@ type Things = {
     onDelete(id: string): void
     onEditClick: (transaction: Transaction) => void
     onDuplicate: (id: string) => void
+    onBulkDelete: (ids: string[]) => void
+    onBulkCategorize: (ids: string[], category: string) => void
     currencySymbol: string
     filter: FilterPeriod
     onFilterChange: (filter: FilterPeriod) => void
@@ -39,11 +41,13 @@ type Things = {
 }
 
 export function TransactionList({
-    transactions, onDelete, onEditClick, onDuplicate, currencySymbol, filter, onFilterChange, categories, accounts, onAddTransaction, categoryCustomization
+    transactions, onDelete, onEditClick, onDuplicate, onBulkDelete, onBulkCategorize, currencySymbol, filter, onFilterChange, categories, accounts, onAddTransaction, categoryCustomization
 }: Things) {
     const [searchTerm, setSearchTerm] = useState("")
     const [typeFilter, setTypeFilter] = useState<string>("all")
     const [categoryFilter, setCategoryFilter] = useState<string>("all")
+
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
     const [tagFilter, setTagFilter] = useState<string>("all")
     const [sortOrder, setSortOrder] = useState<string>("date-desc")
