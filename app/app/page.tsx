@@ -533,6 +533,27 @@ export default function Home() {
     })
   }
 
+  function duplicateTransaction(id: string) {
+    const transaction = transactions.find((transaction) => transaction.id === id)
+    if (!transaction) {
+      return
+    }
+
+    const newTransaction: Transaction = {
+      ...transaction,
+      id: crypto.randomUUID(),
+      date: new Date().toISOString(),
+    }
+    setTransactions((prev) => [newTransaction, ...prev])
+
+    if (isSavingsCategory(transaction.category)) {
+      setGoals((prev) => prev.map((goal) =>
+        savingsCategoryForGoal(goal.name) === transaction.category ? { ...goal, currentAmount: goal.currentAmount + transaction.amount} : goal
+      ))
+    }
+    toast.success("Transaction duplicated")
+  }
+
   function editTransaction(id: string, description: string, amount: number, type: "income" | "expense" | "transfer", category: string, notes?: string, tags?: string[], accountId?: string, transferAccountId?: string) {
     setTransactions((prev) =>
       prev.map((transaction) =>
@@ -1401,6 +1422,7 @@ export default function Home() {
                 transactions={filteredTransactions}
                 onEditClick={setEditingTransaction}
                 onDelete={deleteTransaction}
+                onDuplicate={duplicateTransaction}
                 currencySymbol={currencySymbol}
                 filter={filterPeriod}
                 onFilterChange={setFilterPeriod}
