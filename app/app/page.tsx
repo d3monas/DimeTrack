@@ -1232,6 +1232,20 @@ export default function Home() {
     }
   }
 
+  function handleQuickAdd(amount: number, description: string) {
+    const newTransaction: Transaction = {
+      id: crypto.randomUUID(),
+      description,
+      amount,
+      type: "expense", 
+      category: "Uncategorized",
+      date: new Date().toISOString(),
+      accountId: defaultAccountId || undefined
+    }
+    setTransactions((prev) => [newTransaction, ...prev])
+    toast.success(`Added: ${description} (${currencySymbol}${amount.toFixed(2)})`)
+  }
+
   if (!isLoaded) {
     return (
       <main className="min-h-screen bg-background">
@@ -1530,6 +1544,7 @@ export default function Home() {
           onOpenSettings={() => setSettingsOpen(true)}
           onAddGoal={() => { setActiveTab("budgets"); setEditingGoal(null); setGoalDialogOpen(true) }}
           onExportBackup={handleExportBackup}
+          onQuickAdd={handleQuickAdd}
         />
         <TutorialDialog open={tutorialOpen} onClose={() => { setTutorialOpen(false); setTutorialSeen(true) }} onLoadSampleData={handleLoadSampleData} />
         {tourActive && (
