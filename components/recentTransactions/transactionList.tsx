@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Transaction } from "@/types/transaction"
 import { Button } from "../ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
@@ -13,6 +13,7 @@ import { SelectContent, SelectItem, SelectTrigger, Select, SelectValue } from ".
 import type { Account } from "@/types/account"
 import { STARTING_BALANCE_CATEGORY, DEFAULT_CATEGORY_COLOR } from "@/lib/consts"
 import { Copy } from "lucide-react"
+import { Checkbox } from "../ui/checkbox"
 
 const filterLabels: Record<FilterPeriod, string> = {
     today: "Today",
@@ -125,6 +126,31 @@ export function TransactionList({
         exportToCSV(sortedTransactions, accounts)
     }
 
+    useEffect(() => {
+        setSelectedIds(new Set())
+    }, [searchTerm, typeFilter, categoryFilter, tagFilter, sortOrder, filter])
+
+    const toggleSelection = (id: string) => {
+        setSelectedIds(prev => {
+            const newSet = new Set(prev)
+            if (newSet.has(id)) {
+                newSet.delete(id)
+            } else {
+                newSet.add(id)
+            }
+            return newSet
+        })
+    }
+
+    const toggleSelectAll = () => {
+        setSelectedIds(prev => {
+            if (prev.size === sortedTransactions.length) {
+                return new Set()
+            }
+            return new Set(sortedTransactions.map(t => t.id))
+        })
+    }
+
     const { pageItems, currentPage, totalPages, nextPage, prevPage } = pagination(sortedTransactions, transactionsPerPage, `${searchTerm}-${typeFilter}-${categoryFilter}-${tagFilter}-${sortOrder}-${filter}`)
     return (
         <div>
@@ -153,12 +179,20 @@ export function TransactionList({
                     </div>
                 </div>
 
-                <Input
-                    placeholder="Search description, amount, or tags..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="h-8 w-full text-sm"
-                />
+                <div className="flex items-center gap-2">
+                    <Checkbox
+                        checked={sortedTransactions.length > 0 && selectedIds.size === sortedTransactions.length}
+                        onCheckedChange={toggleSelectAll}
+                        aria-label="Select all"
+                    />
+
+                    <Input
+                        placeholder="Search description, amount, or tags..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="h-8 w-full text-sm"
+                    />
+                </div>
 
                 <div className="flex flex-wrap items-center gap-2">
                     <Select value={sortOrder} onValueChange={setSortOrder}>
@@ -233,7 +267,12 @@ export function TransactionList({
 
                             return (
                                 <div key={transaction.id} className="flex flex-wrap gap-2 items-center justify-between border-b pb-3 last:border-0">
-                                    <div className="min-w-0">
+                                    <div className="min-w-0 flex items-center gap-3">
+                                        <Checkbox 
+                                            checked={selectedIds.has(transaction.id)} 
+                                            onCheckedChange={() => toggleSelection(transaction.id)} 
+                                            aria-label="Select transaction"
+                                        />
                                         <p className="font-medium">{transaction.description}</p>
 
                                         {transaction.notes && (
@@ -301,6 +340,38 @@ export function TransactionList({
                         })}
                     </div>
                     <PaginationUI currentPage={currentPage} totalPages={totalPages} onPrev={prevPage} onNext={nextPage} />
+
+                    {selectedIds.size > 0 && (
+                        <div className="sticky bottom-4 z-50 mt-4 flex items-center justify-between gap-4 rounded-xl border bg-background p-3 shadow-lg">
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium">{selectedIds.size} selected</span>
+                                <Button variant="default" size="sm" onClick={() => setSelectedIds(new Set())}>Clear</Button>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <Select value="" onValueChange={(value) => {
+                                    if (value) {
+                                        onBulkCategorize(Array.from(selectedIds), value)
+                                        setSelectedIds(new Set())
+                                    }
+                                }}>
+                                    <SelectTrigger className="h-8 w-40 text-sm">
+                                        <SelectValue placeholder="Categorize..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {categories.map((category) => (
+                                            <SelectItem key={category} value={category}>{category}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+
+                                <Button variant="destructive" size="sm" onClick={() => {
+                                    onBulkDelete(Array.from(selectedIds))
+                                    setSelectedIds(new Set())
+                                }}>Delete</Button>
+                            </div>
+                        </div>
+                    )}
                 </>
             )}
         </div>
