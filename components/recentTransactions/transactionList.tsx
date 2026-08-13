@@ -32,6 +32,8 @@ type Things = {
     onDuplicate: (id: string) => void
     onBulkDelete: (ids: string[]) => void
     onBulkCategorize: (ids: string[], category: string) => void
+    onBulkChangeAccount: (ids: string[], accountId: string) => void
+    onBulkChangeType: (ids: string[], type: "income" | "expense" | "transfer") => void
     currencySymbol: string
     filter: FilterPeriod
     onFilterChange: (filter: FilterPeriod) => void
@@ -42,7 +44,7 @@ type Things = {
 }
 
 export function TransactionList({
-    transactions, onDelete, onEditClick, onDuplicate, onBulkDelete, onBulkCategorize, currencySymbol, filter, onFilterChange, categories, accounts, onAddTransaction, categoryCustomization
+    transactions, onDelete, onEditClick, onDuplicate, onBulkDelete, onBulkCategorize, onBulkChangeAccount, onBulkChangeType, currencySymbol, filter, onFilterChange, categories, accounts, onAddTransaction, categoryCustomization
 }: Things) {
     const [searchTerm, setSearchTerm] = useState("")
     const [typeFilter, setTypeFilter] = useState<string>("all")
@@ -266,56 +268,58 @@ export function TransactionList({
                             const isTransfer = transaction.type === "transfer"
 
                             return (
-                                <div key={transaction.id} className="flex flex-wrap gap-2 items-center justify-between border-b pb-3 last:border-0">
+                                <div key={transaction.id} className={`flex flex-wrap gap-2 items-center justify-between border-b pb-3 last:border-0 ${selectedIds.has(transaction.id) ? 'bg-muted/40' : ''}`}>
                                     <div className="min-w-0 flex items-center gap-3">
-                                        <Checkbox 
-                                            checked={selectedIds.has(transaction.id)} 
-                                            onCheckedChange={() => toggleSelection(transaction.id)} 
+                                        <Checkbox
+                                            checked={selectedIds.has(transaction.id)}
+                                            onCheckedChange={() => toggleSelection(transaction.id)}
                                             aria-label="Select transaction"
                                         />
-                                        <p className="font-medium">{transaction.description}</p>
+                                        <div className="min-w-0">
+                                            <p className="font-medium">{transaction.description}</p>
 
-                                        {transaction.notes && (
-                                            <p className="text-xs italic text-muted-foreground/80 mt-0.5">{transaction.notes}</p>
-                                        )}
+                                            {transaction.notes && (
+                                                <p className="text-xs italic text-muted-foreground/80 mt-0.5">{transaction.notes}</p>
+                                            )}
 
-                                        <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                                            <span>{new Date(transaction.date).toLocaleString()}</span>
-                                            {!isTransfer && (
-                                                <>
-                                                    <span>•</span>
-                                                    <span className="flex items-center gap-1.5">
-                                                        <span
-                                                            className="h-2 w-2 rounded-full"
-                                                            style={{ backgroundColor: categoryCustomization?.[transaction.category]?.color || DEFAULT_CATEGORY_COLOR }}
-                                                        />
-                                                        <span>
-                                                            {transaction.splits && transaction.splits.length > 0
-                                                                ? transaction.splits.map(split => `${split.category} - ${currencySymbol}${split.amount.toFixed(2)}`).join(", ")
-                                                                : transaction.category}
+                                            <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+                                                <span>{new Date(transaction.date).toLocaleString()}</span>
+                                                {!isTransfer && (
+                                                    <>
+                                                        <span>•</span>
+                                                        <span className="flex items-center gap-1.5">
+                                                            <span
+                                                                className="h-2 w-2 rounded-full"
+                                                                style={{ backgroundColor: categoryCustomization?.[transaction.category]?.color || DEFAULT_CATEGORY_COLOR }}
+                                                            />
+                                                            <span>
+                                                                {transaction.splits && transaction.splits.length > 0
+                                                                    ? transaction.splits.map(split => `${split.category} - ${currencySymbol}${split.amount.toFixed(2)}`).join(", ")
+                                                                    : transaction.category}
+                                                            </span>
                                                         </span>
-                                                    </span>
-                                                </>
-                                            )}
+                                                    </>
+                                                )}
 
-                                            {(fromAccount || toAccount) && (
-                                                <>
-                                                    <span>•</span>
-                                                    <span className="text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                                                        {isTransfer
-                                                            ? `${fromAccount ?? "Unknown"} → ${toAccount ?? "Unknown"}` : fromAccount ?? "Uncategorized"
-                                                        }
-                                                    </span>
-                                                </>
-                                            )}
+                                                {(fromAccount || toAccount) && (
+                                                    <>
+                                                        <span>•</span>
+                                                        <span className="text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
+                                                            {isTransfer
+                                                                ? `${fromAccount ?? "Unknown"} → ${toAccount ?? "Unknown"}` : fromAccount ?? "Uncategorized"
+                                                            }
+                                                        </span>
+                                                    </>
+                                                )}
 
-                                            {transaction.tags && transaction.tags.length > 0 && (
-                                                <div className="flex flex-wrap gap-1 items-center">
-                                                    {transaction.tags.map((tag, i) => (
-                                                        <span key={i} className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium">{tag}</span>
-                                                    ))}
-                                                </div>
-                                            )}
+                                                {transaction.tags && transaction.tags.length > 0 && (
+                                                    <div className="flex flex-wrap gap-1 items-center">
+                                                        {transaction.tags.map((tag, i) => (
+                                                            <span key={i} className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium">{tag}</span>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
 
@@ -342,17 +346,46 @@ export function TransactionList({
                     <PaginationUI currentPage={currentPage} totalPages={totalPages} onPrev={prevPage} onNext={nextPage} />
 
                     {selectedIds.size > 0 && (
-                        <div className="sticky bottom-4 z-50 mt-4 flex items-center justify-between gap-4 rounded-xl border bg-background p-3 shadow-lg">
+                        <div className="sticky bottom-4 z-50 mt-4 flex flex-wrap items-center justify-between gap-4 rounded-xl border bg-background p-3 shadow-lg">
                             <div className="flex items-center gap-2">
                                 <span className="text-sm font-medium">{selectedIds.size} selected</span>
-                                <Button variant="default" size="sm" onClick={() => setSelectedIds(new Set())}>Clear</Button>
+                                <Button variant="default" size="sm" onClick={() => setSelectedIds(new Set())}>Done</Button>
                             </div>
 
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-wrap items-center gap-2">
+                                <Select value="" onValueChange={(value) => {
+                                    if (value) {
+                                        onBulkChangeType(Array.from(selectedIds), value as "income" | "expense" | "transfer")
+                                    }
+                                }}>
+                                    <SelectTrigger className="h-8 w-32 text-sm">
+                                        <SelectValue placeholder="Type..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="income">Income</SelectItem>
+                                        <SelectItem value="expense">Expense</SelectItem>
+                                        <SelectItem value="transfer">Transfer</SelectItem>
+                                    </SelectContent>
+                                </Select>
+
+                                <Select value="" onValueChange={(value) => {
+                                    if (value) {
+                                        onBulkChangeAccount(Array.from(selectedIds), value)
+                                    }
+                                }}>
+                                    <SelectTrigger className="h-8 w-40 text-sm">
+                                        <SelectValue placeholder="Account..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {accounts.map((account) => (
+                                            <SelectItem key={account.id} value={account.id}>{account.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+
                                 <Select value="" onValueChange={(value) => {
                                     if (value) {
                                         onBulkCategorize(Array.from(selectedIds), value)
-                                        setSelectedIds(new Set())
                                     }
                                 }}>
                                     <SelectTrigger className="h-8 w-40 text-sm">
