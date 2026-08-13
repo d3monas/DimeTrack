@@ -503,15 +503,34 @@ export default function Home() {
 
   function deleteTransaction(id: string) {
     const transaction = transactions.find((transaction) => transaction.id === id)
+    if (!transaction) {
+      return
+    }
 
-    if (transaction && isSavingsCategory(transaction.category)) {
+    if (isSavingsCategory(transaction.category)) {
       setGoals((prev) =>
         prev.map((goal) =>
-          savingsCategoryForGoal(goal.name) === transaction.category ? { ...goal, currentAmount: Math.max(0, goal.currentAmount - transaction.amount) } : goal
+          savingsCategoryForGoal(goal.name) === transaction.category ? { ...goal, currentAmount: Math.max(0, goal.currentAmount - transaction.amount)} : goal
         )
       )
     }
+
     setTransactions((prev) => prev.filter((transaction) => transaction.id !== id))
+
+    toast("Transaction deleted", {
+      action: {
+        label: "Undo",
+        onClick: () => {
+          setTransactions((prev) => [transaction, ...prev])
+
+          if (isSavingsCategory(transaction.category)) {
+            setGoals((prev) => prev.map((goal) =>
+              savingsCategoryForGoal(goal.name) === transaction.category ? { ...goal, currentAmount: goal.currentAmount + transaction.amount} : goal
+            ))
+          }
+        }
+      }
+    })
   }
 
   function editTransaction(id: string, description: string, amount: number, type: "income" | "expense" | "transfer", category: string, notes?: string, tags?: string[], accountId?: string, transferAccountId?: string) {
