@@ -1461,6 +1461,8 @@ export default function Home() {
                 onEditClick={setEditingTransaction}
                 onDelete={deleteTransaction}
                 onDuplicate={duplicateTransaction}
+                onBulkDelete={deleteTransactions}
+                onBulkCategorize={categorizeTransactions}
                 currencySymbol={currencySymbol}
                 filter={filterPeriod}
                 onFilterChange={setFilterPeriod}
