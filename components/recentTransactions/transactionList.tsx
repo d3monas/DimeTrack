@@ -12,6 +12,7 @@ import { EmptyState } from "../emptyState"
 import { SelectContent, SelectItem, SelectTrigger, Select, SelectValue } from "../ui/select"
 import type { Account } from "@/types/account"
 import { STARTING_BALANCE_CATEGORY, DEFAULT_CATEGORY_COLOR } from "@/lib/consts"
+import { Copy } from "lucide-react"
 
 const filterLabels: Record<FilterPeriod, string> = {
     today: "Today",
@@ -27,6 +28,7 @@ type Things = {
     transactions: Transaction[]
     onDelete(id: string): void
     onEditClick: (transaction: Transaction) => void
+    onDuplicate: (id: string) => void
     currencySymbol: string
     filter: FilterPeriod
     onFilterChange: (filter: FilterPeriod) => void
@@ -37,7 +39,7 @@ type Things = {
 }
 
 export function TransactionList({
-    transactions, onDelete, onEditClick, currencySymbol, filter, onFilterChange, categories, accounts, onAddTransaction, categoryCustomization
+    transactions, onDelete, onEditClick, onDuplicate, currencySymbol, filter, onFilterChange, categories, accounts, onAddTransaction, categoryCustomization
 }: Things) {
     const [searchTerm, setSearchTerm] = useState("")
     const [typeFilter, setTypeFilter] = useState<string>("all")
@@ -278,6 +280,11 @@ export function TransactionList({
                                         <span className={`font-medium ${transaction.type === "income" ? "text-green-600" : transaction.type === "expense" ? "text-red-600" : "text-muted-foreground"}`}>
                                             {transaction.type === "income" ? "+" : transaction.type === "expense" ? "-" : ""}{currencySymbol}{transaction.amount.toFixed(2)}
                                         </span>
+
+                                        <Button variant="ghost" size="sm" onClick={() => onDuplicate(transaction.id)} aria-label="Duplicate transaction">
+                                            <Copy className="h-3.5 w-3.5" />
+                                        </Button>
+
                                         {!isSavingsCategory(transaction.category) && !isTransfer ? (
                                             <Button variant="ghost" size="sm" onClick={() => onEditClick(transaction)} aria-label="Edit transaction">✎</Button>
                                         ) : (
