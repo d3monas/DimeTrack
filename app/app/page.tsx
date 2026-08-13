@@ -554,6 +554,44 @@ export default function Home() {
     toast.success("Transaction duplicated")
   }
 
+  function deleteTransactions(ids: string[]) {
+    const deleted = transactions.filter((transaction) => ids.includes(transaction.id))
+    if (deleted.length === 0) {
+      return
+    }
+
+    deleted.forEach((transaction) => {
+      if (isSavingsCategory(transaction.category)) {
+        setGoals((prev) => prev.map((goal) =>
+          savingsCategoryForGoal(goal.name) === transaction.category ? { ...goal, currentAmount: Math.max(0, goal.currentAmount - transaction.amount)} : goal
+        ))
+      }
+    })
+    setTransactions((prev) => prev.filter((transaction) => !ids.includes(transaction.id)))
+
+    toast(`${deleted.length} transactions deleted`, {
+      action: {
+        label: "Undo",
+        onClick: () => {
+          setTransactions((prev) => [...deleted, ...prev])
+
+          deleted.forEach((transaction) => {
+            if (isSavingsCategory(transaction.category)) {
+              setGoals((prev) => prev.map((goal) =>
+                savingsCategoryForGoal(goal.name) === transaction.category ? { ...goal, currentAmount: goal.currentAmount + transaction.amount} : goal
+              ))
+            }
+          })
+        }
+      }
+    })
+  }
+
+  function categorizeTransactions(ids: string[], category: string) {
+    setTransactions((prev) => prev.map((transaction) => ids.includes(transaction.id) ? { ...transaction, category} : transaction))
+    toast.success(`${ids.length} transactions categorized as ${category}`)
+  }
+
   function editTransaction(id: string, description: string, amount: number, type: "income" | "expense" | "transfer", category: string, notes?: string, tags?: string[], accountId?: string, transferAccountId?: string) {
     setTransactions((prev) =>
       prev.map((transaction) =>
