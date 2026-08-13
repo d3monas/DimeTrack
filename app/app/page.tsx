@@ -592,6 +592,14 @@ export default function Home() {
     toast.success(`${ids.length} transactions categorized as ${category}`)
   }
 
+  function bulkChangeAccount(ids: string[], accountId: string) {
+    setTransactions((prev) => prev.map((transaction) => ids.includes(transaction.id) ? { ...transaction, accountId } : transaction))
+  }
+
+  function bulkChangeType(ids: string[], type: "income" | "expense" | "transfer") {
+    setTransactions((prev) => prev.map((transaction) => ids.includes(transaction.id) ? { ...transaction, type } : transaction))
+  }
+
   function editTransaction(id: string, description: string, amount: number, type: "income" | "expense" | "transfer", category: string, notes?: string, tags?: string[], accountId?: string, transferAccountId?: string) {
     setTransactions((prev) =>
       prev.map((transaction) =>
@@ -1463,6 +1471,8 @@ export default function Home() {
                 onDuplicate={duplicateTransaction}
                 onBulkDelete={deleteTransactions}
                 onBulkCategorize={categorizeTransactions}
+                onBulkChangeAccount={bulkChangeAccount}
+                onBulkChangeType={bulkChangeType}
                 currencySymbol={currencySymbol}
                 filter={filterPeriod}
                 onFilterChange={setFilterPeriod}
