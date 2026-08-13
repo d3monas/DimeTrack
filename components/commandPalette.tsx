@@ -1,7 +1,8 @@
+import { useState } from "react"
 import { Transaction } from "@/types/transaction"
 import { DialogContent, Dialog, DialogHeader, DialogTitle } from "./ui/dialog"
 import { CommandInput, Command, CommandList, CommandEmpty, CommandGroup, CommandItem, CommandSeparator } from "./ui/command"
-import { CalendarDays, LayoutDashboard, PlusCircle, ArrowLeftRight, Repeat, Target, Search, PiggyBank, Settings, Download } from "lucide-react"
+import { CalendarDays, LayoutDashboard, PlusCircle, ArrowLeftRight, Repeat, Target, Search, PiggyBank, Settings, Download, LineChart } from "lucide-react"
 
 type CommandPaletteThings = {
   open: boolean
@@ -12,32 +13,49 @@ type CommandPaletteThings = {
   onOpenSettings: () => void
   onAddGoal: () => void
   onExportBackup: () => void
+  onQuickAdd: (amount: number, description: string) => void
 }
 
-export function CommandPalette({ open, onOpenChange, transactions, onTabChange, onAddTransaction, onOpenSettings, onAddGoal, onExportBackup }: CommandPaletteThings) {
+export function CommandPalette({ open, onOpenChange, transactions, onTabChange, onAddTransaction, onOpenSettings, onAddGoal, onExportBackup, onQuickAdd }: CommandPaletteThings) {
+  const [search, setSearch] = useState("")
+
+  const quickAddMatch = search.match(/^(\d+(?:\.\d+)?)\s+(.*)$/)
+
   const handleSelect = (action: () => void) => {
     action()
     onOpenChange(false)
+    setSearch("")
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) setSearch("") }}>
       <DialogContent className="p-0 overflow-hidden max-w-2xl">
         <DialogHeader className="sr-only">
           <DialogTitle>Command Menu</DialogTitle>
         </DialogHeader>
         
-        <Command className="rounded-lg">
-          <CommandInput placeholder="Type a command or search transactions..." />
+        <Command className="rounded-lg" shouldFilter={!quickAddMatch}>
+          <CommandInput placeholder="Type a command, search, or 'amount description' to quick add..." value={search} onValueChange={setSearch} />
           <CommandList className="max-h-100">
             <CommandEmpty>No results found.</CommandEmpty>
             
+            {quickAddMatch && (
+              <CommandGroup heading="Quick Add Expense">
+                <CommandItem 
+                  onSelect={() => handleSelect(() => onQuickAdd(parseFloat(quickAddMatch[1]), quickAddMatch[2].trim()))}
+                  value={`quick add ${search}`}
+                >
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  <span>Add <span className="font-bold">${quickAddMatch[1]}</span> as expense for "{quickAddMatch[2]}"</span>
+                </CommandItem>
+              </CommandGroup>
+            )}
+
             <CommandGroup heading="Actions">
               <CommandItem onSelect={() => handleSelect(() => onAddTransaction())} value="add transaction">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 <span>Add Transaction</span>
               </CommandItem>
-              {/* NEW ACTIONS */}
               <CommandItem onSelect={() => handleSelect(() => onAddGoal())} value="add goal">
                 <PiggyBank className="mr-2 h-4 w-4" />
                 <span>Add Savings Goal</span>
@@ -59,9 +77,9 @@ export function CommandPalette({ open, onOpenChange, transactions, onTabChange, 
                 <LayoutDashboard className="mr-2 h-4 w-4" />
                 <span>Go to Overview</span>
               </CommandItem>
-              <CommandItem onSelect={() => handleSelect(() => onTabChange("calendar"))} value="go to calendar">
+              <CommandItem onSelect={() => handleSelect(() => onTabChange("timeline"))} value="go to timeline">
                 <CalendarDays className="mr-2 h-4 w-4" />
-                <span>Go to Calendar</span>
+                <span>Go to Timeline</span>
               </CommandItem>
               <CommandItem onSelect={() => handleSelect(() => onTabChange("transactions"))} value="go to transactions">
                 <ArrowLeftRight className="mr-2 h-4 w-4" />
@@ -70,6 +88,10 @@ export function CommandPalette({ open, onOpenChange, transactions, onTabChange, 
               <CommandItem onSelect={() => handleSelect(() => onTabChange("subscriptions"))} value="go to subscriptions">
                 <Repeat className="mr-2 h-4 w-4" />
                 <span>Go to Subscriptions</span>
+              </CommandItem>
+              <CommandItem onSelect={() => handleSelect(() => onTabChange("investments"))} value="go to investments">
+                <LineChart className="mr-2 h-4 w-4" />
+                <span>Go to Investments</span>
               </CommandItem>
               <CommandItem onSelect={() => handleSelect(() => onTabChange("budgets"))} value="go to budgets">
                 <Target className="mr-2 h-4 w-4" />
