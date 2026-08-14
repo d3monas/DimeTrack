@@ -1232,15 +1232,15 @@ export default function Home() {
     }
   }
 
-  function handleQuickAdd(amount: number, description: string) {
+  function handleQuickAdd(amount: number, description: string, category: string, accountId?: string) {
     const newTransaction: Transaction = {
       id: crypto.randomUUID(),
       description,
       amount,
       type: "expense", 
-      category: "Uncategorized",
+      category,
       date: new Date().toISOString(),
-      accountId: defaultAccountId || undefined
+      accountId: accountId || defaultAccountId || undefined
     }
     setTransactions((prev) => [newTransaction, ...prev])
     toast.success(`Added: ${description} (${currencySymbol}${amount.toFixed(2)})`)
@@ -1539,6 +1539,8 @@ export default function Home() {
           open={commandOpen}
           onOpenChange={setCommandOpen}
           transactions={transactions}
+          categories={categories}
+          accounts={accounts}
           onTabChange={(tab) => setActiveTab(tab)}
           onAddTransaction={() => { setActiveTab("transactions"); setOpen(true) }}
           onOpenSettings={() => setSettingsOpen(true)}
