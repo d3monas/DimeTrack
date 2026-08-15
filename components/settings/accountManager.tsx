@@ -7,6 +7,7 @@ import { Label } from "../ui/label"
 import { DEFAULT_ACCOUNT_ICON, DEFAULT_CATEGORY_COLOR } from "@/lib/consts"
 import { Pencil, Check, X } from "lucide-react"
 import { ColorIconPicker } from "./colorIconPicker"
+import { ConfirmDialog } from "../ui/confirmDialog"
 
 type AccountsManagerThings = {
     accounts: Account[]
@@ -41,6 +42,8 @@ export function AccountsManager({ accounts, onAddAccount, onDeleteAccount, defau
         setEditingId(null)
         setEditName("")
     }
+
+    const [accountToDelete, setAccountToDelete] = useState<string | null>(null)
 
     return (
         <div>
@@ -104,11 +107,7 @@ export function AccountsManager({ accounts, onAddAccount, onDeleteAccount, defau
                                         {defaultAccountId !== account.id && (
                                             <Button variant="outline" size="sm" onClick={() => onSetDefaultAccount(account.id)}>Set Default</Button>
                                         )}
-                                        <Button variant="destructive" size="sm" onClick={() => {
-                                            if (confirm("Are you sure you want to delete this account? Linked transactions will remain but lose their account tag")) {
-                                                onDeleteAccount(account.id)
-                                            }
-                                        }}>Delete</Button>
+                                        <Button variant="destructive" size="sm" onClick={() => setAccountToDelete(account.id)}>Delete</Button>
                                     </div>
                                 )}
                             </div>
@@ -116,6 +115,15 @@ export function AccountsManager({ accounts, onAddAccount, onDeleteAccount, defau
                     })
                 )}
             </div>
+
+            <ConfirmDialog
+                open={!!accountToDelete}
+                onOpenChange={(open) => !open && setAccountToDelete(null)}
+                title="Delete Account?"
+                description="Linked transactions will remain but lose their account tag. This action cannot be undone"
+                onConfirm={() => accountToDelete && onDeleteAccount(accountToDelete)}
+                confirmText="Delete"
+            />
         </div>
     )
 }
