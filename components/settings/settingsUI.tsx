@@ -20,6 +20,7 @@ import { SyncManager } from "./syncManager"
 import { Settings, Palette, Zap, Database, Cloud } from "lucide-react"
 import { DashboardVisibility } from "@/types/dashboard"
 import { Switch } from "../ui/switch"
+import { ConfirmDialog } from "../ui/confirmDialog"
 
 type SettingsDialogThings = {
     categories: string[]
@@ -84,6 +85,9 @@ export function SettingsDialog({
     const backupInputRef = useRef<HTMLInputElement>(null)
 
     const [localColor, setLocalColor] = useState(accentColor || "#000000")
+
+    const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null)
+    const [confirmClearData, setConfirmClearData] = useState(false)
 
     useEffect(() => {
         setLocalColor(accentColor || "#000000")
@@ -162,11 +166,7 @@ export function SettingsDialog({
                                             {isSavingsCategory(category) ? (
                                                 <span className="text-xs text-muted-foreground px-2 py-1 rounded-md border">Default</span>
                                             ) : (
-                                                <Button variant="destructive" size="sm" onClick={() => {
-                                                    if (confirm("Are you sure you want to delete this category? Transactions will be moved to 'Uncategorized'")) {
-                                                        onDeleteCategory(category)
-                                                    }
-                                                }}>Delete</Button>
+                                                <Button variant="destructive" size="sm" onClick={() => setCategoryToDelete(category)}>Delete</Button>
                                             )}
                                         </div>
                                     )
@@ -290,11 +290,7 @@ export function SettingsDialog({
                         <div className="border-t border-red-500/30 pt-6 mt-6">
                             <h3 className="font-semibold mb-2 text-red-600">Danger</h3>
                             <p className="text-sm text-muted-foreground mb-3">This will permanently delete <b>ALL</b> your data</p>
-                            <Button variant="destructive" size="sm" onClick={() => {
-                                if (confirm("Are you sure you want to wipe your data? This action cannot be undone.")) {
-                                    onClearData()
-                                }
-                            }}>Clear all data</Button>
+                            <Button variant="destructive" size="sm" onClick={() => setConfirmClearData(true)}>Clear all data</Button>
                         </div>
 
                     </TabsContent>
@@ -304,6 +300,23 @@ export function SettingsDialog({
                     </TabsContent>
                 </Tabs>
             </DialogContent>
+
+            <ConfirmDialog
+                open={!!categoryToDelete}
+                onOpenChange={(open) => !open && setCategoryToDelete(null)}
+                title="Delete Category?"
+                description="Transactions in this category will be moved to 'Uncategorized'. This action cannot be undone"
+                onConfirm={() => categoryToDelete && onDeleteCategory(categoryToDelete)}
+                confirmText="Delete"
+            />
+            <ConfirmDialog
+                open={confirmClearData}
+                onOpenChange={setConfirmClearData}
+                title="Clear All Data?"
+                description="This will permanently delete all your transactions, budgets, accounts, and settings. This action cannot be undone"
+                onConfirm={onClearData}
+                confirmText="Clear Data"
+            />
         </Dialog>
     )
 }
