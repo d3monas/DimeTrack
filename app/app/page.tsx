@@ -1404,7 +1404,7 @@ export default function Home() {
               <UpcomingTransactions recurring={recurring} currencySymbol={currencySymbol} />
             )}
             {dashboardVisibility.smart_stats && (
-              <SmartStats monthlyExpenses={expenses} currencySymbol={currencySymbol} />
+              <SmartStats monthlyExpenses={expenses} currencySymbol={currencySymbol} insights={financialInsights} />
             )}
             {dashboardVisibility.trend && (
               <TrendChart data={monthlyTrends} currencySymbol={currencySymbol} />
