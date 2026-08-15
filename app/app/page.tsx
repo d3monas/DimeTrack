@@ -42,7 +42,7 @@ import type { Asset, InvestmentTransaction, InvestmentType } from "@/types/asset
 import type { DashboardVisibility } from "@/types/dashboard"
 
 // libs
-import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends } from "@/lib/calculations/calculations"
+import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends, getFinancialInsights } from "@/lib/calculations/calculations"
 import {
   saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring,
   saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, saveAccentColor, saveOnboardingComplete,
@@ -426,13 +426,15 @@ export default function Home() {
   const filteredTransactions = filterTransactionsByPeriod(transactions, filterPeriod)
   const categoryTotals = getCategoryTotals(filteredTransactions)
   const prevCategoryTotals = getCategoryTotals(prevMonthTransactions)
+  const prevExpenses = calculateExpenses(prevMonthTransactions)
   const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
   const firstOfMonthLabel = firstOfMonth.toLocaleDateString(undefined, { month: "long", day: "numeric" })
   const monthlyTrends = getMonthlyTrends(transactions)
-
+  
   const prevTransactions = transactions.filter(transaction => new Date(transaction.date) < startOfThisMonth)
   const prevBalance = calculateIncome(prevTransactions) - calculateExpenses(prevTransactions)
-
+  const financialInsights = getFinancialInsights(income, expenses, prevExpenses, categoryTotals, budgets, goals, assets, prevBalance, balance, currencySymbol)
+  
   const netWorthHistory = getNetWorthHistory(transactions)
 
   const monthlyReportData = getMonthlyReportData(transactions)
@@ -1289,7 +1291,7 @@ export default function Home() {
                 onComplete={() => setOnboardingComplete(true)}
               />
             )}
-            <MonthlyReport data={monthlyReportData} currencySymbol={currencySymbol} />
+            <MonthlyReport data={monthlyReportData} currencySymbol={currencySymbol} insights={financialInsights} />
 
             <Button variant="outline" size="icon" onClick={() => setIsAchievementsOpen(true)} className="relative">
               <Trophy className="w-4 h-4" />
