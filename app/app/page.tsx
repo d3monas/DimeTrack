@@ -1291,7 +1291,7 @@ export default function Home() {
                 onComplete={() => setOnboardingComplete(true)}
               />
             )}
-            <MonthlyReport data={monthlyReportData} currencySymbol={currencySymbol} insights={financialInsights} />
+            <MonthlyReport data={monthlyReportData} currencySymbol={currencySymbol} />
 
             <Button variant="outline" size="icon" onClick={() => setIsAchievementsOpen(true)} className="relative">
               <Trophy className="w-4 h-4" />
