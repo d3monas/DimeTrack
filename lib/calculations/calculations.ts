@@ -3,6 +3,7 @@ import { STARTING_BALANCE_CATEGORY } from "@/lib/consts"
 import { getCategoryTotals } from "../categories"
 import { RecurringTransaction } from "@/types/recurringTransaction"
 import type { Goal } from "@/types/goal"
+import type { Asset } from "@/types/asset"
 
 export function calculateIncome(transactions: Transaction[]) {
     return transactions
@@ -240,6 +241,9 @@ export function getFinancialInsights(
     categoryTotals: Record<string, number>,
     budgets: Record<string, number>,
     goals: Goal[],
+    assets: Asset[],
+    prevBalance: number,
+    balance: number,
     currencySymbol: string
     ): Insight[] {
     const insights: Insight[] = []
@@ -269,12 +273,12 @@ export function getFinancialInsights(
         if (savings > 0) {
         const savingsRate = (savings / income) * 100
         insights.push({
-            text: `Savings Progress: You've saved ${currencySymbol}${savings.toFixed(2)} this month, putting your savings rate at ${savingsRate.toFixed(0)}%`,
+            text: `You've saved ${currencySymbol}${savings.toFixed(2)} this month, putting your savings rate at ${savingsRate.toFixed(0)}%`,
             type: "info",
         })
         } else if (savings < 0) {
         insights.push({
-            text: `Budget Alert: You are spending more than you earn this month by ${currencySymbol}${Math.abs(savings).toFixed(2)}.`,
+            text: `You are spending more than you earn this month by ${currencySymbol}${Math.abs(savings).toFixed(2)}.`,
             type: "negative",
         })
         }
@@ -297,14 +301,14 @@ export function getFinancialInsights(
         const pctUsed = (spent / limit) * 100
         if (pctUsed >= 80 && pctUsed < 100 && daysLeft > 0) {
             insights.push({
-            text: `Budget Warning: You've used ${pctUsed.toFixed(0)}% of your ${category} budget with ${daysLeft} days remaining.`,
+            text: `Budget Warning - You've used ${pctUsed.toFixed(0)}% of your ${category} budget with ${daysLeft} days remaining.`,
             type: "warning",
             })
             break
         }
         if (pctUsed >= 100) {
             insights.push({
-            text: `Budget Exceeded: You've gone over your ${category} budget by ${currencySymbol}${(spent - limit).toFixed(2)}.`,
+            text: `Budget Exceeded - You've gone over your ${category} budget by ${currencySymbol}${(spent - limit).toFixed(2)}.`,
             type: "negative",
             })
             break
@@ -321,11 +325,40 @@ export function getFinancialInsights(
 
         if (requiredMonthly > 0) {
         insights.push({
-            text: `Goal Projection: To reach ${activeGoal.name} by ${targetDate.toLocaleDateString(undefined, { month: "long", year: "numeric" })}, you need to save ${currencySymbol}${requiredMonthly.toFixed(2)} per month.`,
+            text: `To reach ${activeGoal.name} by ${targetDate.toLocaleDateString(undefined, { month: "long", year: "numeric" })}, you need to save ${currencySymbol}${requiredMonthly.toFixed(2)} per month.`,
             type: "info",
         })
         }
     }
 
-    return insights
+    if (expenses > 0 && dayOfMonth > 0) {
+      const dailyAvg = expenses / dayOfMonth
+      const projectedTotal = dailyAvg * daysInMonth
+      insights.push({
+        text: `At your current rate, you are projected to spend ${currencySymbol}${projectedTotal.toFixed(2)} by the end of the month.`,
+        type: "info",
+      })
+    }
+
+    if (prevBalance !== 0 && balance !== 0) {
+      const nwDiff = balance - prevBalance
+      if (nwDiff !== 0) {
+        const pct = (nwDiff / Math.abs(prevBalance)) * 100
+        if (Math.abs(pct) > 1) {
+          insights.push({
+            text: `Net Worth Trend: Your net worth is ${nwDiff > 0 ? "up" : "down"} ${currencySymbol}${Math.abs(nwDiff).toFixed(2)} (${pct > 0 ? "+" : ""}${pct.toFixed(0)}%) compared to last month.`,
+            type: nwDiff > 0 ? "positive" : "negative",
+          })
+        }
+      }
+    }
+
+    if (assets.length > 0) {
+      insights.push({
+        text: `You are tracking ${assets.length} asset${assets.length > 1 ? "s" : ""} in your portfolio. Keep updating the prices to track your net worth accurately.`,
+        type: "info",
+      })
+    }
+  
+  return insights
 }
