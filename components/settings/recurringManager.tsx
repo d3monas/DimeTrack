@@ -1,8 +1,10 @@
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
 import { getNextDate } from "@/lib/recurring"
 import { EmptyState } from "../emptyState"
 import { recurringIntervalLabels } from "@/lib/consts"
+import { ConfirmDialog } from "../ui/confirmDialog"
 
 type RecurringManagerThings = {
     recurring: RecurringTransaction[]
@@ -22,6 +24,8 @@ function getIntervalLabel(recurring: RecurringTransaction): string {
 }
 
 export function RecurringManager({ recurring, currencySymbol, onDelete }: RecurringManagerThings) {
+    const [recurringToDelete, setRecurringToDelete] = useState<string | null>(null)
+
     if (recurring.length === 0) {
         return (
             <div>
@@ -48,15 +52,20 @@ export function RecurringManager({ recurring, currencySymbol, onDelete }: Recurr
                         <span className={`text-sm font-medium ${recurring.type === "income" ? "text-green-600" : "text-red-600"}`}>
                             {recurring.type === "income" ? "+" : "-"}{currencySymbol}{recurring.amount.toFixed(2)}
                         </span>
-                        <Button variant="destructive" size="sm" onClick={() => {
-                            if (confirm("Are you sure you want to delete this recurring transaction? Past transactions will NOT be deleted")) {
-                                onDelete(recurring.id)
-                            }
-                        }}>Delete</Button>
+                        <Button variant="destructive" size="sm" onClick={() => setRecurringToDelete(recurring.id)}>Delete</Button>
                     </div>
                 </div>
                 ))}
             </div>
+
+            <ConfirmDialog
+                open={!!recurringToDelete}
+                onOpenChange={(open) => !open && setRecurringToDelete(null)}
+                title="Delete Recurring Transaction?"
+                description="Past transactions will NOT be deleted. This only stops future transactions from being generated"
+                onConfirm={() => recurringToDelete && onDelete(recurringToDelete)}
+                confirmText="Delete"
+            />
         </div>
     )
 }
