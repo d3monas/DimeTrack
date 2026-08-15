@@ -10,6 +10,7 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from ".
 import { getAssetSummary, getPortfolioSummary, getPortfolioHistory } from "@/lib/calculations/investmentCalculations"
 import { Trash2, PlusCircle, TrendingUp, TrendingDown, Wallet, Pencil } from "lucide-react"
 import { PortfolioChart } from "./charts/portfolioChart"
+import { ConfirmDialog } from "./ui/confirmDialog"
 
 type InvestmentsThings = {
   assets: Asset[]
@@ -33,13 +34,15 @@ export function Investments({ assets, currencySymbol, onAddAsset, onUpdateAsset,
   const [type, setType] = useState<InvestmentType>("Stock")
   const [notes, setNotes] = useState("")
   const [errors, setErrors] = useState<Record<string, string>>({})
-
+  
   const [transactionType, setTransactionType] = useState<"buy" | "sell" | "update">("buy")
   const [quantity, setQuantity] = useState("")
   const [price, setPrice] = useState("")
   const [transactionDate, setTransactionDate] = useState(new Date().toISOString().split("T")[0])
   const [transactionNotes, setTransactionNotes] = useState("")
-
+  
+  const [assetToDelete, setAssetToDelete] = useState<string | null>(null)
+  
   const portfolio = getPortfolioSummary(assets)
   const historyData = getPortfolioHistory(assets)
 
@@ -249,7 +252,7 @@ export function Investments({ assets, currencySymbol, onAddAsset, onUpdateAsset,
                         <Button size="sm" variant="ghost" className="h-7" onClick={() => openEditDialog(asset)}>
                           <Pencil className="h-3.5 w-3.5" />
                         </Button>
-                        <Button size="sm" variant="ghost" className="h-7 text-red-500" onClick={() => onDeleteAsset(asset.id)}>
+                        <Button size="sm" variant="ghost" className="h-7 text-red-500" onClick={() => setAssetToDelete(asset.id)}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </div>
@@ -344,6 +347,15 @@ export function Investments({ assets, currencySymbol, onAddAsset, onUpdateAsset,
           </div>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!assetToDelete}
+        onOpenChange={(open) => !open && setAssetToDelete(null)}
+        title="Delete Asset?"
+        description="This will permanently remove the asset and its transaction history from your portfolio. This action cannot be undone"
+        onConfirm={() => assetToDelete && onDeleteAsset(assetToDelete)}
+        confirmText="Delete"
+      />
     </div>
   )
 }
