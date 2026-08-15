@@ -2,6 +2,7 @@ import type { Transaction } from "../../types/transaction"
 import { STARTING_BALANCE_CATEGORY } from "@/lib/consts"
 import { getCategoryTotals } from "../categories"
 import { RecurringTransaction } from "@/types/recurringTransaction"
+import type { Goal } from "@/types/goal"
 
 export function calculateIncome(transactions: Transaction[]) {
     return transactions
@@ -227,3 +228,104 @@ export function get12MonthForecast(currentBalance: number, recurring: RecurringT
     return forecast
 }
 
+export type Insight = {
+    text: string
+    type: "positive" | "negative" | "warning" | "info"
+}
+
+export function getFinancialInsights(
+    income: number,
+    expenses: number,
+    prevExpenses: number,
+    categoryTotals: Record<string, number>,
+    budgets: Record<string, number>,
+    goals: Goal[],
+    currencySymbol: string
+    ): Insight[] {
+    const insights: Insight[] = []
+    const now = new Date()
+    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+    const dayOfMonth = now.getDate()
+    const daysLeft = daysInMonth - dayOfMonth
+
+    if (prevExpenses > 0 && expenses > 0) {
+        const diff = prevExpenses - expenses
+        const pctChange = (diff / prevExpenses) * 100
+        if (pctChange > 5) {
+        insights.push({
+            text: `Spending is down ${pctChange.toFixed(0)}%. You've spent ${currencySymbol}${diff.toFixed(2)} less than last month.`,
+            type: "positive",
+        })
+        } else if (pctChange < -5) {
+        insights.push({
+            text: `Spending is up ${Math.abs(pctChange).toFixed(0)}%. You've spent ${currencySymbol}${Math.abs(diff).toFixed(2)} more than last month.`,
+            type: "negative",
+        })
+        }
+    }
+
+    if (income > 0) {
+        const savings = income - expenses
+        if (savings > 0) {
+        const savingsRate = (savings / income) * 100
+        insights.push({
+            text: `Savings Progress: You've saved ${currencySymbol}${savings.toFixed(2)} this month, putting your savings rate at ${savingsRate.toFixed(0)}%`,
+            type: "info",
+        })
+        } else if (savings < 0) {
+        insights.push({
+            text: `Budget Alert: You are spending more than you earn this month by ${currencySymbol}${Math.abs(savings).toFixed(2)}.`,
+            type: "negative",
+        })
+        }
+    }
+
+    const topCategory = Object.entries(categoryTotals).sort(([, a], [, b]) => b - a)[0]
+    if (topCategory && topCategory[1] > 0 && expenses > 0) {
+        const pct = (topCategory[1] / expenses) * 100
+        if (pct > 15) {
+        insights.push({
+            text: `${topCategory[0]} is your biggest expense, representing ${pct.toFixed(0)}% of your spending this month.`,
+            type: "info",
+        })
+        }
+    }
+
+    for (const [category, limit] of Object.entries(budgets)) {
+        if (limit > 0) {
+        const spent = categoryTotals[category] || 0
+        const pctUsed = (spent / limit) * 100
+        if (pctUsed >= 80 && pctUsed < 100 && daysLeft > 0) {
+            insights.push({
+            text: `Budget Warning: You've used ${pctUsed.toFixed(0)}% of your ${category} budget with ${daysLeft} days remaining.`,
+            type: "warning",
+            })
+            break
+        }
+        if (pctUsed >= 100) {
+            insights.push({
+            text: `Budget Exceeded: You've gone over your ${category} budget by ${currencySymbol}${(spent - limit).toFixed(2)}.`,
+            type: "negative",
+            })
+            break
+        }
+        }
+    }
+
+    const activeGoal = goals.find((goal) => goal.currentAmount < goal.targetAmount && goal.targetAmount > 0 && goal.targetDate)
+    if (activeGoal) {
+        const remaining = activeGoal.targetAmount - activeGoal.currentAmount
+        const targetDate = new Date(activeGoal.targetDate!)
+        const monthsLeft = Math.max(1, Math.round((targetDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24 * 30)))
+        const requiredMonthly = remaining / monthsLeft
+
+        if (requiredMonthly > 0) {
+        insights.push({
+            text: `Goal Projection: To reach ${activeGoal.name} by ${targetDate.toLocaleDateString(undefined, { month: "long", year: "numeric" })}, you need to save ${currencySymbol}${requiredMonthly.toFixed(2)} per month.`,
+            type: "info",
+        })
+        }
+    }
+
+    return insights
+}
