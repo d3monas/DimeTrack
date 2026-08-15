@@ -10,6 +10,7 @@ import { savingsCategoryForGoal } from "@/lib/consts"
 import { PaginationUI } from "../paginationUI"
 import { pagination } from "@/lib/pagination"
 import { EmptyState } from "../emptyState"
+import { ConfirmDialog } from "../ui/confirmDialog";
 
 type GoalCardThings = {
     goal: Goal
@@ -86,6 +87,8 @@ export function GoalCard({ goal, progress, remaining, onEdit, onDelete, onContri
         setErrors({})
     }
 
+    const [confirmDelete, setConfirmDelete] = useState(false)
+
     return (
         <div className="mt-6 rounded-2xl border p-4 sm:p-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -98,11 +101,7 @@ export function GoalCard({ goal, progress, remaining, onEdit, onDelete, onContri
                     <div className="flex gap-2">
                         <Button size="sm" variant="outline" onClick={() => setContributeOpen(true)}>Contribute to goal</Button>
                         <Button size="sm" variant="outline" onClick={onEdit}>Edit</Button>
-                        <Button size="sm" variant="destructive" onClick={() => {
-                            if (confirm("Are you sure you want to delete this goal? This action cannot be undone")) {
-                                onDelete()
-                            }
-                        }}>Delete</Button>
+                        <Button size="sm" variant="destructive" onClick={() => setConfirmDelete(true)}>Delete</Button>
                     </div>
                 </div>
             </div>
@@ -178,6 +177,15 @@ export function GoalCard({ goal, progress, remaining, onEdit, onDelete, onContri
                     </div>
                 </DialogContent>
             </Dialog>
+
+            <ConfirmDialog
+                open={confirmDelete}
+                onOpenChange={setConfirmDelete}
+                title="Delete Goal?"
+                description="This will permanently delete this savings goal. This action cannot be undone"
+                onConfirm={onDelete}
+                confirmText="Delete"
+            />
         </div>
     )
 }
