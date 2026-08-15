@@ -111,7 +111,7 @@ export function BudgetOverview({ totals, prevTotals, budgets, onUpdateBudget, cu
           const spent = totals[category] ?? 0
 
           const prevSpent = prevTotals[category] ?? 0
-          const rolloverAmount = limit > 0 ? (limit - prevSpent) : 0
+          const rolloverAmount = (limit > 0 && prevSpent > 0) ? (limit - prevSpent) : 0
           const available = limit + rolloverAmount
 
           const hasLimit = limit > 0
