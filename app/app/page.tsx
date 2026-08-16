@@ -40,13 +40,14 @@ import type { Rule } from "@/types/rule"
 import type { Account } from "@/types/account"
 import type { Asset, InvestmentTransaction, InvestmentType } from "@/types/asset"
 import type { DashboardVisibility } from "@/types/dashboard"
+import type { TransactionTemplate } from "@/types/template"
 
 // libs
 import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMonthlyTrends, getFinancialInsights } from "@/lib/calculations/calculations"
 import {
   saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring,
   saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, saveAccentColor, saveOnboardingComplete,
-  saveTutorialSeen, saveAssets, saveSyncId, saveDashboardVisibility, saveUnlockedAchievements, clearAllData
+  saveTutorialSeen, saveAssets, saveSyncId, saveDashboardVisibility, saveUnlockedAchievements, saveTemplates, clearAllData
 } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 import { savingsCategoryForGoal, isSavingsCategory, STARTING_BALANCE_CATEGORY, INVESTMENT_CATEGORY } from "@/lib/consts"
@@ -139,6 +140,8 @@ export default function Home() {
 
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false)
 
+  const [templates, setTemplates] = useState<TransactionTemplate[]>([])
+
   // load localstorage 
   useEffect(() => {
     const data = loadAllData()
@@ -170,6 +173,8 @@ export default function Home() {
     })
     setCheckedAchievements(initialChecked)
     prevCheckedRef.current = initialChecked
+
+    setTemplates(data.templates || [])
 
     setIsLoaded(true)
   }, [])
@@ -421,6 +426,12 @@ export default function Home() {
     return () => document.removeEventListener("keydown", down)
   }, [])
 
+  useEffect(() => {
+    if (isLoaded) {
+      saveTemplates(templates)
+    }
+  }, [isLoaded, templates])
+
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
   const totalAssetsValue = getPortfolioSummary(assets).totalValue
@@ -652,6 +663,37 @@ export default function Home() {
       ))
   }
 
+  function handleSaveTemplate() {
+    if (!description || !amount || Number.isNaN(Number(amount))) {
+      toast.error("Fill in description and amount to save a preset")
+      return
+    }
+    const newTemplate: TransactionTemplate = {
+      id: crypto.randomUUID(),
+      name: description,
+      description,
+      amount: Number(amount),
+      type: transactionType,
+      category: transactionType === "transfer" ? "Transfer" : category,
+      accountId: defaultAccountId || undefined,
+      notes: notes || undefined
+    }
+    setTemplates((prev) => [...prev, newTemplate])
+    toast.success("Preset saved!")
+  }
+
+  function handleApplyTemplate(template: TransactionTemplate) {
+    setDescription(template.description)
+    setAmount(template.amount.toString())
+    setTransactionType(template.type)
+    setCategory(template.category)
+    setNotes(template.notes || "")
+  }
+
+  function handleDeleteTemplate(id: string) {
+    setTemplates((prev) => prev.filter((transaction) => transaction.id !== id))
+  }
+  
   function saveGoal(id: string | null, name: string, currentAmount: number, targetAmount: number, targetDate?: string) {
     if (id) {
       const existingGoal = goals.find((goal) => goal.id === id)
