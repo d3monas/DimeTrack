@@ -28,7 +28,7 @@ export function CommandPalette({ open, onOpenChange, transactions, categories, a
 
     const amount = parseFloat(match[1])
     let rest = match[2].trim()
-    let category = "Uncategorized"
+    let category = null
     let accountId: string | undefined = undefined
     let accountName: string | undefined = undefined
     let description = rest
@@ -54,10 +54,14 @@ export function CommandPalette({ open, onOpenChange, transactions, categories, a
       }
     }
 
+    if (!category) {
+      return null
+    }
+
     if (words.length > 0) {
       description = words.join(" ")
     } else {
-      description = category !== "Uncategorized" ? category : (accountName || "Quick Add")
+      description = category
     }
 
     return { amount, description, category, accountId, accountName }
