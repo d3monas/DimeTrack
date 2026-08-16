@@ -469,9 +469,9 @@ export function AddTransactionDialog({
                         </div>
                     )}
                 </div>
-                <div className="flex gap-2">
-                    <Button className="w-full" onClick={handleSave}>Save Transaction</Button>
-                    <Button variant="outline" size="icon" onClick={onSaveTemplate} aria-label="Save as preset">
+                <div className="flex items-center gap-2 w-full">
+                    <Button className="flex-1" onClick={handleSave}>Save Transaction</Button>
+                    <Button variant="outline" size="icon" className="shrink-0" onClick={onSaveTemplate} aria-label="Save as preset">
                         <Bookmark className="h-4 w-4" />
                     </Button>
                 </div>
