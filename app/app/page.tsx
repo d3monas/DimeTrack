@@ -58,13 +58,14 @@ import { categoryCustomization } from "@/lib/categoryCustomization"
 import { colord } from "colord"
 import { getNetWorthHistory } from "@/lib/calculations/calculations"
 import { getMonthlyReportData } from "@/lib/calculations/calculations"
-import { ArrowLeftRight, CalendarDays, LayoutDashboard, Repeat, Settings, Target, Search, LineChart, Trophy } from "lucide-react"
+import { ArrowLeftRight, CalendarDays, LayoutDashboard, Repeat, Settings, Target, Search, LineChart, Trophy, Keyboard } from "lucide-react"
 import { get12MonthForecast } from "@/lib/calculations/calculations"
 import { getSampleData } from "@/lib/sampleData"
 import { TourGuide } from "@/components/tutorials/tourGuide"
 import { pushSyncData, pullSyncData } from "@/lib/sync"
 import { getPortfolioSummary } from "@/lib/calculations/investmentCalculations"
 import { ACHIEVEMENTS, checkAchievements, CheckedAchievement } from "@/lib/achievements"
+import { KeyboardShortcutsDialog } from "@/components/keyboardShortcutsDialog"
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -135,6 +136,8 @@ export default function Home() {
   const [isAchievementsOpen, setIsAchievementsOpen] = useState(false)
   const [checkedAchievements, setCheckedAchievements] = useState<Record<string, CheckedAchievement>>({})
   const prevCheckedRef = useRef<Record<string, CheckedAchievement>>({})
+
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false)
 
   // load localstorage 
   useEffect(() => {
@@ -387,6 +390,36 @@ export default function Home() {
     prevCheckedRef.current = currentChecked
     setCheckedAchievements(currentChecked)
   }, [isLoaded, transactions, goals, assets])
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement
+      const isTyping = target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable
+
+      if (e.key.toLowerCase() === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setCommandOpen(true)
+      }
+
+      if (isTyping) {
+        return
+      }
+
+      if (e.key.toLowerCase() === "n" && e.altKey) {
+        e.preventDefault()
+        setActiveTab("transactions")
+        setOpen(true)
+      }
+
+      if (e.altKey && e.key >= "1" && e.key <= "6") {
+        e.preventDefault()
+        const tabs = ["overview", "timeline", "transactions", "subscriptions", "investments", "budgets"]
+        setActiveTab(tabs[parseInt(e.key) - 1])
+      }
+    }
+    document.addEventListener("keydown", down)
+    return () => document.removeEventListener("keydown", down)
+  }, [])
 
   const lifetimeIncome = calculateIncome(transactions)
   const lifetimeExpenses = calculateExpenses(transactions)
@@ -1292,6 +1325,7 @@ export default function Home() {
               />
             )}
             <MonthlyReport data={monthlyReportData} currencySymbol={currencySymbol} />
+            
 
             <Button variant="outline" size="icon" onClick={() => setIsAchievementsOpen(true)} className="relative">
               <Trophy className="w-4 h-4" />
@@ -1302,11 +1336,15 @@ export default function Home() {
               )}
             </Button>
 
+            <Button variant="outline" size="icon" onClick={() => setIsShortcutsOpen(true)}>
+              <Keyboard className="w-4 h-4" />
+            </Button>
             <Button variant="outline" onClick={() => setSettingsOpen(true)} className="gap-2">
               <Settings className="w-4 h-4" />
               <span className="hidden sm:inline">Settings</span>
             </Button>
             <AchievementsDialog open={isAchievementsOpen} onOpenChange={setIsAchievementsOpen} checkedAchievements={checkedAchievements} />
+            <KeyboardShortcutsDialog open={isShortcutsOpen} onOpenChange={setIsShortcutsOpen} />
             <SettingsDialog
               categories={categories}
               newCategory={newCategory}
@@ -1365,7 +1403,7 @@ export default function Home() {
 
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-6 sticky top-5 z-40 bg-muted/35 backdrop-blur p-1 rounded-lg border">
+          <TabsList className="grid w-full grid-cols-6 sticky top-5 z-40 bg-muted/35 backdrop-blur rounded-lg border">
             <TabsTrigger value="overview" className="flex-1 sm:flex-initial gap-1.5">
               <LayoutDashboard className="w-4 h-4" />
               <span className="hidden sm:inline">Overview</span>
