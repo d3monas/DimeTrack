@@ -11,6 +11,7 @@ type CommandPaletteThings = {
   transactions: Transaction[]
   categories: string[]
   accounts: Account[]
+  currencySymbol: string
   onTabChange: (tab: string) => void
   onAddTransaction: () => void
   onOpenSettings: () => void
@@ -19,7 +20,7 @@ type CommandPaletteThings = {
   onQuickAdd: (amount: number, description: string, category: string, accountId?: string) => void
 }
 
-export function CommandPalette({ open, onOpenChange, transactions, categories, accounts, onTabChange, onAddTransaction, onOpenSettings, onAddGoal, onExportBackup, onQuickAdd }: CommandPaletteThings) {
+export function CommandPalette({ open, onOpenChange, transactions, categories, accounts, currencySymbol, onTabChange, onAddTransaction, onOpenSettings, onAddGoal, onExportBackup, onQuickAdd }: CommandPaletteThings) {
   const [search, setSearch] = useState("")
 
   const parseQuickAdd = (input: string) => {
@@ -94,7 +95,7 @@ export function CommandPalette({ open, onOpenChange, transactions, categories, a
                   value={`quick add ${search}`}>
                   <PlusCircle className="mr-2 h-4 w-4 shrink-0" />
                   <div className="flex flex-col text-sm">
-                    <span>Add <span className="font-bold">${quickAddData.amount.toFixed(2)}</span> - {quickAddData.description}</span>
+                    <span>Add <span className="font-bold">{currencySymbol}{quickAddData.amount.toFixed(2)}</span> - {quickAddData.description}</span>
                     <span className="text-xs text-muted-foreground">
                       Category: {quickAddData.category}{quickAddData.accountName ? ` | Account: ${quickAddData.accountName}` : ""}
                     </span>
