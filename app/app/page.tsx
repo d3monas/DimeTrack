@@ -1300,6 +1300,8 @@ export default function Home() {
       setCheckedAchievements(initialChecked)
       prevCheckedRef.current = initialChecked
 
+      setTemplates(data.templates || [])
+
       setSyncId(id)
       setSessionPassword(password)
       saveSyncId(id)
