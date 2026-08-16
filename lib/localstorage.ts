@@ -6,6 +6,7 @@ import { categoryCustomization } from "@/lib/categoryCustomization"
 import type { Account } from "@/types/account"
 import type { Asset } from "@/types/asset"
 import { DashboardVisibility } from "@/types/dashboard"
+import { TransactionTemplate } from "@/types/template"
 
 const isBrowser = typeof window !== "undefined"
 
@@ -364,17 +365,25 @@ export function loadSyncId(): string {
 
 // assets
 export function saveAssets(assets: Asset[]) {
-    if (!isBrowser) return
+    if (!isBrowser) {
+        return
+    }
     localStorage.setItem("assets", JSON.stringify(assets))
 }
 
 export function loadAssets(): Asset[] {
-    if (!isBrowser) return []
+    if (!isBrowser) {
+        return []
+    }
     try {
         const saved = localStorage.getItem("assets")
-        if (!saved) return []
+        if (!saved) {
+            return []
+        }
         const parsed = JSON.parse(saved)
-        if (!Array.isArray(parsed)) return []
+        if (!Array.isArray(parsed)) {
+            return []
+        }
         return parsed
     } catch {
         return []
@@ -420,18 +429,49 @@ export function loadDashboardVisibility(): DashboardVisibility {
 
 // achievs
 export function saveUnlockedAchievements(ids: string[]) {
-  if (!isBrowser) return
-  localStorage.setItem("unlockedAchievements", JSON.stringify(ids))
+    if (!isBrowser) {
+        return
+    }
+    localStorage.setItem("unlockedAchievements", JSON.stringify(ids))
 }
 
 export function loadUnlockedAchievements(): string[] {
-  if (!isBrowser) return []
-  try {
-    const saved = localStorage.getItem("unlockedAchievements")
-    return saved ? JSON.parse(saved) : []
-  } catch {
-    return []
-  }
+    if (!isBrowser) {
+        return []
+    }
+    try {
+        const saved = localStorage.getItem("unlockedAchievements")
+        return saved ? JSON.parse(saved) : []
+    } catch {
+        return []
+    }
+}
+
+// templates
+export function saveTemplates(templates: TransactionTemplate[]) {
+    if (!isBrowser) {
+        return
+    }
+    localStorage.setItem("templates", JSON.stringify(templates))
+}
+
+export function loadTemplates(): TransactionTemplate[] {
+    if (!isBrowser) {
+        return []
+    }
+    try {
+        const saved = localStorage.getItem("templates")
+        if (!saved) {
+            return []
+        }
+        const parsed = JSON.parse(saved)
+        if (!Array.isArray(parsed)) {
+            return []
+        }
+        return parsed
+    } catch {
+        return []
+    }
 }
 
 export function loadAllData() {
@@ -453,6 +493,7 @@ export function loadAllData() {
         assets: loadAssets(),
         dashboardVisibility: loadDashboardVisibility(),
         achievements: loadUnlockedAchievements(),
+        templates: loadTemplates(),
     }
 }
 
@@ -479,4 +520,5 @@ export function clearAllData() {
     localStorage.removeItem("assets")
     localStorage.removeItem("dashboardVisibility")
     localStorage.removeItem("unlockedAchievements")
+    localStorage.removeItem("templates")
 }
