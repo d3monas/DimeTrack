@@ -664,15 +664,22 @@ export default function Home() {
   }
 
   function handleSaveTemplate() {
-    if (!description || !amount || Number.isNaN(Number(amount))) {
+    const numberAmount = Number(amount)
+    if (!description || !amount || Number.isNaN(numberAmount)) {
       toast.error("Fill in description and amount to save a preset")
       return
     }
+
+    if (transactionType !== "transfer" && !category) {
+      toast.error("Please select a category to save a preset")
+      return
+    }
+
     const newTemplate: TransactionTemplate = {
       id: crypto.randomUUID(),
       name: description,
       description,
-      amount: Number(amount),
+      amount: numberAmount,
       type: transactionType,
       category: transactionType === "transfer" ? "Transfer" : category,
       accountId: defaultAccountId || undefined,
