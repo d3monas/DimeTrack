@@ -904,7 +904,8 @@ export default function Home() {
       onboardingComplete,
       assets,
       dashboardVisibility,
-      unlockedAchievements: Object.values(checkedAchievements).filter(e => e.unlocked).map(e => e.id)
+      unlockedAchievements: Object.values(checkedAchievements).filter(e => e.unlocked).map(e => e.id),
+      templates
     })
   }
 
@@ -952,6 +953,8 @@ export default function Home() {
     })
     setCheckedAchievements(initialChecked)
     prevCheckedRef.current = initialChecked
+
+    setTemplates(data.templates || [])
 
     toast.success("Backup file imported successfully")
   }
@@ -1197,6 +1200,7 @@ export default function Home() {
       recurring, rules, categoryCustomization, accounts,
       defaultAccountId, accentColor, onboardingComplete, assets,
       dashboardVisibility, unlockedAchievements: Object.values(checkedAchievements).filter(e => e.unlocked).map(e => e.id),
+      templates
     }
   }
 
@@ -1544,6 +1548,10 @@ export default function Home() {
                 rules={rules}
                 accounts={accounts}
                 defaultAccountId={defaultAccountId}
+                templates={templates}
+                onSaveTemplate={handleSaveTemplate}
+                onApplyTemplate={handleApplyTemplate}
+                onDeleteTemplate={handleDeleteTemplate}
               />
             </div>
 
