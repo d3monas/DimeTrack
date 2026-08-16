@@ -1640,6 +1640,7 @@ export default function Home() {
           transactions={transactions}
           categories={categories}
           accounts={accounts}
+          currencySymbol={currencySymbol}
           onTabChange={(tab) => setActiveTab(tab)}
           onAddTransaction={() => { setActiveTab("transactions"); setOpen(true) }}
           onOpenSettings={() => setSettingsOpen(true)}
