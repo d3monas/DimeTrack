@@ -13,6 +13,8 @@ import type { TransactionSplit } from "@/types/transaction"
 import { autoCategories } from "@/lib/rules"
 import type { Rule } from "@/types/rule"
 import type { Account } from "@/types/account"
+import { TransactionTemplate } from "@/types/template"
+import { Bookmark } from "lucide-react"
 
 type AddTransactionDialogThings = {
     open: boolean
@@ -43,12 +45,17 @@ type AddTransactionDialogThings = {
     rules: Rule[]
     accounts: Account[]
     defaultAccountId: string
+    templates: TransactionTemplate[]
+    onSaveTemplate: () => void
+    onApplyTemplate: (template: TransactionTemplate) => void
+    onDeleteTemplate: (id: string) => void
 }
 
 export function AddTransactionDialog({
     open, setOpen, description, setDescription, amount, setAmount, transactionType,
     setTransactionType, category, setCategory, onSave, categories, notes, setNotes,
-    onAddNewCategory, budgets, categoryTotals, currencySymbol, rules, accounts, defaultAccountId
+    onAddNewCategory, budgets, categoryTotals, currencySymbol, rules, accounts, defaultAccountId,
+    templates, onSaveTemplate, onApplyTemplate, onDeleteTemplate
 }: AddTransactionDialogThings) {
     const [errors, setErrors] = useState<Record<string, string>>({})
     const [isRecurring, setIsRecurring] = useState(false)
@@ -182,6 +189,21 @@ export function AddTransactionDialog({
                 <DialogHeader>
                     <DialogTitle>Add Transaction</DialogTitle>
                 </DialogHeader>
+
+                {templates.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pb-2">
+                        {templates.map((template) => (
+                            <div key={template.id} className="group relative">
+                                <Button variant="secondary" size="sm" className="pr-6" onClick={() => onApplyTemplate(template)}>
+                                    {template.description} ({currencySymbol}{template.amount.toFixed(2)})
+                                </Button>
+                                <button onClick={() => onDeleteTemplate(template.id)} 
+                                    className="absolute right-1 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    aria-label="Delete preset">✕</button>
+                            </div>
+                        ))}
+                    </div>
+                )}
 
                 <div className="space-y-4" onKeyDown={handleKeyDown}>
                     <div>
@@ -447,7 +469,12 @@ export function AddTransactionDialog({
                         </div>
                     )}
                 </div>
-                <Button className="w-full" onClick={handleSave}>Save Transaction</Button>
+                <div className="flex gap-2">
+                    <Button className="w-full" onClick={handleSave}>Save Transaction</Button>
+                    <Button variant="outline" size="icon" onClick={onSaveTemplate} aria-label="Save as preset">
+                        <Bookmark className="h-4 w-4" />
+                    </Button>
+                </div>
             </DialogContent>
         </Dialog>
     )
