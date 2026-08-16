@@ -84,7 +84,7 @@ export function CommandPalette({ open, onOpenChange, transactions, categories, a
         </DialogHeader>
         
         <Command className="rounded-lg" shouldFilter={!quickAddData}>
-          <CommandInput placeholder="Search or 'amount description [category] [account]...'" value={search} onValueChange={setSearch} className="text-sm h-9" />
+          <CommandInput placeholder="Search or 'amount description category [account]...'" value={search} onValueChange={setSearch} className="text-sm h-9" />
           <CommandList className="max-h-100">
             <CommandEmpty>No results found.</CommandEmpty>
             
