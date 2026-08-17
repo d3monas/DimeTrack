@@ -296,24 +296,35 @@ export function getFinancialInsights(
     }
 
     for (const [category, limit] of Object.entries(budgets)) {
-        if (limit > 0) {
+      if (limit > 0) {
         const spent = categoryTotals[category] || 0
+
+        if (spent === 0) {
+          continue
+        }
+
         const pctUsed = (spent / limit) * 100
-        if (pctUsed >= 80 && pctUsed < 100 && daysLeft > 0) {
-            insights.push({
-            text: `Budget Warning - You've used ${pctUsed.toFixed(0)}% of your ${category} budget with ${daysLeft} days remaining.`,
-            type: "warning",
-            })
-            break
-        }
-        if (pctUsed >= 100) {
-            insights.push({
-            text: `Budget Exceeded - You've gone over your ${category} budget by ${currencySymbol}${(spent - limit).toFixed(2)}.`,
+
+        if (spent > limit) {
+          insights.push({
+            text: `Budget Exceeded - you've gone over your ${category} budget by ${currencySymbol}${(spent - limit).toFixed(2)}.`,
             type: "negative",
-            })
-            break
+          })
+          break
+        } else if (pctUsed >= 100) {
+          insights.push({
+            text: `Budget Update - you've reached exactly 100% of your ${category} budget.`,
+            type: "warning",
+          })
+          break
+        } else if (pctUsed >= 80 && daysLeft > 0) {
+          insights.push({
+            text: `Budget Warning - you've used ${pctUsed.toFixed(0)}% of your ${category} budget with ${daysLeft} days remaining.`,
+            type: "warning",
+          })
+          break
         }
-        }
+      }
     }
 
     const activeGoal = goals.find((goal) => goal.currentAmount < goal.targetAmount && goal.targetAmount > 0 && goal.targetDate)
