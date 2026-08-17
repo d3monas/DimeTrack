@@ -42,12 +42,14 @@ export async function POST(
 ) {
   const { id: syncId } = await params;
 
-  if (!syncId) return NextResponse.json({ error: "Invalid Sync ID" }, { status: 400 });
+  if (!syncId) {
+    return NextResponse.json({ error: "Invalid Sync ID" }, { status: 400 });
+  }
 
   try {
     const redis = getRedisClient();
     const encryptedData = await request.text();
-    await redis.set(`sync:${syncId}`, encryptedData);
+    await redis.set(`sync:${syncId}`, encryptedData, { ex: 2592000 });
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
