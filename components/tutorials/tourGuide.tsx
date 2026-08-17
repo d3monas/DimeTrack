@@ -76,9 +76,9 @@ const steps = [
         requiresAction: "saveGoal"
     },
     {
-        title: "11. View the Overview",
-        description: "Amazing! You've customized your app. Click the 'Overview' tab to see your data visualized in the charts.",
-        targetTab: "overview",
+        title: "11. Check Your Investments",
+        description: "We've added a sample stock portfolio for you! Click on the 'Investments' tab to see how Buy/Sell work.",
+        targetTab: "investments",
         requiresAction: "tab"
     },
     {
