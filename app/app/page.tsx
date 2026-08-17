@@ -1109,6 +1109,7 @@ export default function Home() {
     setCategoryCustomization(sampleData.categoryCustomization)
     setAccounts(sampleData.accounts)
     setDefaultAccountId(sampleData.defaultAccountId)
+    setAssets(sampleData.assets || [])
     setTutorialSeen(true)
     setTourActive(true)
     setTourStep(0)
@@ -1127,6 +1128,7 @@ export default function Home() {
     setAccounts([])
     setDefaultAccountId("")
     setAccentColor("")
+    setAssets([])
     toast.success("Tour finished! Start adding your own data.")
   }
 
@@ -1662,7 +1664,7 @@ export default function Home() {
             categoriesCount={categories.length}
             rulesCount={rules.length}
             onFinishTour={handleFinishTour}
-            onSkip={() => { setTourActive(false); setTourStep(0) }}
+            onSkip={handleFinishTour}
           />
         )}
       </div>
