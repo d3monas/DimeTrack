@@ -1,12 +1,15 @@
 import { useState, useMemo } from "react"
 import { Button } from "./ui/button"
 import { EmptyState } from "./emptyState"
-import { TrendingUp, TrendingDown, CalendarClock, Wallet, ArrowDownUp, AlertTriangle } from "lucide-react"
+import { TrendingUp, TrendingDown, CalendarClock, Wallet, ArrowDownUp, AlertTriangle, ShieldAlert, CalendarIcon } from "lucide-react"
 import { getNextDate } from "@/lib/recurring"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
 import { AreaChart, Area, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from "recharts"
 import { chartTooltipStyle } from "@/lib/chartStyles"
 import { cn } from "@/lib/utils"
+import { Input } from "./ui/input"
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
+import { Calendar } from "./ui/calendar"
 
 type CashFlowTimelineThings = {
     currentBalance: number
@@ -22,7 +25,9 @@ type TimelineEvent = {
 }
 
 export function CashFlowTimeline({ currentBalance, recurring, currencySymbol }: CashFlowTimelineThings) {
-    const [filterValue, setFilterValue] = useState<"7days" | "1month" | "3months">("7days")
+    const [filterValue, setFilterValue] = useState<"7days" | "1month" | "3months" | "custom">("7days")
+    const [customDate, setCustomDate] = useState<Date | undefined>(undefined)
+    const [safetyBuffer, setSafetyBuffer] = useState<number>(0)
 
     const { timelineGroups, chartData, projectedBalance, minBalance, filterLabel } = useMemo(() => {
         const now = new Date()
@@ -39,6 +44,9 @@ export function CashFlowTimeline({ currentBalance, recurring, currencySymbol }: 
         } else if (filterValue === "3months") {
             futureDate.setMonth(now.getMonth() + 3)
             label = "3 months"
+        } else if (filterValue === "custom" && customDate) {
+            futureDate.setTime(customDate.getTime())
+            label = customDate.toLocaleDateString(undefined, { month: "short", day: "numeric" })
         }
 
         const events: TimelineEvent[] = []
@@ -99,7 +107,7 @@ export function CashFlowTimeline({ currentBalance, recurring, currencySymbol }: 
         }))
 
         return { timelineGroups, chartData, projectedBalance: running, minBalance: minBal, filterLabel: label }
-    }, [recurring, filterValue, currentBalance])
+    }, [recurring, filterValue, currentBalance, customDate])
 
     const isProjectionPositive = projectedBalance >= currentBalance
     const hasNegativeDip = minBalance < 0
@@ -113,10 +121,33 @@ export function CashFlowTimeline({ currentBalance, recurring, currencySymbol }: 
                     </h2>
                     <p className="text-sm text-muted-foreground">Current balance: <span className="font-bold text-foreground">{currencySymbol}{currentBalance.toFixed(2)}</span></p>
                 </div>
-                <div className="flex gap-1 rounded-lg border p-1 w-fit">
-                    <Button size="sm" variant={filterValue === "7days" ? "default" : "ghost"} onClick={() => setFilterValue("7days")} className="h-7">7 days</Button>
-                    <Button size="sm" variant={filterValue === "1month" ? "default" : "ghost"} onClick={() => setFilterValue("1month")} className="h-7">1 month</Button>
-                    <Button size="sm" variant={filterValue === "3months" ? "default" : "ghost"} onClick={() => setFilterValue("3months")} className="h-7">3 months</Button>
+
+                <div className="flex flex-col sm:flex-row gap-2">
+                    <div className="flex items-center gap-2 rounded-lg border p-1">
+                        <ShieldAlert className="w-4 h-4 text-orange-500 ml-1" />
+                        <Input type="number" value={safetyBuffer || ""} onChange={(e) => setSafetyBuffer(Number(e.target.value))} placeholder="Buffer"
+                            className="h-6 w-24 text-center text-sm border-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-0"
+                        />
+                    </div>
+
+                    <div className="flex gap-1 rounded-lg border p-1 w-fit">
+                        <Button size="sm" variant={filterValue === "7days" ? "default" : "ghost"} onClick={() => setFilterValue("7days")} className="h-7">7 days</Button>
+                        <Button size="sm" variant={filterValue === "1month" ? "default" : "ghost"} onClick={() => setFilterValue("1month")} className="h-7">1 month</Button>
+                        <Button size="sm" variant={filterValue === "3months" ? "default" : "ghost"} onClick={() => setFilterValue("3months")} className="h-7">3 months</Button>
+
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button size="sm" variant={filterValue === "custom" ? "default" : "ghost"} className="h-7 px-2">
+                                    <CalendarIcon className="w-4 h-4" />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar mode="single" selected={customDate} onSelect={(date) => { setCustomDate(date); setFilterValue("custom") }}
+                                    disabled={(date) => date < new Date()}
+                                />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
                 </div>
             </div>
 
@@ -131,6 +162,13 @@ export function CashFlowTimeline({ currentBalance, recurring, currencySymbol }: 
                         {currencySymbol}{projectedBalance.toFixed(2)}
                     </h3>
                     <p className="text-xs text-muted-foreground mt-1">In {filterLabel}</p>
+
+                    {safetyBuffer > 0 && minBalance < safetyBuffer && (
+                        <div className="mt-3 flex items-center gap-2 text-xs font-medium text-orange-600 bg-orange-500/10 p-2 rounded-md">
+                            <AlertTriangle className="w-4 h-4" />
+                            Warning: Balance drops below safety buffer ({currencySymbol}{safetyBuffer.toFixed(2)}) during this period
+                        </div>
+                    )}
 
                     {hasNegativeDip && (
                         <div className="mt-3 flex items-center gap-2 text-xs font-medium text-red-600 bg-red-500/10 p-2 rounded-md">
@@ -156,6 +194,9 @@ export function CashFlowTimeline({ currentBalance, recurring, currencySymbol }: 
                                     {...chartTooltipStyle}
                                 />
                                 <ReferenceLine y={0} stroke="#ef4444" strokeDasharray="4 4" />
+                                {safetyBuffer > 0 && (
+                                    <ReferenceLine y={safetyBuffer} stroke="#f97316" strokeDasharray="4 4" />
+                                )}
                                 <Area type="monotone" dataKey="balance" stroke={isProjectionPositive ? "#22c55e" : "#ef4444"} strokeWidth={2} fillOpacity={1} fill="url(#colorBalance)" />
                             </AreaChart>
                         </ResponsiveContainer>
