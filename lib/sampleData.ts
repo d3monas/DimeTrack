@@ -4,6 +4,7 @@ import type { RecurringTransaction } from "@/types/recurringTransaction"
 import type { Account } from "@/types/account"
 import type { Rule } from "@/types/rule"
 import type { categoryCustomization } from "@/lib/categoryCustomization"
+import { Asset } from "@/types/asset"
 
 export function getSampleData() {
   const now = new Date()
@@ -69,6 +70,13 @@ export function getSampleData() {
     { id: "rule-1", contains: "Uber", category: "Transport" }
   ]
 
+  const assets: Asset[] = [
+    { id: crypto.randomUUID(), name: "Apple Inc.", ticker: "APPL", type: "Stock", notes: "Long term hold", transactions: [
+      { id: crypto.randomUUID(), type: "buy", date: new Date(Date.now() - 86400000 * 30).toISOString(), quantity: 5, pricePerUnit: 294.35},
+      { id: crypto.randomUUID(), type: "update", date: new Date().toISOString(), quantity: 0, pricePerUnit: 305.93}
+    ]}
+  ]
+
   return {
     transactions,
     goals,
@@ -77,6 +85,7 @@ export function getSampleData() {
     currency: "USD",
     recurring,
     rules,
+    assets,
     categoryCustomization,
     accounts,
     defaultAccountId: "acc-1",
