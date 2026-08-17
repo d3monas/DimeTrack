@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Wallet, RefreshCw, ShieldCheck, Download, CalendarDays, TrendingUp } from "lucide-react"
+import { Wallet, RefreshCw, ShieldCheck, Download, CalendarClock, LineChart, Trophy, LayoutDashboard } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-provider"
 import { useState, useEffect } from "react"
 import { useTheme } from "next-themes"
@@ -15,14 +15,19 @@ const features = [
         description: "Track Checking, Savings, and Cash separately. Move money with transfers that don't inflate your income or expenses."
     },
     {
-        icon: CalendarDays,
-        title: "Cash Flow Calendar",
-        description: "Project upcoming bills and predict your spending before it happens."
+        icon: CalendarClock,
+        title: "Timeline",
+        description: "Project upcoming bills and predict your spending before it happens. Set a safety buffer and get warned before you overdraft."
     },
     {
-        icon: TrendingUp,
+        icon: LineChart,
         title: "Net Worth & Reports",
         description: "See how your wealth grows with charts and generate monthly spending reports."
+    },
+    {
+        icon: Trophy,
+        title: "Smart Insights & Achievements",
+        description: "Get insights about your spending pace and budget limits. Unlock achievements as you use the app and achieve your goals."
     },
     {
         icon: RefreshCw,
@@ -31,13 +36,18 @@ const features = [
     },
     {
         icon: ShieldCheck,  
-        title: "100% Private & Offline",
-        description: "No accounts, servers or cloud. Your financial data never leaves your browser's local storage."
+        title: "Local-first & E2EE Sync",
+        description: "Your data stays in your browser by default. Optionally sync securely across devices with End-to-End Encryption. Nobody except YOU can read YOUR data."
     },
     {
         icon: Download,
         title: "Exportable data",
         description: "Export your transactions to CSV or create full JSON backups to transfer your data to any device."
+    },
+    {
+        icon: LayoutDashboard,
+        title: "Customizable Dashboard",
+        description: "Toggle widgets on and off to see exactly what matters to you."
     }
 ]
 
