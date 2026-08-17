@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react"
 import { Button } from "./ui/button"
 import { EmptyState } from "./emptyState"
-import { TrendingUp, TrendingDown, CalendarClock, Wallet, ArrowDownUp, AlertTriangle, ShieldAlert, CalendarIcon } from "lucide-react"
+import { TrendingUp, TrendingDown, CalendarClock, Wallet, ArrowDownUp, AlertTriangle, ShieldAlert, Calendar as CalendarIcon } from "lucide-react"
 import { getNextDate } from "@/lib/recurring"
 import type { RecurringTransaction } from "@/types/recurringTransaction"
 import { AreaChart, Area, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from "recharts"
