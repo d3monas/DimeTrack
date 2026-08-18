@@ -10,4 +10,6 @@ export type RecurringTransaction = {
     lastProcessedDate: string
     createdAt: string
     isActive?: boolean
+    accountId?: string
+    transferAccountId?: string
 }
