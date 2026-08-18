@@ -48,9 +48,9 @@ export function getSampleData() {
   ]
 
   const recurring: RecurringTransaction[] = [
-    { id: "rec-1", description: "Salary", amount: 3000, type: "income", category: "Salary", interval: "monthly", lastProcessedDate: thisMonthDay(1), createdAt: thisMonthDay(1), isActive: true },
-    { id: "rec-2", description: "Rent", amount: 1500, type: "expense", category: "Rent", interval: "monthly", lastProcessedDate: thisMonthDay(1), createdAt: thisMonthDay(1), isActive: true },
-    { id: "rec-3", description: "Netflix", amount: 15.99, type: "expense", category: "Entertainment", interval: "monthly", lastProcessedDate: thisMonthDay(1), createdAt: thisMonthDay(1), isActive: true }
+    { id: "rec-1", description: "Salary", amount: 3000, type: "income", category: "Salary", interval: "monthly", lastProcessedDate: thisMonthDay(1), createdAt: thisMonthDay(1), isActive: true, accountId: "acc-1" },
+    { id: "rec-2", description: "Rent", amount: 1500, type: "expense", category: "Rent", interval: "monthly", lastProcessedDate: thisMonthDay(1), createdAt: thisMonthDay(1), isActive: true, accountId: "acc-1" },
+    { id: "rec-3", description: "Netflix", amount: 15.99, type: "expense", category: "Entertainment", interval: "monthly", lastProcessedDate: thisMonthDay(1), createdAt: thisMonthDay(1), isActive: true, accountId: "acc-1" }
   ]
 
   const transactions: Transaction[] = [
@@ -71,7 +71,7 @@ export function getSampleData() {
   ]
 
   const assets: Asset[] = [
-    { id: crypto.randomUUID(), name: "Apple Inc.", ticker: "APPL", type: "Stock", notes: "Long term hold", transactions: [
+    { id: crypto.randomUUID(), name: "Apple Inc.", ticker: "AAPL", type: "Stock", notes: "Long term hold", transactions: [
       { id: crypto.randomUUID(), type: "buy", date: new Date(Date.now() - 86400000 * 30).toISOString(), quantity: 5, pricePerUnit: 294.35},
       { id: crypto.randomUUID(), type: "update", date: new Date().toISOString(), quantity: 0, pricePerUnit: 305.93}
     ]}
