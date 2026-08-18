@@ -227,9 +227,15 @@ export function TransactionList({
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All Categories</SelectItem>
-                            {categories.map((category) => (
-                                <SelectItem key={category} value={category}>{category}</SelectItem>
-                            ))}
+                            {categories.map((category) => {
+                                const catColor = categoryCustomization?.[category]?.color || DEFAULT_CATEGORY_COLOR
+                                return (
+                                    <SelectItem key={category} value={category} className="flex items-center gap-2">
+                                        <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: catColor }} />
+                                        <span>{category}</span>
+                                    </SelectItem>
+                                )
+                            })}
                         </SelectContent>
                     </Select>
 
@@ -392,9 +398,15 @@ export function TransactionList({
                                         <SelectValue placeholder="Categorize..." />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {categories.map((category) => (
-                                            <SelectItem key={category} value={category}>{category}</SelectItem>
-                                        ))}
+                                        {categories.map((category) => {
+                                            const catColor = categoryCustomization?.[category]?.color || DEFAULT_CATEGORY_COLOR
+                                            return (
+                                                <SelectItem key={category} value={category} className="flex items-center gap-2">
+                                                    <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: catColor }} />
+                                                    <span>{category}</span>
+                                                </SelectItem>
+                                            )
+                                        })}
                                     </SelectContent>
                                 </Select>
 
