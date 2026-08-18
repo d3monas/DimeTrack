@@ -124,6 +124,8 @@ export default function Home() {
   const lastSyncedStateRef = useRef<string | null>(null)
   const pendingLocalStateRef = useRef<string | null>(null)
   const syncPullInFlightRef = useRef(false)
+  const syncSessionInitializedRef = useRef(false)
+  const syncChangeVersionRef = useRef(0)
 
   const [assets, setAssets] = useState<Asset[]>([])
 
@@ -353,11 +355,18 @@ export default function Home() {
     const state = getCurrentState()
     const stateFingerprint = JSON.stringify(state)
 
+    if (!syncSessionInitializedRef.current) {
+      syncSessionInitializedRef.current = true
+      lastSyncedStateRef.current = stateFingerprint
+      return
+    }
+
     if (stateFingerprint === lastSyncedStateRef.current) {
       return
     }
 
     pendingLocalStateRef.current = stateFingerprint
+    syncChangeVersionRef.current += 1
 
     const syncTimer = setTimeout(() => {
       pushSyncData(syncId, sessionPassword, state)
@@ -407,8 +416,14 @@ export default function Home() {
       }
 
       syncPullInFlightRef.current = true
+      const requestChangeVersion = syncChangeVersionRef.current
       try {
         const pulledState = await pullSyncData(syncId, sessionPassword)
+
+        if (requestChangeVersion !== syncChangeVersionRef.current || pendingLocalStateRef.current) {
+          return
+        }
+
         const pulledFingerprint = JSON.stringify(pulledState)
 
         if (pulledFingerprint === JSON.stringify(getCurrentState())) {
@@ -497,9 +512,15 @@ export default function Home() {
         }
 
         syncPullInFlightRef.current = true
+        const requestChangeVersion = syncChangeVersionRef.current
 
         try {
           const pulledState = await pullSyncData(syncId, sessionPassword)
+
+          if (requestChangeVersion !== syncChangeVersionRef.current || pendingLocalStateRef.current) {
+            return
+          }
+
           const data = pulledState as any
           lastSyncedStateRef.current = JSON.stringify(pulledState)
 
