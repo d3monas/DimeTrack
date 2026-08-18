@@ -122,6 +122,7 @@ export default function Home() {
   const [lastSynced, setLastSynced] = useState<string | null>(null)
   const [sessionPassword, setSessionPassword] = useState<string | null>(null)
   const lastSyncedStateRef = useRef<string | null>(null)
+  const pendingLocalStateRef = useRef<string | null>(null)
   const syncPullInFlightRef = useRef(false)
 
   const [assets, setAssets] = useState<Asset[]>([])
@@ -349,20 +350,28 @@ export default function Home() {
       return
     }
 
+    const state = getCurrentState()
+    const stateFingerprint = JSON.stringify(state)
+
+    if (stateFingerprint === lastSyncedStateRef.current) {
+      return
+    }
+
+    pendingLocalStateRef.current = stateFingerprint
+
     const syncTimer = setTimeout(() => {
-      const state = getCurrentState()
-      const stateFingerprint = JSON.stringify(state)
-
-      if (stateFingerprint === lastSyncedStateRef.current) {
-        return
-      }
-
       pushSyncData(syncId, sessionPassword, state)
         .then(() => {
-          lastSyncedStateRef.current = stateFingerprint
-          setLastSynced(new Date().toLocaleString())
+          if (pendingLocalStateRef.current === stateFingerprint) {
+            pendingLocalStateRef.current = null
+            lastSyncedStateRef.current = stateFingerprint
+            setLastSynced(new Date().toLocaleString())
+          }
         })
         .catch((error) => {
+          if (pendingLocalStateRef.current === stateFingerprint) {
+            pendingLocalStateRef.current = null
+          }
           console.error("Auto-sync failed:", error)
         })
     }, 1000)
@@ -390,6 +399,10 @@ export default function Home() {
       const isTyping = activeElement && (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA")
 
       if (isTyping || open || settingsOpen || goalDialogOpen) {
+        return
+      }
+
+      if (pendingLocalStateRef.current) {
         return
       }
 
@@ -472,6 +485,10 @@ export default function Home() {
         const isTyping = activeElement && (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA")
 
         if (isTyping || open || settingsOpen || goalDialogOpen) {
+          return
+        }
+
+        if (pendingLocalStateRef.current) {
           return
         }
 
@@ -1391,6 +1408,7 @@ export default function Home() {
       const state = getCurrentState()
       await pushSyncData(newId, password, state)
 
+      pendingLocalStateRef.current = null
       lastSyncedStateRef.current = JSON.stringify(state)
       setSyncId(newId)
       setSessionPassword(password)
@@ -1425,6 +1443,7 @@ export default function Home() {
       const state = getCurrentState()
       await pushSyncData(syncId, passwordToUse, state)
 
+      pendingLocalStateRef.current = null
       lastSyncedStateRef.current = JSON.stringify(state)
       setSessionPassword(passwordToUse)
       saveSyncPassword(passwordToUse)
@@ -1448,6 +1467,7 @@ export default function Home() {
     try {
       const pulledState = await pullSyncData(id, password)
       const data = pulledState as any
+      pendingLocalStateRef.current = null
       lastSyncedStateRef.current = JSON.stringify(pulledState)
 
       setTransactions(data.transactions || [])
