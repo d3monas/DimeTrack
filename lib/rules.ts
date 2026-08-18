@@ -5,7 +5,7 @@ export function autoCategories(description: string, rules: Rule[]): string | nul
         return null
     }
     const lowerDesc = description.toLowerCase()
-    const matchedRule = rules.find((rule) => lowerDesc.includes(rule.contains.toLowerCase()))
+    const matchedRule = rules.find((rule) => rule.contains.trim() !== "" && lowerDesc.includes(rule.contains.toLowerCase()))
 
     return (
         matchedRule ? matchedRule.category : null
