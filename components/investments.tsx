@@ -8,9 +8,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { FieldError } from "./fieldError"
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "./ui/select"
 import { getAssetSummary, getPortfolioSummary, getPortfolioHistory } from "@/lib/calculations/investmentCalculations"
-import { Trash2, PlusCircle, TrendingUp, TrendingDown, Wallet, Pencil } from "lucide-react"
+import { Trash2, PlusCircle, TrendingUp, TrendingDown, Wallet, Pencil, CalendarIcon } from "lucide-react"
 import { PortfolioChart } from "./charts/portfolioChart"
 import { ConfirmDialog } from "./ui/confirmDialog"
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
+import { Calendar } from "./ui/calendar"
+import { format } from "date-fns"
 
 type InvestmentsThings = {
   assets: Asset[]
@@ -104,7 +107,9 @@ export function Investments({ assets, currencySymbol, onAddAsset, onUpdateAsset,
       return
     }
 
-    const finalDate = new Date().toISOString()
+    const isToday = transactionDate === new Date().toISOString().split("T")[0]
+    const finalDate = isToday ? new Date().toISOString() : new Date(transactionDate + "T12:00:00").toISOString()
+
     const finalQty = transactionType === "update" ? 0 : qty
 
     onLogInvestmentTransaction(selectedAsset.id, transactionType, finalQty, prc, finalDate, transactionNotes.trim() || undefined)
@@ -335,7 +340,21 @@ export function Investments({ assets, currencySymbol, onAddAsset, onUpdateAsset,
 
             <div>
               <Label>Date</Label>
-              <Input type="date" value={transactionDate} onChange={(e) => setTransactionDate(e.target.value)} />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-full justify-start text-left font-normal h-9">
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {transactionDate ? format(new Date(transactionDate), "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={transactionDate ? new Date(transactionDate) : undefined}
+                    onSelect={(d) => setTransactionDate(d ? d.toISOString().split("T")[0] : new Date().toISOString().split("T")[0])}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div>
