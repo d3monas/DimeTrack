@@ -71,6 +71,7 @@ Create accounts, categories, rules, update currency, customize & more
 
 ### Optional Cloud Sync
 End-to-End Cloud Syncing between devices. Nobody can read your data.
+<br>
 <img width="425" height="437" alt="image" src="https://github.com/user-attachments/assets/5e889f8f-88b6-480c-b975-11f3bd66afc3" /><br>
 
 Built with:
