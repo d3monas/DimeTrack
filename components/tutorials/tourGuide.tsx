@@ -83,7 +83,7 @@ const steps = [
     },
     {
         title: "12. You're Ready!",
-        description: "Explore the Calendar and Subscriptions tabs. When you're ready to use your own real data, click 'Finish Tour & Start Fresh' below.",
+        description: "Explore the Timeline and Subscriptions tabs. When you're ready to use your own real data, click 'Finish Tour & Start Fresh' below.",
         targetTab: "overview",
         requiresAction: "finish"
     }
