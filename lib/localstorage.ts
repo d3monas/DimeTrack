@@ -474,6 +474,21 @@ export function loadTemplates(): TransactionTemplate[] {
     }
 }
 
+// app install date
+export function loadAppInstallDate(): string {
+    if (!isBrowser) {
+        return new Date().toISOString()
+    }
+    const saved = localStorage.getItem("appInstallDate")
+    if (saved) {
+        return saved
+    }
+
+    const now = new Date().toISOString()
+    localStorage.setItem("appInstallDate", now)
+    return now
+}
+
 export function loadAllData() {
     return {
         transactions: loadTransactions(),
@@ -494,6 +509,7 @@ export function loadAllData() {
         dashboardVisibility: loadDashboardVisibility(),
         achievements: loadUnlockedAchievements(),
         templates: loadTemplates(),
+        appInstallDate: loadAppInstallDate(),
     }
 }
 

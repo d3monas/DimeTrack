@@ -32,7 +32,7 @@ export type CheckedAchievement = {
     unlocked: boolean
 }
 
-export function checkAchievements(transactions: Transaction[], goals: Goal[], assets: Asset[]): Record<string, CheckedAchievement> {
+export function checkAchievements(transactions: Transaction[], goals: Goal[], assets: Asset[], appInstallDate: string): Record<string, CheckedAchievement> {
     const evaluated: Record<string, CheckedAchievement> = {}
 
     evaluated["first_transaction"] = { id: "first_transaction", currentValue: transactions.length, unlocked: transactions.length >= 1 }
@@ -55,11 +55,11 @@ export function checkAchievements(transactions: Transaction[], goals: Goal[], as
     evaluated["saved_5000"] = { id: "saved_5000", currentValue: totalSaved, unlocked: totalSaved >= 5000 }
 
     let daysTracked = 0
-    if (transactions.length > 0) {
-        const sorted = [...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-        const firstDate = new Date(sorted[0].date).getTime()
-        daysTracked = Math.floor((Date.now() - firstDate) / (1000 * 60 * 60 * 24))
+    if (appInstallDate) {
+        const installTime = new Date(appInstallDate).getTime()
+        daysTracked = Math.floor((Date.now() - installTime) / (1000 * 60 * 60 * 24))
     }
+
     evaluated["tracked_7_days"] = { id: "tracked_7_days", currentValue: daysTracked, unlocked: daysTracked >= 7 }
     evaluated["tracked_30_days"] = { id: "tracked_30_days", currentValue: daysTracked, unlocked: daysTracked >= 30 }
     evaluated["tracked_100_days"] = { id: "tracked_100_days", currentValue: daysTracked, unlocked: daysTracked >= 100 }

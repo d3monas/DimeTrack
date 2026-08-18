@@ -142,6 +142,8 @@ export default function Home() {
 
   const [templates, setTemplates] = useState<TransactionTemplate[]>([])
 
+  const [appInstallDate, setAppInstallDate] = useState<string>("")
+
   // load localstorage 
   useEffect(() => {
     const data = loadAllData()
@@ -175,6 +177,7 @@ export default function Home() {
     prevCheckedRef.current = initialChecked
 
     setTemplates(data.templates || [])
+    setAppInstallDate(data.appInstallDate || new Date().toISOString())
 
     setIsLoaded(true)
   }, [])
@@ -377,7 +380,7 @@ export default function Home() {
       return
     }
 
-    const currentChecked = checkAchievements(transactions, goals, assets)
+    const currentChecked = checkAchievements(transactions, goals, assets, appInstallDate)
 
     const justGot = Object.values(currentChecked).filter(
       ev => ev.unlocked && (!prevCheckedRef.current[ev.id] || !prevCheckedRef.current[ev.id].unlocked)
@@ -394,7 +397,7 @@ export default function Home() {
 
     prevCheckedRef.current = currentChecked
     setCheckedAchievements(currentChecked)
-  }, [isLoaded, transactions, goals, assets])
+  }, [isLoaded, transactions, goals, assets, appInstallDate])
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -912,7 +915,8 @@ export default function Home() {
       assets,
       dashboardVisibility,
       unlockedAchievements: Object.values(checkedAchievements).filter(e => e.unlocked).map(e => e.id),
-      templates
+      templates,
+      appInstallDate
     })
   }
 
@@ -962,6 +966,7 @@ export default function Home() {
     prevCheckedRef.current = initialChecked
 
     setTemplates(data.templates || [])
+    setAppInstallDate(data.appInstallDate || new Date().toISOString())
 
     toast.success("Backup file imported successfully")
   }
@@ -1209,7 +1214,7 @@ export default function Home() {
       recurring, rules, categoryCustomization, accounts,
       defaultAccountId, accentColor, onboardingComplete, assets,
       dashboardVisibility, unlockedAchievements: Object.values(checkedAchievements).filter(e => e.unlocked).map(e => e.id),
-      templates
+      templates, appInstallDate
     }
   }
 
@@ -1310,6 +1315,7 @@ export default function Home() {
       prevCheckedRef.current = initialChecked
 
       setTemplates(data.templates || [])
+      setAppInstallDate(data.appInstallDate || new Date().toISOString())
 
       setSyncId(id)
       setSessionPassword(password)

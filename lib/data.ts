@@ -25,6 +25,7 @@ type AppBackupThings = {
     dashboardVisibility?: DashboardVisibility
     unlockedAchievements?: string[]
     templates?: TransactionTemplate[]
+    appInstallDate?: string
 }
 
 export function exportToJSON(data: AppBackupThings, filename = "dimetrack-backup.json") {
