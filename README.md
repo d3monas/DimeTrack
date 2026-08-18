@@ -7,21 +7,22 @@ A simple, open-source money tracker and savings planner.
 ## Features
 
 - Track Checking, Savings, and Cash separately. Move money with transfers that don't inflate your income or expenses.
-- Search and filter transactions by description, amount, category or transaction type.
+- Search and filter transactions by description, amount, category or transaction type. Perform bulk actions on transactions, including changing categories, accounts, types and deleting multiple transactions at a time.
 - Export your transactions to CSV or create full JSON backups to transfer your data to any device.
 - Set multiple savings goals at a time and contribute towards them directly, with full contribution history. Set savings goals with target dates and the app will calculate how much you need to save and contribute per month to hit your goal.
 - Create custom categories & set budget limits, with warnings as you approach them.
 - Split a single purchase across multiple categories.
 - Track your finances with interactive charts, category breakdowns, net worth history and monthly spending reports.
-- Project upcoming bills and predict your spending before it happens with cash flow calendar.
+- Project upcoming bills and predict your spending before it happens with the cash flow timeline.
 - Multi-currency support.
 - Schedule recurring transactions for bills, subscriptions, salaries, and more.
+- Manage your subscriptions with the dedicated subscriptions manager.
 - Set rules (e.g. "If description contains Uber, set category to Transport")
-- Personalize the app with a built-in color picker. Choose from presets or use a custom Hex code.
+- Track your investments and monitor your portfolio value over time with the investment tracker.
+- Personalize the app with a built-in color picker. Choose from presets or use a custom Hex code. Customize your accounts and categories with custom icons and colors, and personalize your dashboard with customizable widgets.
 - View balances for every account and your total net worth at a glance.
-- Create custom spending categories with custom icons and colors.
 - Mobile friendly UI.
-- No accounts, subscriptions, servers. Everything stays in your device.
+- No accounts, subscriptions, or servers required. Everything stays on your device by default, with optional cloud sync for accessing your data across devices.
 
 ## Screenshots
 
