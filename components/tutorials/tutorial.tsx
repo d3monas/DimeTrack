@@ -29,7 +29,7 @@ export function TutorialDialog({ open, onClose, onLoadSampleData }: TutorialDial
           </div>
           <DialogTitle className="text-center text-2xl">Welcome to DimeTrack! 👋</DialogTitle>
           <DialogDescription className="text-center text-sm text-muted-foreground pt-2 min-h-15">
-            DimeTrack is a 100% private, offline budgeting app. Your data never leaves your device. Would you like to start with an interactive demo tour with sample data, or start completely fresh?
+            DimeTrack is a 100% private, offline budgeting app. Your data stays on your device by default. If you turn on optional sync, your data is encrypted on your device before it's sent, meaning that nobody can read it. Would you like to start with an interactive demo tour with sample data, or start completely fresh?
           </DialogDescription>
         </DialogHeader>
         <div className="mt-4 space-y-2">
