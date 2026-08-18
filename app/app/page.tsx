@@ -121,6 +121,8 @@ export default function Home() {
   const [isSyncing, setIsSyncing] = useState(false)
   const [lastSynced, setLastSynced] = useState<string | null>(null)
   const [sessionPassword, setSessionPassword] = useState<string | null>(null)
+  const lastSyncedStateRef = useRef<string | null>(null)
+  const syncPullInFlightRef = useRef(false)
 
   const [assets, setAssets] = useState<Asset[]>([])
 
@@ -349,15 +351,21 @@ export default function Home() {
 
     const syncTimer = setTimeout(() => {
       const state = getCurrentState()
+      const stateFingerprint = JSON.stringify(state)
+
+      if (stateFingerprint === lastSyncedStateRef.current) {
+        return
+      }
 
       pushSyncData(syncId, sessionPassword, state)
         .then(() => {
+          lastSyncedStateRef.current = stateFingerprint
           setLastSynced(new Date().toLocaleString())
         })
         .catch((error) => {
           console.error("Auto-sync failed:", error)
         })
-    }, 3000)
+    }, 1000)
 
     return () => clearTimeout(syncTimer)
   }, [
@@ -366,6 +374,90 @@ export default function Home() {
     recurring, rules, categoryCustomization, accounts,
     defaultAccountId, accentColor, assets, dashboardVisibility,
     templates, appInstallDate, checkedAchievements, onboardingComplete
+  ])
+
+  useEffect(() => {
+    if (!isLoaded || !syncId || !sessionPassword) {
+      return
+    }
+
+    const pullLatestState = async () => {
+      if (syncPullInFlightRef.current || document.visibilityState !== "visible") {
+        return
+      }
+
+      const activeElement = document.activeElement
+      const isTyping = activeElement && (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA")
+
+      if (isTyping || open || settingsOpen || goalDialogOpen) {
+        return
+      }
+
+      syncPullInFlightRef.current = true
+      try {
+        const pulledState = await pullSyncData(syncId, sessionPassword)
+        const pulledFingerprint = JSON.stringify(pulledState)
+
+        if (pulledFingerprint === JSON.stringify(getCurrentState())) {
+          lastSyncedStateRef.current = pulledFingerprint
+          return
+        }
+
+        lastSyncedStateRef.current = pulledFingerprint
+        const data = pulledState as any
+        setTransactions(data.transactions || [])
+        setGoals(data.goals || [])
+        setCategories(data.categories || [])
+        setBudgets(data.budgets || {})
+        setCurrency(data.currency || "USD")
+        setRecurring(data.recurring || [])
+        setRules(data.rules || [])
+        setCategoryCustomization(data.categoryCustomization || {})
+        setAccounts(data.accounts || [])
+        setDefaultAccountId(data.defaultAccountId || "")
+        setAccentColor(data.accentColor || "")
+        setAssets(data.assets || [])
+        setTemplates(data.templates || [])
+        setAppInstallDate(data.appInstallDate || new Date().toISOString())
+        setDashboardVisibility(data.dashboardVisibility || {
+          networth: true,
+          networth_history: true,
+          upcoming: true,
+          smart_stats: true,
+          trend: true,
+          forecast: true,
+          accounts: true,
+          breakdown: true
+        })
+        setOnboardingComplete(data.onboardingComplete || false)
+
+        const savedUnlocked = data.unlockedAchievements || []
+        const initialChecked: Record<string, CheckedAchievement> = {}
+        ACHIEVEMENTS.forEach(ach => {
+          initialChecked[ach.id] = {
+            id: ach.id,
+            currentValue: 0,
+            unlocked: savedUnlocked.includes(ach.id)
+          }
+        })
+        setCheckedAchievements(initialChecked)
+        prevCheckedRef.current = initialChecked
+        setLastSynced(new Date().toLocaleString())
+      } catch (error) {
+        console.error("Auto-sync pull failed:", error)
+      } finally {
+        syncPullInFlightRef.current = false
+      }
+    }
+
+    const syncTimer = window.setInterval(pullLatestState, 1000)
+    return () => window.clearInterval(syncTimer)
+  }, [
+    isLoaded, syncId, sessionPassword, open, settingsOpen, goalDialogOpen,
+    transactions, goals, categories, budgets, currency, recurring, rules,
+    categoryCustomization, accounts, defaultAccountId, accentColor, assets,
+    dashboardVisibility, templates, appInstallDate, onboardingComplete,
+    checkedAchievements
   ])
 
   // auto pull
@@ -383,9 +475,16 @@ export default function Home() {
           return
         }
 
+        if (syncPullInFlightRef.current) {
+          return
+        }
+
+        syncPullInFlightRef.current = true
+
         try {
           const pulledState = await pullSyncData(syncId, sessionPassword)
           const data = pulledState as any
+          lastSyncedStateRef.current = JSON.stringify(pulledState)
 
           setTransactions(data.transactions || [])
           setGoals(data.goals || [])
@@ -420,6 +519,8 @@ export default function Home() {
 
           setLastSynced(new Date().toLocaleString())
         } catch (error) {
+        } finally {
+          syncPullInFlightRef.current = false
         }
       }
     }
@@ -1290,6 +1391,7 @@ export default function Home() {
       const state = getCurrentState()
       await pushSyncData(newId, password, state)
 
+      lastSyncedStateRef.current = JSON.stringify(state)
       setSyncId(newId)
       setSessionPassword(password)
       saveSyncId(newId)
@@ -1322,7 +1424,8 @@ export default function Home() {
 
       const state = getCurrentState()
       await pushSyncData(syncId, passwordToUse, state)
-      
+
+      lastSyncedStateRef.current = JSON.stringify(state)
       setSessionPassword(passwordToUse)
       saveSyncPassword(passwordToUse)
       setLastSynced(new Date().toLocaleString())
@@ -1345,6 +1448,7 @@ export default function Home() {
     try {
       const pulledState = await pullSyncData(id, password)
       const data = pulledState as any
+      lastSyncedStateRef.current = JSON.stringify(pulledState)
 
       setTransactions(data.transactions || [])
       setGoals(data.goals || [])
