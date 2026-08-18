@@ -83,4 +83,4 @@ Want to run DimeTrack locally? Not a problem!:
 
 Then open http://localhost:3000 in your browser.
 > NOTE: some features rely on `crypto.randomUUID()`, which requires a secure context. This works while testing on `localhost`, but if you are testing on another device over
-> your local network, use a tool like Vercel to test over HTTPS, because features like adding transactions will not work.
+> your local network, use a tool like Vercel to test over HTTPS, because features like adding transactions will not work. Cloud syncing WILL not work on localhost
