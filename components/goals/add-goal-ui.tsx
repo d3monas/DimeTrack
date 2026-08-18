@@ -5,6 +5,10 @@ import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import type { Goal } from "@/types/goal"
 import { FieldError } from "@/components/fieldError"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import { Calendar as CalendarIcon } from "lucide-react"
+import { format } from "date-fns"
+import { Calendar } from "../ui/calendar"
 
 type GoalDialogThings = {
     open: boolean
@@ -97,11 +101,24 @@ export function GoalDialog({ open, setOpen, goal, onSave }: GoalDialogThings) {
 
                     <div>
                         <Label>Target Date (optional)</Label>
-                        <Input type="date" value={targetDate} onChange={(e) => { setTargetDate(e.target.value) 
-                            if (errors.targetDate) {
-                                setErrors((p) => ({ ...p, targetDate: "" }))
-                            }
-                        }} />
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" className="w-full justify-start text-left font-normal h-9">
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {targetDate ? format(new Date(targetDate), "PPP") : <span>Pick a date</span>}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar
+                                    mode="single"
+                                    selected={targetDate ? new Date(targetDate) : undefined}
+                                    onSelect={(d) => {
+                                        setTargetDate(d ? d.toISOString().split("T")[0] : "")
+                                        if (errors.targetDate) setErrors((p) => ({ ...p, targetDate: "" }))
+                                    }}
+                                />
+                            </PopoverContent>
+                        </Popover>
                         <FieldError message={errors.targetDate} />
                     </div>
 
