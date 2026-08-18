@@ -14,7 +14,7 @@ export const availableColors = [
 
 export const availableIcons = [
     "ShoppingCart", "Car", "Home", "Utensils", "Plane", "Gamepad2", "HeartPulse", "Briefcase",
-    "Dumbbell", "Piggybank", "Gift", "GraduationCap", "Baby", "Dog", "Zap", "Coffee", "Smartphone", "Camera"
+    "Dumbbell", "PiggyBank", "Gift", "GraduationCap", "Baby", "Dog", "Zap", "Coffee", "Smartphone", "Camera"
 ]
 
 const iconMap: Record<string, LucideIcon> = {

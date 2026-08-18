@@ -8,7 +8,7 @@ export function pagination<T>(items: T[], perPage: number, resetKey?: unknown) {
     }, [resetKey])
 
     const totalPages = Math.max(1, Math.ceil(items.length / perPage))
-    const currentPage = Math.min(page, totalPages - 1)
+    const currentPage = Math.min(Math.max(page, 0), totalPages - 1)
     const pageItems = items.slice(currentPage * perPage, currentPage * perPage + perPage)
 
     return {
