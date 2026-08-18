@@ -967,6 +967,7 @@ export default function Home() {
 
     setTemplates(data.templates || [])
     setAppInstallDate(data.appInstallDate || new Date().toISOString())
+    setOnboardingComplete(data.onboardingComplete || false)
 
     toast.success("Backup file imported successfully")
   }
@@ -1316,6 +1317,7 @@ export default function Home() {
 
       setTemplates(data.templates || [])
       setAppInstallDate(data.appInstallDate || new Date().toISOString())
+      setOnboardingComplete(data.onboardingComplete || false)
 
       setSyncId(id)
       setSessionPassword(password)
