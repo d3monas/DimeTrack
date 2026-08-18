@@ -47,7 +47,8 @@ import { calculateIncome, calculateExpenses, filterTransactionsByPeriod, getMont
 import {
   saveTransactions, saveCategories, saveBudgets, saveCurrency, loadAllData, saveRecurring,
   saveGoals, saveRules, saveCategoryCustomization, saveAccounts, saveDefaultAccountId, saveAccentColor, saveOnboardingComplete,
-  saveTutorialSeen, saveAssets, saveSyncId, saveDashboardVisibility, saveUnlockedAchievements, saveTemplates, clearAllData
+  saveTutorialSeen, saveAssets, saveSyncId, saveDashboardVisibility, saveUnlockedAchievements, saveTemplates, clearAllData,
+  saveSyncPassword
 } from "@/lib/localstorage"
 import { getCategoryTotals } from "@/lib/categories"
 import { savingsCategoryForGoal, isSavingsCategory, STARTING_BALANCE_CATEGORY, INVESTMENT_CATEGORY } from "@/lib/consts"
@@ -161,6 +162,12 @@ export default function Home() {
     setOnboardingComplete(data.onboardingComplete || false)
     setTutorialSeen(data.tutorialSeen || false)
     setSyncId(data.syncId || "")
+
+    const savedPassword = data.syncPassword || ""
+    if (savedPassword) {
+      setSessionPassword(savedPassword)
+    }
+
     setAssets(data.assets || [])
     setDashboardVisibility(data.dashboardVisibility)
 
@@ -336,14 +343,12 @@ export default function Home() {
 
   // auto sync
   useEffect(() => {
-    if (!isLoaded || !syncId || !sessionPassword) return
+    if (!isLoaded || !syncId || !sessionPassword) {
+      return
+    }
 
     const syncTimer = setTimeout(() => {
-      const state = {
-        transactions, goals, categories, budgets, currency,
-        recurring, rules, categoryCustomization, accounts,
-        defaultAccountId, accentColor, onboardingComplete, assets
-      }
+      const state = getCurrentState()
 
       pushSyncData(syncId, sessionPassword, state)
         .then(() => {
@@ -359,8 +364,69 @@ export default function Home() {
     isLoaded, syncId, sessionPassword,
     transactions, goals, categories, budgets, currency,
     recurring, rules, categoryCustomization, accounts,
-    defaultAccountId, accentColor, assets
+    defaultAccountId, accentColor, assets, dashboardVisibility,
+    templates, appInstallDate, checkedAchievements, onboardingComplete
   ])
+
+  // auto pull
+  useEffect(() => {
+    if (!isLoaded || !syncId || !sessionPassword) {
+      return
+    }
+
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === "visible") {
+        const activeElement = document.activeElement
+        const isTyping = activeElement && (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA")
+
+        if (isTyping || open || settingsOpen || goalDialogOpen) {
+          return
+        }
+
+        try {
+          const pulledState = await pullSyncData(syncId, sessionPassword)
+          const data = pulledState as any
+
+          setTransactions(data.transactions || [])
+          setGoals(data.goals || [])
+          setCategories(data.categories || [])
+          setBudgets(data.budgets || {})
+          setCurrency(data.currency || "USD")
+          setRecurring(data.recurring || [])
+          setRules(data.rules || [])
+          setCategoryCustomization(data.categoryCustomization || {})
+          setAccounts(data.accounts || [])
+          setDefaultAccountId(data.defaultAccountId || "")
+          setAccentColor(data.accentColor || "")
+          setAssets(data.assets || [])
+          setTemplates(data.templates || [])
+          setAppInstallDate(data.appInstallDate || new Date().toISOString())
+          setDashboardVisibility(data.dashboardVisibility || {
+            networth: true, networth_history: true, upcoming: true, smart_stats: true, trend: true, forecast: true, accounts: true, breakdown: true
+          })
+          setOnboardingComplete(data.onboardingComplete || false)
+
+          const savedUnlocked = data.unlockedAchievements || []
+          const initialChecked: Record<string, CheckedAchievement> = {}
+          ACHIEVEMENTS.forEach(ach => {
+            initialChecked[ach.id] = {
+              id: ach.id,
+              currentValue: 0,
+              unlocked: savedUnlocked.includes(ach.id)
+            }
+          })
+          setCheckedAchievements(initialChecked)
+          prevCheckedRef.current = initialChecked
+
+          setLastSynced(new Date().toLocaleString())
+        } catch (error) {
+        }
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange)
+  }, [isLoaded, syncId, sessionPassword, open, settingsOpen, goalDialogOpen])
 
   useEffect(() => {
     if (isLoaded) {
@@ -967,7 +1033,6 @@ export default function Home() {
 
     setTemplates(data.templates || [])
     setAppInstallDate(data.appInstallDate || new Date().toISOString())
-    setOnboardingComplete(data.onboardingComplete || false)
 
     toast.success("Backup file imported successfully")
   }
@@ -1228,6 +1293,7 @@ export default function Home() {
       setSyncId(newId)
       setSessionPassword(password)
       saveSyncId(newId)
+      saveSyncPassword(password)
       setLastSynced(new Date().toLocaleString())
       toast.success("Sync enabled!")
     } catch (error) {
@@ -1258,6 +1324,7 @@ export default function Home() {
       await pushSyncData(syncId, passwordToUse, state)
       
       setSessionPassword(passwordToUse)
+      saveSyncPassword(passwordToUse)
       setLastSynced(new Date().toLocaleString())
       toast.success("Sync unlocked and data pushed successfully!")
     } catch (error) {
@@ -1322,6 +1389,7 @@ export default function Home() {
       setSyncId(id)
       setSessionPassword(password)
       saveSyncId(id)
+      saveSyncPassword(password)
       setLastSynced(new Date().toLocaleString())
       toast.success("Data pulled successfully!")
     } catch (error) {

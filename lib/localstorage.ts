@@ -489,6 +489,23 @@ export function loadAppInstallDate(): string {
     return now
 }
 
+// sync password
+export function saveSyncPassword(password: string) {
+    if (!isBrowser) {
+        return
+    }
+    localStorage.setItem("syncPassword", password)
+}
+
+export function loadSyncPassword(): string {
+    if (!isBrowser) {
+        return ""
+    }
+    return (
+        localStorage.getItem("syncPassword") || ""
+    )
+}
+
 export function loadAllData() {
     return {
         transactions: loadTransactions(),
@@ -510,6 +527,7 @@ export function loadAllData() {
         achievements: loadUnlockedAchievements(),
         templates: loadTemplates(),
         appInstallDate: loadAppInstallDate(),
+        syncPassword: loadSyncPassword(),
     }
 }
 
@@ -537,4 +555,5 @@ export function clearAllData() {
     localStorage.removeItem("dashboardVisibility")
     localStorage.removeItem("unlockedAchievements")
     localStorage.removeItem("templates")
+    localStorage.removeItem("syncPassword")
 }
