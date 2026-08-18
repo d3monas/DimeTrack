@@ -1,4 +1,3 @@
-<img width="1284" height="2654" alt="overview" src="https://github.com/user-attachments/assets/483e10fb-b18d-4b6b-88d8-676d01fa31a8" />
 # DimeTrack
 
 A simple, open-source money tracker and savings planner.
@@ -30,8 +29,7 @@ A simple, open-source money tracker and savings planner.
 A complete overview of your finances
 <br>
 
-<img width="1005" height="1885" alt="dark-dashboard" src="https://github.com/user-attachments/assets/494589d8-d36c-4be4-8f0f-c3af62144cae" />
-![Uploading overview.png…]()
+<img width="1035" height="2633" alt="image" src="https://github.com/user-attachments/assets/620e20f3-00ce-48eb-926a-6a15c6b5dd25" />
 
 ### Accounts
 Manage multiple accounts, see balances of each & all accounts instantly
