@@ -71,7 +71,7 @@ export default function LandingPage() {
             <section className="mx-auto max-w-5xl px-4 pt-20 pb-16 text-center sm:px-6">
                 <h1 className="text-4xl font-bold sm:text-5xl md:text-6xl">Money tracking, <br/>made simple.</h1>
                 <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-                    DimeTrack is a free, open-source money tracker and savings planner. No accounts, servers or subscriptions.
+                    DimeTrack is a free, open-source money tracker and savings planner. No accounts or subscriptions.
                 </p>
                 <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
                     <Button size="lg" asChild>
